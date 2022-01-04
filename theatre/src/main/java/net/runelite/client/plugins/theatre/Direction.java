@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https:github.com/Owain94>
+ * Copyright (c) 2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,17 +22,79 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.theatre;
 
-rootProject.name = "Test Plugins"
+import lombok.Getter;
 
-include(":theatre")
+/**
+ * Represents the four main cardinal points.
+ */
+public enum Direction
+{
+	NORTH("N"),
+	EAST("E"),
+	SOUTH("S"),
+	WEST("W"),
+	NORTHEAST("NE"),
+	NORTHWEST("NW"),
+	SOUTHEAST("SE"),
+	SOUTHWEST("SW");
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+	@Getter
+	private final String dirName;
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	public static Direction getNearestDirection(int angle)
+	{
+		int round = angle >>> 9;
+		int up = angle & 256;
+		if (up != 0)
+		{
+			++round;
+		}
+
+		switch (round & 3)
+		{
+			case 0:
+				return SOUTH;
+			case 1:
+				return WEST;
+			case 2:
+				return NORTH;
+			case 3:
+				return EAST;
+			default:
+				throw new IllegalStateException();
+		}
+	}
+
+	public static Direction getPreciseDirection(int angle)
+	{
+		int ordinalDirection = (int)Math.round((double)angle / 256.0D) % 8;
+		switch (ordinalDirection)
+		{
+			case 0:
+				return SOUTH;
+			case 1:
+				return SOUTHWEST;
+			case 2:
+				return WEST;
+			case 3:
+				return NORTHWEST;
+			case 4:
+				return NORTH;
+			case 5:
+				return NORTHEAST;
+			case 6:
+				return EAST;
+			case 7:
+				return SOUTHEAST;
+			default:
+				throw new IllegalStateException();
+		}
+	}
+
+	private Direction(String dirName)
+	{
+		this.dirName = dirName;
+	}
 }
