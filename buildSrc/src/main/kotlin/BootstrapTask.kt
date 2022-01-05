@@ -61,7 +61,10 @@ open class BootstrapTask : DefaultTask() {
                             "version" to it.project.version,
                             "requires" to ProjectVersions.apiVersion,
                             "date" to formatDate(Date()),
+                            //private
                             "url" to "https://raw.githubusercontent.com/9InchHog/plugins-release/master/release/${it.project.name}-${it.project.version}.jar",
+                            //public
+                            //"url" to "https://raw.githubusercontent.com/SpoonLite/spoon-plugins/master/release/${it.project.name}-${it.project.version}.jar",
                             "sha512sum" to hash(plugin.readBytes())
                     ))
 

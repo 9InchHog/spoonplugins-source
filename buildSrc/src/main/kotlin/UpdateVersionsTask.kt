@@ -21,7 +21,10 @@ open class UpdateVersionsTask : DefaultTask() {
     private fun getBootstrap(): JSONArray? {
         val client = OkHttpClient()
 
+        //private
         val url = "https://raw.githubusercontent.com/9InchHog/plugins-release/master/plugins.json"
+        //public
+        //val url = "https://raw.githubusercontent.com/SpoonLite/spoon-plugins/master/plugins.json"
         val request = Request.Builder()
                 .url(url)
                 .build()

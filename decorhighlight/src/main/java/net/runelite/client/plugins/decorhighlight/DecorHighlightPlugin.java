@@ -10,8 +10,13 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+import org.pf4j.Extension;
 
-@PluginDescriptor(name = "[D] Decor Highlight", description = "Highlights ground decor \"graphics objects\" by ID in-game")
+@Extension
+@PluginDescriptor(
+        name = "[D] Decor Highlight",
+        description = "Highlights ground decor \"graphics objects\" by ID in-game"
+)
 public class DecorHighlightPlugin extends Plugin {
     @Inject
     private OverlayManager overlayManager;
