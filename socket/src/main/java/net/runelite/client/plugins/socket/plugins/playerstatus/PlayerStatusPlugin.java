@@ -13,7 +13,9 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.SpriteManager;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.socket.SocketPlugin;
 import net.runelite.client.plugins.socket.org.json.JSONObject;
 import net.runelite.client.plugins.socket.packet.SocketBroadcastPacket;
 import net.runelite.client.plugins.socket.packet.SocketPlayerLeave;
@@ -25,6 +27,7 @@ import net.runelite.client.plugins.socket.plugins.playerstatus.marker.IndicatorM
 import net.runelite.client.plugins.socket.plugins.playerstatus.marker.TimerMarker;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -34,12 +37,14 @@ import static net.runelite.client.plugins.socket.plugins.playerstatus.gametimer.
 import static net.runelite.client.plugins.socket.plugins.playerstatus.gametimer.GameTimer.*;
 import static net.runelite.client.plugins.socket.plugins.playerstatus.gametimer.GameTimerConstant.*;
 
+@Extension
 @PluginDescriptor(
         name = "Socket - Player Status",
         description = "Socket extension for displaying player status to members in your party.",
         tags = {"socket", "server", "discord", "connection", "broadcast", "player", "status", "venge", "vengeance"},
         enabledByDefault = true
 )
+@PluginDependency(SocketPlugin.class)
 @Slf4j
 public class PlayerStatusPlugin extends Plugin {
 

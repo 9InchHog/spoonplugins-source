@@ -25,6 +25,7 @@ import net.runelite.client.plugins.socket.packet.*;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.ImageUtil;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import java.awt.*;
@@ -34,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
+@Extension
 @PluginDescriptor(
         name = "Socket",
         description = "Socket connection for broadcasting messages across clients.",

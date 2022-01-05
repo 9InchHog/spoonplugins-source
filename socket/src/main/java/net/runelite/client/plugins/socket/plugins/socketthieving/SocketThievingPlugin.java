@@ -14,7 +14,9 @@ import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.socket.SocketPlugin;
 import net.runelite.client.plugins.socket.org.json.JSONArray;
 import net.runelite.client.plugins.socket.org.json.JSONObject;
 import net.runelite.client.plugins.socket.packet.SocketBroadcastPacket;
@@ -22,12 +24,15 @@ import net.runelite.client.plugins.socket.packet.SocketReceivePacket;
 import net.runelite.client.plugins.socket.plugins.socketthieving.util.Raids1Util;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.Text;
+import org.pf4j.Extension;
 
+@Extension
 @PluginDescriptor(
         name = "Socket - Thieving",
         description = "De0's thieving plugin with the option of Socket! Works without socket too.",
         tags = {"xeric", "thieving", "chambers", "cox", "socket", "de0", "bats", "grubs"}
         )
+@PluginDependency(SocketPlugin.class)
 public class SocketThievingPlugin extends Plugin {
     @Inject
     private Client client;

@@ -13,8 +13,10 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.SkillIconManager;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
+import net.runelite.client.plugins.socket.SocketPlugin;
 import net.runelite.client.plugins.socket.org.json.JSONObject;
 import net.runelite.client.plugins.socket.packet.SocketBroadcastPacket;
 import net.runelite.client.plugins.socket.packet.SocketMembersUpdate;
@@ -24,6 +26,7 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.util.ColorUtil;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import java.awt.*;
@@ -36,13 +39,14 @@ import static net.runelite.api.ScriptID.XPDROPS_SETDROPSIZE;
 import static net.runelite.api.widgets.WidgetInfo.TO_CHILD;
 import static net.runelite.api.widgets.WidgetInfo.TO_GROUP;
 
+@Extension
 @PluginDescriptor(
         name = "Socket - Defence",
         description = "Shows defence level for different bosses after specs",
         tags = {"socket", "pvm", "cox", "gwd", "corp", "tob"},
         enabledByDefault = false
 )
-
+@PluginDependency(SocketPlugin.class)
 @Slf4j
 public class SocketDefencePlugin extends Plugin {
     @Inject

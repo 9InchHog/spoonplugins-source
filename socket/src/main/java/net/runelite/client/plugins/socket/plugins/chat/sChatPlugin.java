@@ -17,13 +17,16 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.input.KeyListener;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.socket.SocketPlugin;
 import net.runelite.client.plugins.socket.org.json.JSONArray;
 import net.runelite.client.plugins.socket.org.json.JSONException;
 import net.runelite.client.plugins.socket.org.json.JSONObject;
 import net.runelite.client.plugins.socket.packet.SocketBroadcastPacket;
 import net.runelite.client.plugins.socket.packet.SocketReceivePacket;
 import net.runelite.client.util.ColorUtil;
+import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +37,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
 
-@PluginDescriptor(name = "Socket - Chat", description = "Chat over socket", tags = {"Socket", "chat"})
+@Extension
+@PluginDescriptor(
+        name = "Socket - Chat",
+        description = "Chat over socket",
+        tags = {"Socket", "chat"}
+)
+@PluginDependency(SocketPlugin.class)
 public class sChatPlugin extends Plugin implements KeyListener {
     private static final Logger log = LoggerFactory.getLogger(sChatPlugin.class);
 

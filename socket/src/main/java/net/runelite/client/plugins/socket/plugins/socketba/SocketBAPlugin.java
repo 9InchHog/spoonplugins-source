@@ -15,7 +15,9 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.socket.SocketPlugin;
 import net.runelite.client.plugins.socket.org.json.JSONArray;
 import net.runelite.client.plugins.socket.org.json.JSONObject;
 import net.runelite.client.plugins.socket.packet.SocketBroadcastPacket;
@@ -23,18 +25,21 @@ import net.runelite.client.plugins.socket.packet.SocketReceivePacket;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.Text;
 import org.checkerframework.checker.units.qual.C;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+@Extension
 @PluginDescriptor(
         name = "Socket - Barbarian Assault",
         description = "Socket BA",
         tags = {"ba", "barb assault", "spoon", "spoonlite"},
 		enabledByDefault = false
 )
+@PluginDependency(SocketPlugin.class)
 public class SocketBAPlugin extends Plugin {
     @Inject
     private Client client;

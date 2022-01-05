@@ -27,6 +27,7 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.Text;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import java.awt.*;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
+@Extension
 @PluginDescriptor(
         name = "Socket - Healing",
         description = "Displays health overlays for socket party members. <br> Created by: A wild animal with a keyboard <br> Modified by: SpoonLite",

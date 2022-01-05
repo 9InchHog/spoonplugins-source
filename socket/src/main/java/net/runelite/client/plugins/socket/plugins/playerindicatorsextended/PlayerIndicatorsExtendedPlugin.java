@@ -9,12 +9,15 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ChatIconManager;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
+import net.runelite.client.plugins.socket.SocketPlugin;
 import net.runelite.client.plugins.socket.packet.SocketMembersUpdate;
 import net.runelite.client.plugins.socket.packet.SocketPlayerJoin;
 import net.runelite.client.plugins.socket.packet.SocketShutdown;
 import net.runelite.client.ui.overlay.OverlayManager;
+import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +25,13 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Objects;
 
-@PluginDescriptor(name = "Socket - Player Indicator", description = "Shows you players who are in your socket", tags = {"indicator, socket, player, highlight"})
+@Extension
+@PluginDescriptor(
+        name = "Socket - Player Indicator",
+        description = "Shows you players who are in your socket",
+        tags = {"indicator, socket, player, highlight"}
+)
+@PluginDependency(SocketPlugin.class)
 public class PlayerIndicatorsExtendedPlugin extends Plugin {
     private static final Logger log = LoggerFactory.getLogger(PlayerIndicatorsExtendedPlugin.class);
 

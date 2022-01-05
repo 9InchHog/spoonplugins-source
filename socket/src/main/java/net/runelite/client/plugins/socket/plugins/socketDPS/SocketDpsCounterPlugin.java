@@ -23,6 +23,7 @@ import net.runelite.client.plugins.socket.packet.SocketReceivePacket;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
+import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,12 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-@PluginDescriptor(name = "Socket - Damage Counter", description = "Counts damage by a party", enabledByDefault = false)
+@Extension
+@PluginDescriptor(
+        name = "Socket - Damage Counter",
+        description = "Counts damage by a party",
+        enabledByDefault = false
+)
 @PluginDependency(SocketPlugin.class)
 public class SocketDpsCounterPlugin extends Plugin {
     private static final Logger log = LoggerFactory.getLogger(SocketDpsCounterPlugin.class);

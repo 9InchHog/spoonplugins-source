@@ -12,24 +12,29 @@ import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.socket.SocketPlugin;
 import net.runelite.client.plugins.socket.org.json.JSONArray;
 import net.runelite.client.plugins.socket.org.json.JSONObject;
 import net.runelite.client.plugins.socket.packet.SocketBroadcastPacket;
 import net.runelite.client.plugins.socket.packet.SocketReceivePacket;
 import net.runelite.client.util.ColorUtil;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Extension
 @PluginDescriptor(
         name = "Socket - Player Status Extended",
         description = "Socket extension for displaying player status to members in your party.",
         tags = {"socket"},
         enabledByDefault = false
 )
+@PluginDependency(SocketPlugin.class)
 public class PlayerStatusExtendedPlugin extends Plugin {
     @Inject
     private Client client;

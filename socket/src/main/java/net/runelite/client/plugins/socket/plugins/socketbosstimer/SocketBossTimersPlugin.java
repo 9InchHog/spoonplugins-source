@@ -18,7 +18,9 @@ import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.socket.SocketPlugin;
 import net.runelite.client.plugins.socket.org.json.JSONArray;
 import net.runelite.client.plugins.socket.org.json.JSONObject;
 import net.runelite.client.plugins.socket.packet.SocketBroadcastPacket;
@@ -26,10 +28,17 @@ import net.runelite.client.plugins.socket.packet.SocketReceivePacket;
 import net.runelite.client.ui.overlay.infobox.InfoBox;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.util.ColorUtil;
+import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@PluginDescriptor(name = "Socket - Boss Timers", description = "Show boss spawn timer overlays. Zhuri made the multiple worlds possible. I just made it socket.", tags = {"combat", "pve", "overlay", "spawn"})
+@Extension
+@PluginDescriptor(
+		name = "Socket - Boss Timers",
+		description = "Show boss spawn timer overlays.",
+		tags = {"combat", "pve", "overlay", "spawn"}
+)
+@PluginDependency(SocketPlugin.class)
 public class SocketBossTimersPlugin extends Plugin {
 	private static final Logger log = LoggerFactory.getLogger(SocketBossTimersPlugin.class);
 

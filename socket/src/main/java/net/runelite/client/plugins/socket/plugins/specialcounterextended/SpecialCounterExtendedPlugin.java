@@ -35,12 +35,15 @@ import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.socket.SocketPlugin;
 import net.runelite.client.plugins.socket.org.json.JSONObject;
 import net.runelite.client.plugins.socket.packet.SocketBroadcastPacket;
 import net.runelite.client.plugins.socket.packet.SocketReceivePacket;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import java.awt.image.BufferedImage;
@@ -48,12 +51,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+@Extension
 @PluginDescriptor(
         name = "Socket - Special Attack Counter",
         description = "Track DWH, Arclight, Darklight, and BGS special attacks used on NPCs using server sockets.",
         tags = {"socket", "server", "discord", "connection", "broadcast", "combat", "npcs", "overlay"},
         enabledByDefault = true
 )
+@PluginDependency(SocketPlugin.class)
 @Slf4j
 public class SpecialCounterExtendedPlugin extends Plugin {
 
