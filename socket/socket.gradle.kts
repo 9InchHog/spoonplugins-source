@@ -36,13 +36,16 @@ dependencies {
 
     compileOnly("com.openosrs:runelite-api:$rlVersion")
     compileOnly("com.openosrs:runelite-client:$rlVersion")
+    compileOnly("com.openosrs:http-api:$rlVersion")
 
     compileOnly(Libraries.guice)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.pf4j)
     compileOnly(Libraries.rxjava)
     compileOnly(Libraries.apacheCommonsText)
-    compileOnly(Libraries.annotations)
+
+    compileOnly(group = "net.java.dev.jna", name = "jna", version = "5.7.0")
+    compileOnly(group = "net.java.dev.jna", name = "jna-platform", version = "5.7.0")
 }
 
 tasks {

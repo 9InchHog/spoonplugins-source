@@ -40,6 +40,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+import org.pf4j.Extension;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;

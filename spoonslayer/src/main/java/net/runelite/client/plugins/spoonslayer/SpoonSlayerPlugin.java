@@ -26,8 +26,8 @@
 package net.runelite.client.plugins.spoonslayer;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import com.google.inject.Provides;
-import joptsimple.internal.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -58,6 +58,7 @@ import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.Text;
 import net.runelite.http.api.chat.ChatClient;
 import org.apache.commons.lang3.ArrayUtils;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import javax.inject.Named;

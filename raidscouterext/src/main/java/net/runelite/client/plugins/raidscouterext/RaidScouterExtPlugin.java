@@ -38,6 +38,7 @@ import net.runelite.client.ws.PartyService;
 import net.runelite.client.ws.WSClient;
 import net.runelite.http.api.ws.messages.party.PartyChatMessage;
 import org.apache.commons.lang3.StringUtils;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import java.awt.*;
