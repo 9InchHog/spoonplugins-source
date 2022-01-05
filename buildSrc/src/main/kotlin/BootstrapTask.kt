@@ -41,8 +41,8 @@ open class BootstrapTask : DefaultTask() {
     @TaskAction
     fun boostrap() {
         if (project == project.rootProject) {
-            val bootstrapDir = File("${project.projectDir}/release")
-            val bootstrapReleaseDir = File("${project.projectDir}/release/plugins")
+            val bootstrapDir = File("${project.projectDir}")
+            val bootstrapReleaseDir = File("${project.projectDir}/release/")
 
             bootstrapDir.mkdirs()
             bootstrapReleaseDir.mkdirs()
@@ -61,7 +61,7 @@ open class BootstrapTask : DefaultTask() {
                             "version" to it.project.version,
                             "requires" to ProjectVersions.apiVersion,
                             "date" to formatDate(Date()),
-                            "url" to "https://raw.githubusercontent.com/9InchHog/spoonplugins-source/master/release/plugins/${it.project.name}-${it.project.version}.jar",
+                            "url" to "https://raw.githubusercontent.com/9InchHog/spoonplugins-source/master/release/${it.project.name}-${it.project.version}.jar",
                             "sha512sum" to hash(plugin.readBytes())
                     ))
 
