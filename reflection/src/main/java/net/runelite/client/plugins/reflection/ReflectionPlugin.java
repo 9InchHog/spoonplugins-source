@@ -182,7 +182,7 @@ public class ReflectionPlugin extends Plugin
         Image image;
         if  (restore || !config.changeIcon())
         {
-            image = ImageUtil.loadImageResource(ReflectionPlugin.class, "/runelite.png");
+            image = ImageUtil.loadImageResource(ReflectionPlugin.class, "runelite.png");
         }
         else
         {
@@ -191,7 +191,7 @@ public class ReflectionPlugin extends Plugin
                 image = ImageIO.read(ICON_FILE);
             } catch (IOException e)
             {
-                image = ImageUtil.loadImageResource(ReflectionPlugin.class, "/peepospoon.png");
+                image = ImageUtil.loadImageResource(ReflectionPlugin.class, "peepospoon.png");
             }
         }
         ClientUI.getFrame().setIconImage(image);
