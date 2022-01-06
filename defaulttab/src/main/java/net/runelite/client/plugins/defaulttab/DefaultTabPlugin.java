@@ -37,20 +37,20 @@ public class DefaultTabPlugin extends Plugin {
     private boolean pushTab = false;
 
     protected void shutDown() {
-        this.pushTab = false;
+        pushTab = false;
     }
 
     @Subscribe
     private void onGameStateChanged(GameStateChanged e) {
         if (e.getGameState() == GameState.HOPPING)
-            this.pushTab = true;
+            pushTab = true;
     }
 
     @Subscribe
     private void onGameTick(GameTick e) {
-        if (!this.pushTab || this.client.getGameState() != GameState.LOGGED_IN || this.client.getLocalPlayer() == null)
+        if (!pushTab || client.getGameState() != GameState.LOGGED_IN || client.getLocalPlayer() == null)
             return;
-        this.client.runScript(new Object[] { Integer.valueOf(915), Integer.valueOf(this.config.getDefaultTab().getIndex()) });
-        this.pushTab = false;
+        client.runScript(915, config.getDefaultTab().getIndex());
+        pushTab = false;
     }
 }

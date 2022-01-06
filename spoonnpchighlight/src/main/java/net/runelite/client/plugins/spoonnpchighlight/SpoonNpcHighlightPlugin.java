@@ -29,7 +29,7 @@ import static net.runelite.api.MenuAction.MENU_ACTION_DEPRIORITIZE_OFFSET;
 @PluginDescriptor(
         name = "<html><font color=#25c550>[S] Npc Highlight",
         description = "NPC highlight for brainlets",
-        tags = {"SpoonNpcHighlight", "spoon"},
+        tags = {"SpoonNpcHighlight", "spoon", "npc", "highlight", "indicators"},
         conflicts = "NPC Indicators"
 )
 public class SpoonNpcHighlightPlugin extends Plugin {

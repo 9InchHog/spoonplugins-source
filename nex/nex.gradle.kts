@@ -25,10 +25,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.1"
+version = "1.0.0"
 
-project.extra["PluginName"] = "Spoon Tob"
-project.extra["PluginDescription"] = "All-in-one plugin for Theatre of Blood"
+project.extra["PluginName"] = "Nex"
+project.extra["PluginDescription"] = "Yuri's Nex Plugin"
 
 dependencies {
     annotationProcessor(Libraries.lombok)

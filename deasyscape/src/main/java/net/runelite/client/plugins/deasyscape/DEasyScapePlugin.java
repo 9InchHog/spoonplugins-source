@@ -15,7 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Extension
-@PluginDescriptor(name = "[D] EasyScape", enabledByDefault = false)
+@PluginDescriptor(
+        name = "[D] EasyScape",
+        enabledByDefault = false
+)
 public class DEasyScapePlugin extends Plugin {
     @Inject
     private Client client;

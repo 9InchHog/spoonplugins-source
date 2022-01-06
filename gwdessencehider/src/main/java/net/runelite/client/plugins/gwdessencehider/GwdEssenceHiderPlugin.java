@@ -105,6 +105,6 @@ public class GwdEssenceHiderPlugin extends Plugin {
         bandosKc = this.client.getVarbitValue(3975);
         saraKc = this.client.getVarbitValue(3972);
         zammyKc = this.client.getVarbitValue(3976);
-        //nexKc = this.client.getVarbitValue(3977);
+        nexKc = this.client.getVarbitValue(13080);
     }
 }

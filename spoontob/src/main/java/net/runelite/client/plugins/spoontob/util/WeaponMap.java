@@ -738,6 +738,9 @@ public class WeaponMap
 		StyleMap.put(ItemID.YEW_COMP_BOW, WeaponStyle.RANGE);
 		StyleMap.put(ItemID.YEW_LONGBOW, WeaponStyle.RANGE);
 		StyleMap.put(ItemID.YEW_SHORTBOW, WeaponStyle.RANGE);
+		StyleMap.put(ItemID.ZARYTE_BOW, WeaponStyle.RANGE);
+		StyleMap.put(ItemID.ZARYTE_BOW_26239, WeaponStyle.RANGE);
+		StyleMap.put(ItemID.ZARYTE_CROSSBOW, WeaponStyle.RANGE);
 
 		//Magic
 		StyleMap.put(ItemID._3RD_AGE_WAND, WeaponStyle.MAGIC);

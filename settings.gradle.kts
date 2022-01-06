@@ -28,6 +28,7 @@ rootProject.name = "Spoon Plugins"
 //------------------------------------------------------------//
 // Private Plugins
 //------------------------------------------------------------//
+///*
 include(":alchemicalhydra")
 include(":animationcooldown")
 include(":aoe")
@@ -67,6 +68,7 @@ include(":keydrag")
 include(":mouseovertext")
 include(":multiindicators")
 include(":neverlog")
+include(":nex")
 include(":objecthider")
 include(":outgoingchatfilter")
 include(":phoenixnecklace")
@@ -125,6 +127,7 @@ include(":vengcounter")
 include(":vmswimshamer")
 include(":yuritheatre")
 include(":zulrah")
+//*/
 
 //------------------------------------------------------------//
 // Public Plugins
@@ -158,6 +161,7 @@ include(":hoptimer")
 include(":keydrag")
 include(":mouseovertext")
 include(":neverlog")
+include(":nex")
 include(":outgoingchatfilter")
 include(":phoenixnecklace")
 include(":pvpplayerindicators")
