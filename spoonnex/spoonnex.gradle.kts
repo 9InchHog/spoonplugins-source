@@ -27,8 +27,8 @@ import ProjectVersions.rlVersion
 
 version = "1.0.0"
 
-project.extra["PluginName"] = "Effect Timers"
-project.extra["PluginDescription"] = "Effect timer overlay on players"
+project.extra["PluginName"] = "Spoon Nex"
+project.extra["PluginDescription"] = "SpoonLite Nex Plugin"
 
 dependencies {
     annotationProcessor(Libraries.lombok)
@@ -36,7 +36,6 @@ dependencies {
 
     compileOnly("com.openosrs:runelite-api:$rlVersion")
     compileOnly("com.openosrs:runelite-client:$rlVersion")
-    compileOnly(project(":multiindicators"))
 
     compileOnly(Libraries.guice)
     compileOnly(Libraries.lombok)
@@ -54,7 +53,6 @@ tasks {
                     "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
                     "Plugin-Provider" to project.extra["PluginProvider"],
                     "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-Dependencies" to nameToId("multiindicators"),
                     "Plugin-License" to project.extra["PluginLicense"]
             ))
         }
