@@ -28,7 +28,7 @@ rootProject.name = "Spoon Plugins"
 //------------------------------------------------------------//
 // Private Plugins
 //------------------------------------------------------------//
-///*
+/*
 include(":alchemicalhydra")
 include(":animationcooldown")
 include(":aoe")
@@ -128,12 +128,12 @@ include(":vengcounter")
 include(":vmswimshamer")
 include(":yuritheatre")
 include(":zulrah")
-//*/
+*/
 
 //------------------------------------------------------------//
 // Public Plugins
 //------------------------------------------------------------//
-/*
+///*
 include(":alchemicalhydra")
 include(":aoe")
 include(":ariatob")
@@ -209,7 +209,7 @@ include(":tzhaartimers")
 include(":vanguards")
 include(":vmswimshamer")
 include(":yuritheatre")
-*/
+//*/
 
 for (project in rootProject.children) {
     project.apply {
