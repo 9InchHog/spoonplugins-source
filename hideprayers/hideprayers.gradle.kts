@@ -27,7 +27,7 @@ import ProjectVersions.rlVersion
 
 version = "1.0.0"
 
-project.extra["PluginName"] = "Hide Prayers"
+project.extra["PluginName"] = "Spoon Hide Prayers"
 project.extra["PluginDescription"] = "Hides prayers with a custom list or presets"
 
 dependencies {

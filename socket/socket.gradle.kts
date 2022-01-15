@@ -27,7 +27,7 @@ import ProjectVersions.rlVersion
 
 version = "1.0.0"
 
-project.extra["PluginName"] = "Socket"
+project.extra["PluginName"] = "Spoon Socket"
 project.extra["PluginDescription"] = "Contains all Socket plugins from SpoonLite"
 
 dependencies {

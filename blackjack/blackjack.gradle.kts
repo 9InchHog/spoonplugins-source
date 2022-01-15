@@ -27,7 +27,7 @@ import ProjectVersions.rlVersion
 
 version = "1.0.0"
 
-project.extra["PluginName"] = "Blackjack"
+project.extra["PluginName"] = "BlueLite Blackjack"
 project.extra["PluginDescription"] = "BlueLite's blackjacking plugin"
 
 dependencies {

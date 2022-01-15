@@ -63,9 +63,9 @@ class GwdEssenceHiderOverlay extends OverlayPanel {
             }
             if (plugin.nexKc > 0){
                 panelComponent.getChildren().add(LineComponent.builder()
-                        .leftColor(Color.MAGENTA)
+                        .leftColor(config.textColor() ? config.nexColor() : config.defaultColor())
                         .left(config.godMode() == GwdEssenceHiderConfig.GodMode.FULL_NAME ? "Ancient: " : "Nex: ")
-                        .rightColor(Color.MAGENTA)
+                        .rightColor(config.textColor() ? config.nexColor() : config.defaultColor())
                         .right(String.valueOf(plugin.nexKc))
                         .build());
             }

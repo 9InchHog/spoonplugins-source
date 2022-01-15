@@ -68,7 +68,9 @@ public interface NexConfig extends Config {
     @ConfigItem(
             position = 4,
             keyName = "getVirusIndicator",
-            name = "Sickness Indicator", description = "Determines the indicator to use on sick players.")
+            name = "Sickness Indicator",
+            description = "Determines the indicator to use on sick players."
+    )
     default VirusIndicator getVirusIndicator() {
         return VirusIndicator.TILE;
     }
@@ -107,7 +109,7 @@ public interface NexConfig extends Config {
             position = 8,
             keyName = "showIceShardRange",
             name = "Show Ice Shard Range",
-            description = "Show the effective danger range of Nex's ice shard attack."
+            description = "Show the effective danger range of Nex's ice shard attack (on nex)."
     )
     default boolean showIceShardRange() {
         return true;
@@ -115,11 +117,59 @@ public interface NexConfig extends Config {
 
     @ConfigItem(
             position = 9,
+            keyName = "showIceShardTimer",
+            name = "Show Ice Cage Attack",
+            description = "Show the timer of Nex's ice cage attack (on players)."
+    )
+    default boolean showIceShardTimer() {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 10,
             keyName = "showWrathRange",
             name = "Show Wrath Range",
             description = "Shows the effective danger range of Nex's Wrath range."
     )
     default boolean showWrathRange() {
+        return true;
+    }
+
+    public enum NexTargetIndicator {
+        DISABLED(false, false),
+        TILE(true, false),
+        HULL(false, true),
+        LINE_AND_HULL(true, true);
+
+        NexTargetIndicator(boolean lineVisible, boolean hullVisible) {
+            this.lineVisible = lineVisible;
+            this.hullVisible = hullVisible;
+        }
+
+        @Getter
+        private boolean lineVisible;
+
+        @Getter
+        private boolean hullVisible;
+    }
+
+    @ConfigItem(
+            position = 11,
+            keyName = "showNexTarget",
+            name = "Show Nex Target",
+            description = "Shows the current attack target of Nex."
+    )
+    default NexTargetIndicator showNexTarget() {
+        return NexTargetIndicator.LINE_AND_HULL;
+    }
+
+    @ConfigItem(
+            position = 12,
+            keyName = "showLocalPlayerOnly",
+            name = "Only Show Target on You",
+            description = "Only shows the Nex target indicator if Nex is targeting you."
+    )
+    default boolean showTargetLocalPlayerOnly() {
         return true;
     }
 }

@@ -27,7 +27,7 @@ import ProjectVersions.rlVersion
 
 version = "1.0.0"
 
-project.extra["PluginName"] = "AoE Warnings"
+project.extra["PluginName"] = "Spoon AoE Warnings"
 project.extra["PluginDescription"] = "SpoonLite AoE Warnings"
 
 dependencies {

@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Shape;
 import javax.inject.Inject;
+import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.NPC;
@@ -36,7 +37,7 @@ public class NexOverlay extends Overlay {
         this.config = config;
         setPosition(OverlayPosition.DYNAMIC);
         setPriority(OverlayPriority.HIGH);
-        setLayer(OverlayLayer.ABOVE_SCENE);
+        setLayer(OverlayLayer.ALWAYS_ON_TOP);
     }
 
     public Dimension render(Graphics2D graphics) {
@@ -45,6 +46,28 @@ public class NexOverlay extends Overlay {
         if (config.highlightShadows())
             plugin.getShadowObjects()
                     .forEach(obj -> drawTile(graphics, obj.getWorldLocation(), Color.CYAN, 2, 255, 64));
+        if (config.showIceShardTimer() && plugin.getIceCageTimer() > 0)
+            plugin.getIceObjects().forEach(obj -> {
+                Color color = healthColorCode((int)(100.0D * plugin.getIceCageTimer() / 8.0D));
+                LocalPoint lp = obj.getLocalLocation();
+                if (lp != null) {
+                    Polygon poly = Perspective.getCanvasTileAreaPoly(client, lp, 3);
+                    if (poly != null)
+                        drawPoly(graphics, poly, color, 2, 255, 64);
+                    String txt = Integer.toString(plugin.getIceCageTimer());
+                    Point loc = Perspective.getCanvasTextLocation(client, graphics, lp, txt, 0);
+                    if (loc != null)
+                        OverlayUtil.renderTextLocation(graphics, loc, txt, Color.WHITE);
+                }
+            });
+        if (config.showBloodSacrificeRange() && plugin.getBloodSacrificeTimer() > 0 && plugin.getBloodSacrificeLocation() != null) {
+            LocalPoint lp = LocalPoint.fromWorld(client, plugin.getBloodSacrificeLocation());
+            Polygon poly = Perspective.getCanvasTileAreaPoly(client, lp, 13);
+            if (poly != null) {
+                Color color = healthColorCode((int)(100.0D * plugin.getBloodSacrificeTimer() / 10.0D) - 20);
+                drawPoly(graphics, poly, color, 2, 255, 64);
+            }
+        }
         NPC nex = plugin.findNpc(NexConstant.NEX_IDS);
         if (nex != null) {
             LocalPoint lp = nex.getLocalLocation();
@@ -54,13 +77,6 @@ public class NexOverlay extends Overlay {
                     Point loc = Perspective.getCanvasTextLocation(client, graphics, lp, txt, nex.getLogicalHeight() / 2);
                     if (loc != null)
                         OverlayUtil.renderTextLocation(graphics, loc, txt, Color.WHITE);
-                }
-                if (config.showBloodSacrificeRange() && plugin.getBloodSacrificeTimer() > 0) {
-                    Polygon poly = Perspective.getCanvasTileAreaPoly(client, lp, 13);
-                    if (poly != null) {
-                        Color color = healthColorCode((int)(100.0D * plugin.getBloodSacrificeTimer() / 10.0D) - 20);
-                        drawPoly(graphics, poly, color, 2, 255, 64);
-                    }
                 }
                 if (config.showIceShardRange() && plugin.getIceShardTimer() > 0) {
                     Polygon poly = Perspective.getCanvasTileAreaPoly(client, lp, 5);
@@ -76,6 +92,12 @@ public class NexOverlay extends Overlay {
                         drawPoly(graphics, poly, color, 2, 255, 64);
                     }
                 }
+            }
+            if (config.showNexTarget() != NexConfig.NexTargetIndicator.DISABLED) {
+                Actor target = nex.getInteracting();
+                if (target != null)
+                    if (!config.showTargetLocalPlayerOnly() || target == client.getLocalPlayer())
+                        drawInteracting(graphics, (Actor)nex, target, config.showNexTarget());
             }
         }
         if (config.showPlayersWithVirus()) {
@@ -147,5 +169,26 @@ public class NexOverlay extends Overlay {
         graphics.draw(poly);
         graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), fillAlpha));
         graphics.fill(poly);
+    }
+
+    private void drawInteracting(Graphics2D graphics, Actor source, Actor target, NexConfig.NexTargetIndicator indicator) {
+        if (indicator.isLineVisible()) {
+            LocalPoint sourcePosition = source.getLocalLocation();
+            LocalPoint targetPosition = target.getLocalLocation();
+            if (sourcePosition != null && targetPosition != null) {
+                Point sourcePoint = Perspective.localToCanvas(client, sourcePosition, client.getPlane(), 0);
+                Point targetPoint = Perspective.localToCanvas(client, targetPosition, client.getPlane(), 0);
+                if (sourcePoint != null && targetPoint != null) {
+                    graphics.setColor(Color.CYAN);
+                    graphics.setStroke(new BasicStroke(1.0F));
+                    graphics.drawLine(sourcePoint.getX(), sourcePoint.getY(), targetPoint.getX(), targetPoint.getY());
+                }
+            }
+        }
+        if (indicator.isHullVisible()) {
+            Shape targetShape = target.getConvexHull();
+            if (targetShape != null)
+                drawPoly(graphics, targetShape, Color.CYAN, 2, 255, 30);
+        }
     }
 }

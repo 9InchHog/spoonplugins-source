@@ -78,6 +78,16 @@ public interface GwdEssenceHiderConfig extends Config {
         return Color.RED;
     }
 
+    @ConfigItem(
+            keyName = "nexColor",
+            name = "Ancient Color",
+            description = "Color of Ancient killcount",
+            position = 7
+    )
+    default Color nexColor() {
+        return Color.MAGENTA;
+    }
+
     public enum GodMode {
         FULL_NAME, NICKNAME
     }

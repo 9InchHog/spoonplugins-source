@@ -27,7 +27,7 @@ import ProjectVersions.rlVersion
 
 version = "1.0.0"
 
-project.extra["PluginName"] = "Alchemical Hydra"
+project.extra["PluginName"] = "Spoon Alchemical Hydra"
 project.extra["PluginDescription"] = "SpoonLite alchemical hydra plugin"
 
 dependencies {

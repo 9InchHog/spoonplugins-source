@@ -27,7 +27,7 @@ import ProjectVersions.rlVersion
 
 version = "1.0.0"
 
-project.extra["PluginName"] = "Hide Under"
+project.extra["PluginName"] = "Spoon Hide Under"
 project.extra["PluginDescription"] = "Hides the local player when standing under other players"
 
 dependencies {
