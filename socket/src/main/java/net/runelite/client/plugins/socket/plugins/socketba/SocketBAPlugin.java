@@ -5,6 +5,7 @@ import com.google.inject.Provides;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
+import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
@@ -12,34 +13,26 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.events.NpcLootReceived;
-import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.socket.SocketPlugin;
 import net.runelite.client.plugins.socket.org.json.JSONArray;
 import net.runelite.client.plugins.socket.org.json.JSONObject;
 import net.runelite.client.plugins.socket.packet.SocketBroadcastPacket;
 import net.runelite.client.plugins.socket.packet.SocketReceivePacket;
 import net.runelite.client.ui.overlay.OverlayManager;
-import net.runelite.client.util.Text;
-import org.checkerframework.checker.units.qual.C;
-import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.function.Predicate;
 
-@Extension
 @PluginDescriptor(
         name = "Socket - Barbarian Assault",
         description = "Socket BA",
         tags = {"ba", "barb assault", "spoon", "spoonlite"},
 		enabledByDefault = false
 )
-@PluginDependency(SocketPlugin.class)
 public class SocketBAPlugin extends Plugin {
     @Inject
     private Client client;
@@ -173,6 +166,7 @@ public class SocketBAPlugin extends Plugin {
 		if(this.client.getVar(Varbits.IN_GAME_BA) == 1) {
 			int id = event.getGameObject().getId();
 			if(id == 20241 || id == 20242 || id == 20243) {
+				vendingMachines.removeIf(obj -> obj.getId() == id);
 				vendingMachines.add(event.getGameObject());
 			} else if(id == 20267) {
 				eggHoppers.put(event.getGameObject(), Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
@@ -305,7 +299,7 @@ public class SocketBAPlugin extends Plugin {
 			}
 		}
     }
-	
+
 	@Subscribe
     private void onNpcDespawned(NpcDespawned event) {
     	if(this.client.getVar(Varbits.IN_GAME_BA) == 1) {
@@ -316,62 +310,12 @@ public class SocketBAPlugin extends Plugin {
 			}
 		}
     }
-	
-	@Subscribe
-    public void onMenuEntryAdded(MenuEntryAdded e) {
-		if(this.client.getVar(Varbits.IN_GAME_BA) == 1){
-			int type = e.getType();
-			int id = e.getIdentifier();
-			String option = e.getOption().toLowerCase();
-			String target = e.getTarget().toLowerCase();
-
-			if (this.config.leftClickEggs() && type >= 18 && type <= 22 && (id == 10531 || id == 10532 || id == 10533)) {
-				if(!role.equals("Collector") || 
-					((colCall.equals("Green egg") && (id == 10532 || id == 10533)) || (colCall.equals("Red egg") && (id == 10531 || id == 10533)) || (colCall.equals("Blue egg") && (id == 10531 || id == 10532)))){
-					removeEntry();
-				}
-			}else if(config.hideAttack() && target.contains("penance ") && (target.contains(" fighter") || target.contains(" ranger"))){
-				if(option.contains("attack")) {
-					WeaponType wepType =  WeaponType.getWeaponType(equippedWeaponTypeVarbit);
-					if (!role.equals("Attacker")
-							|| (((wepType == WeaponType.TYPE_3 || wepType == WeaponType.TYPE_5 || wepType == WeaponType.TYPE_7 || wepType == WeaponType.TYPE_19)
-								&& ((arrowEquiped == 22227 && !attCall.contains("Controlled")) || (arrowEquiped == 22228 && !attCall.contains("Accurate"))
-									|| (arrowEquiped == 22229 && !attCall.contains("Aggressive")) || (arrowEquiped == 22230 && !attCall.contains("Defensive"))))
-								|| !attCall.contains(attackStyle.getName()))) {
-						removeEntry();
-					}
-				}else if(option.contains("cast ") && target.contains(" -> ")){
-					if (!role.equals("Attacker") || (option.contains(" wind ") && !attCall.contains("Controlled")) || (option.contains(" water ") && !attCall.contains("Accurate"))
-							|| (option.contains(" earth ") && !attCall.contains("Aggressive")) || (option.contains(" fire ") && !attCall.contains("Defensive"))) {
-						removeEntry();
-					}
-				}
-			}else if(config.hideAttack() && option.contains("attack") && target.contains("penance queen")){
-				removeEntry();
-			}else if(config.removeUseFood() && option.contains("use") && target.contains("poisoned") && !target.contains("penance healer") && role.equals("Healer")) {
-				removeEntry();
-			}else if(config.highlightVendingMachine() && (option.contains("stock-up") || option.contains("take-")) && target.contains(" item machine")) {
-				if((role.equals("Attacker") && !target.contains("attacker item machine")) || (role.equals("Defender") && !target.contains("defender item machine"))
-					|| (role.equals("Healer") && !target.contains("healer item machine"))) {
-					removeEntry();
-				}
-			}
-		}
-    }
-
-	private void removeEntry() {
-		MenuEntry[] entries = this.client.getMenuEntries();
-		MenuEntry[] newEntries = new MenuEntry[entries.length - 1];
-		System.arraycopy(entries, 0, newEntries, 0, newEntries.length);
-		this.client.setMenuEntries(newEntries);
-	}
 
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event) {
-		if(this.client.getVar(Varbits.IN_GAME_BA) == 1 && event.getMenuOption().equalsIgnoreCase("wield") && event.getMenuTarget().contains(" arrow")){
-			if(event.getId() == 22227 || event.getId() == 22228 || event.getId() == 22229 || event.getId() == 22230) {
-				arrowEquiped = event.getId();
-			}
+		if(this.client.getVar(Varbits.IN_GAME_BA) == 1 && event.getMenuOption().equalsIgnoreCase("wield")
+				&& (event.getId() == 22227 || event.getId() == 22228 || event.getId() == 22229 || event.getId() == 22230)){
+			arrowEquiped = event.getId();
 		}
 	}
 
@@ -397,23 +341,23 @@ public class SocketBAPlugin extends Plugin {
 						if(data.getString("role").equals("Attacker")){
 							attCall = data.getString("call");
 							if(attCall.contains("Defensive")) {
-								//Objects.requireNonNull(client.getWidget(31784967)).setText("Defensive");
+								Objects.requireNonNull(client.getWidget(31784967)).setText("Defensive");
 							}else if(attCall.contains("Aggressive")) {
-								//Objects.requireNonNull(client.getWidget(31784967)).setText("Aggressive");
+								Objects.requireNonNull(client.getWidget(31784967)).setText("Aggressive");
 							}else if(attCall.contains("Accurate")) {
-								//Objects.requireNonNull(client.getWidget(31784967)).setText("Accurate");
+								Objects.requireNonNull(client.getWidget(31784967)).setText("Accurate");
 							}else {
-								//Objects.requireNonNull(client.getWidget(31784967)).setText("Controlled");
+								Objects.requireNonNull(client.getWidget(31784967)).setText("Controlled");
 							}
 						}else if(data.getString("role").equals("Defender")){
 							defCall = data.getString("call");
-							//Objects.requireNonNull(client.getWidget(31916039)).setText(defCall);
+							Objects.requireNonNull(client.getWidget(31916039)).setText(defCall);
 						}else if(data.getString("role").equals("Healer")){
 							healCall = data.getString("call");
-							//Objects.requireNonNull(client.getWidget(31981575)).setText(healCall);
+							Objects.requireNonNull(client.getWidget(31981575)).setText(healCall);
 						}else if(data.getString("role").equals("Collector")){
 							colCall = data.getString("call");
-							//Objects.requireNonNull(client.getWidget(31850503)).setText(colCall);
+							Objects.requireNonNull(client.getWidget(31850503)).setText(colCall);
 						}
 					}
 				}else if(payload.has("socketbaalt") && config.bmMessages()){
@@ -496,11 +440,11 @@ public class SocketBAPlugin extends Plugin {
 			}
 		}
     }
-	
+
 	@Subscribe
     public void onHitsplatApplied(HitsplatApplied event) {
 		if(this.client.getVar(Varbits.IN_GAME_BA) == 1 && this.client.getLocalPlayer() != null){
-			if (role.equals("Attacker") && event.getHitsplat().getAmount() == 0 && event.getActor() instanceof NPC && event.getHitsplat().isMine() && event.getActor().getName() != null 
+			if (role.equals("Attacker") && event.getHitsplat().getAmount() == 0 && event.getActor() instanceof NPC && event.getHitsplat().isMine() && event.getActor().getName() != null
 					&& event.getActor().getName().contains("Penance ") && this.client.getLocalPlayer().getAnimation() != 7511) {
 				int rng = new Random().nextInt(3);
 				if(rng == 0) {
@@ -513,7 +457,7 @@ public class SocketBAPlugin extends Plugin {
 			}
 		}
     }
-	
+
 	@Subscribe
 	public void onVarbitChanged(VarbitChanged event) {
 		int currentAttackStyleVarbit = client.getVar(VarPlayer.ATTACK_STYLE);
@@ -564,6 +508,8 @@ public class SocketBAPlugin extends Plugin {
 			idx = 0;
 			for (MenuEntry entry : menuEntries)
 				swapMenuEntry(idx++, entry);
+
+			client.setMenuEntries(updateMenuEntries(client.getMenuEntries()));
 		}
     }
 	
@@ -585,14 +531,6 @@ public class SocketBAPlugin extends Plugin {
 			swap(newSwap, option, target, index, false);
 		}
 	}
-
-    private void swap(String optionA, String optionB, String target, int index) {
-        swap(optionA, optionB, target, index, true);
-    }
-
-    private void swapContains(String optionA, String optionB, String target, int index) {
-        swap(optionA, optionB, target, index, false);
-    }
 
     private void swap(String optionA, String optionB, String target, int index, boolean strict) {
         MenuEntry[] menuEntries = this.client.getMenuEntries();
@@ -636,5 +574,75 @@ public class SocketBAPlugin extends Plugin {
             optionIndexes.put(option, idx++);
         }
     }
+
+	private MenuEntry[] updateMenuEntries(MenuEntry[] menuEntries) {
+		return Arrays.stream(menuEntries)
+				.filter(filterMenuEntries).sorted((o1, o2) -> 0)
+				.toArray(MenuEntry[]::new);
+	}
+
+	private final Predicate<MenuEntry> filterMenuEntries = entry -> {
+		int id = entry.getIdentifier();
+		String option = Text.standardize(entry.getOption(), true).toLowerCase();
+		String target = Text.standardize(entry.getTarget(), true).toLowerCase();
+		int type = entry.getType().getId();
+
+		if (this.config.leftClickEggs() && type >= 18 && type <= 22 && (id == 10531 || id == 10532 || id == 10533 || id == 10534)) {
+			if(!role.equals("Collector")
+					|| ((colCall.equals("Green egg") && (id == 10532 || id == 10533))
+					|| (colCall.equals("Red egg") && (id == 10531 || id == 10533))
+					|| (colCall.equals("Blue egg") && (id == 10531 || id == 10532)))){
+				return false;
+			}
+		}
+
+		if(config.hideAttack() && (target.contains("penance fighter") || target.contains("penance ranger"))){
+			if(option.contains("attack")) {
+				WeaponType wepType =  WeaponType.getWeaponType(equippedWeaponTypeVarbit);
+				System.out.println("Arrow: " + arrowEquiped);
+				System.out.println("wepType: " + wepType);
+				System.out.println("attCall: " + attCall);
+				System.out.println("Style: " + attackStyle.getName());
+				if (!role.equals("Attacker")){
+					System.out.println("Hide Not attack\n");
+					return false;
+				} else if(wepType == WeaponType.TYPE_3 || wepType == WeaponType.TYPE_5 || wepType == WeaponType.TYPE_7 || wepType == WeaponType.TYPE_19) {
+					if((arrowEquiped == 22227 && !attCall.contains("Controlled"))
+							|| (arrowEquiped == 22228 && !attCall.contains("Accurate"))
+							|| (arrowEquiped == 22229 && !attCall.contains("Aggressive"))
+							|| (arrowEquiped == 22230 && !attCall.contains("Defensive"))) {
+						System.out.println("Hide Wrong arrow\n");
+						return false;
+					}
+				} else if (!attCall.contains(attackStyle.getName())) {
+					System.out.println("Hide wrong melee\n");
+					return false;
+				}
+			}else if(option.contains("cast ") && target.contains(" -> ")){
+				if (!role.equals("Attacker") || (option.contains(" wind ") && !attCall.contains("Controlled")) || (option.contains(" water ") && !attCall.contains("Accurate"))
+						|| (option.contains(" earth ") && !attCall.contains("Aggressive")) || (option.contains(" fire ") && !attCall.contains("Defensive"))) {
+					return false;
+				}
+			}
+		}
+
+		if(config.hideAttack() && option.contains("attack") && target.contains("penance queen")){
+			return false;
+		}
+
+		if(config.removeUseFood() && option.contains("use") && (target.contains("poisoned ") && (target.contains(" meat ->") || target.contains(" tofu ->") || target.contains(" worms ->")))
+				&& !target.contains("penance healer") && role.equals("Healer")) {
+			return false;
+		}
+
+		if(config.highlightVendingMachine() && (option.contains("stock-up") || option.contains("take-") || option.contains("convert"))
+				&& (target.contains(" item machine") || target.contains("collector converter"))) {
+			if((role.equals("Attacker") && !target.contains("attacker item machine")) || (role.equals("Defender") && !target.contains("defender item machine"))
+					|| (role.equals("Healer") && !target.contains("healer item machine")) || (!role.equals("Collector") && target.contains("collector converter"))) {
+				return false;
+			}
+		}
+		return true;
+	};
 }
 

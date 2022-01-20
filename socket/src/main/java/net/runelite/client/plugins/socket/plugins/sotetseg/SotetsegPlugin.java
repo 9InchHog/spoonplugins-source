@@ -223,7 +223,7 @@ public class SotetsegPlugin extends Plugin
 	{
 		if(event.getProjectile().getId() == 1604)
 		{
-			if(event.getProjectile().getEndCycle()-event.getProjectile().getStartMovementCycle() == event.getProjectile().getRemainingCycles())
+			if(event.getProjectile().getEndCycle()-event.getProjectile().getStartCycle() == event.getProjectile().getRemainingCycles())
 			{
 				JSONObject data = new JSONObject();
 				data.put("sotetseg-extended-ball", event.getProjectile().getInteracting().getName());

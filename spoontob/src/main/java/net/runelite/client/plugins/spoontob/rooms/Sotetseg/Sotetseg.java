@@ -200,7 +200,7 @@ public class Sotetseg extends Room {
     {
         if (sotetsegActive) {
             Projectile p = e.getProjectile();
-            if (client.getGameCycle() < p.getStartMovementCycle()) {
+            if (client.getGameCycle() < p.getStartCycle()) {
                 switch (p.getId())
                 {
                     case SOTETSEG_BIG_AOE_ORB:

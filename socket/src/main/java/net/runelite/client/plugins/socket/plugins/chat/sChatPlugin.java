@@ -281,6 +281,9 @@ public class sChatPlugin extends Plugin implements KeyListener {
                     continue;
                 }
                 if (!message.isSetOverhead() && !tickCheck) {
+                    if (config.hideLocalPlayerOverhead() && p == client.getLocalPlayer()) {
+                        continue;
+                    }
                     if (config.overheadText()) {
                         p.setOverheadText(message.getText());
                         message.setSetOverhead(true);

@@ -15,6 +15,7 @@ import javax.inject.Singleton;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
+import java.util.Collection;
 
 @Singleton
 public class HydraExtraOverlay extends Overlay {
@@ -56,7 +57,7 @@ public class HydraExtraOverlay extends Overlay {
             }
         }
 
-        if(config.lightningHighlight() != HydraConfig.LightningMode.OFF & this.client.getGraphicsObjects().size() > 0) {
+        if(config.lightningHighlight() != HydraConfig.LightningMode.OFF & ((Collection<?>) this.client.getGraphicsObjects().iterator()).size() > 0) {
             for (GraphicsObject obj : this.client.getGraphicsObjects()) {
                 if (obj.getId() == 1666) {
                     int size = 1;

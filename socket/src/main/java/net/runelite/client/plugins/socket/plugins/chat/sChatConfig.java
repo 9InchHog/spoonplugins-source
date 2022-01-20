@@ -129,6 +129,16 @@ public interface sChatConfig extends Config {
 
     @ConfigItem(
             position = 11,
+            keyName = "hideLocalPlayerOverhead",
+            name = "Overhead Text Exemption",
+            description = "Hide Overhead text on your own player."
+    )
+    default boolean hideLocalPlayerOverhead() {
+        return false;
+    }
+
+    @ConfigItem(
+            position = 12,
             keyName = "showSomeStupidShit",
             name = "Show Custom Message",
             description = "Can put whatever the fuck you want here... I don't fucking know"
@@ -136,7 +146,7 @@ public interface sChatConfig extends Config {
     default String showSomeStupidShit() {return "";}
 
     @ConfigItem(
-            position = 12,
+            position = 13,
             keyName = "chatnameFake",
             name = "Use Fake Name",
             description = "Uses a fake name for socket messages, made by Azo"

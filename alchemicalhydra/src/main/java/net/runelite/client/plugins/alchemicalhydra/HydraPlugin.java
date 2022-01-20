@@ -274,7 +274,7 @@ public class HydraPlugin extends Plugin {
 
 	@Subscribe
 	private void onProjectileMoved(ProjectileMoved event) {
-		if (!inHydraInstance || hydra == null || client.getGameCycle() >= event.getProjectile().getStartMovementCycle()) {
+		if (!inHydraInstance || hydra == null || client.getGameCycle() >= event.getProjectile().getStartCycle()) {
 			return;
 		}
 

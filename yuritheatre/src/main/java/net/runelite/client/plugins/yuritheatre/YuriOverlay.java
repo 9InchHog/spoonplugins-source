@@ -276,7 +276,7 @@ public class YuriOverlay extends Overlay {
             if (id == 1586) {
                 if (p.getRemainingCycles() <= 0)
                     continue;
-                int totalTicks = p.getEndCycle() - p.getStartMovementCycle();
+                int totalTicks = p.getEndCycle() - p.getStartCycle();
                 double deltaX = p.getVelocityX() * totalTicks;
                 double deltaY = p.getVelocityY() * totalTicks;
                 deltaX = Math.round(deltaX / 128.0D) * 128.0D;

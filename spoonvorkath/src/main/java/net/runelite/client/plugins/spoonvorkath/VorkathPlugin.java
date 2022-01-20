@@ -118,7 +118,7 @@ public class VorkathPlugin extends Plugin {
     @Subscribe
     public void onProjectileMoved(ProjectileMoved e) {
         Projectile projectile = e.getProjectile();
-        if (this.client.getGameCycle() >= projectile.getStartMovementCycle())
+        if (this.client.getGameCycle() >= projectile.getStartCycle())
             return;
         int projectileId = projectile.getId();
         if (this.vorkathNpc != null)
