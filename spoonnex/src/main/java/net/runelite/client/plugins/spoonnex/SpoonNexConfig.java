@@ -51,7 +51,7 @@ public interface SpoonNexConfig extends Config {
 
 	@ConfigItem(
 			keyName = "noEscape",
-			name = "No Escape",
+			name = "No Escape Sound",
 			description = "A10 Strafe 2: Electric Boogaloo",
 			position = 3,
 			section = specSection
@@ -59,10 +59,28 @@ public interface SpoonNexConfig extends Config {
 	default NoEscapeMode noEscape(){ return NoEscapeMode.NEX; }
 
 	@ConfigItem(
+			keyName = "noEscapeRunway",
+			name = "No Escape Runway",
+			description = "Gotta go fast",
+			position = 4,
+			section = specSection
+	)
+	default NoEscapeRunwayMode noEscapeRunway(){ return NoEscapeRunwayMode.OFF; }
+
+	@ConfigItem(
+			keyName = "noEscapeRunwayColor",
+			name = "No Escape Color",
+			description = "Sets color of No Escape Runway",
+			position = 5,
+			section = specSection
+	)
+	default Color noEscapeRunwayColor(){ return Color.RED; }
+
+	@ConfigItem(
 			keyName = "shadowSpots",
 			name = "Shadow Spots",
 			description = "Highlights shadow spots on the ground during shadow phase",
-			position = 4,
+			position = 6,
 			section = specSection
 	)
 	default ShadowsMode shadowSpots(){ return ShadowsMode.OFF; }
@@ -71,7 +89,7 @@ public interface SpoonNexConfig extends Config {
 			keyName = "sacrifice",
 			name = "Blood Sacrifice AoE",
 			description = "Bring that ass here boi",
-			position = 5,
+			position = 7,
 			section = specSection
 	)
 	default boolean sacrifice(){ return false; }
@@ -80,7 +98,7 @@ public interface SpoonNexConfig extends Config {
 			keyName = "icePrison",
 			name = "Ice Prison Tiles",
 			description = "help",
-			position = 6,
+			position = 8,
 			section = specSection
 	)
 	default boolean icePrison(){ return false; }
@@ -89,7 +107,7 @@ public interface SpoonNexConfig extends Config {
 			keyName = "containThis",
 			name = "Contain This AoE",
 			description = "Highlights an AoE around Nex for the Contain This special",
-			position = 7,
+			position = 9,
 			section = specSection
 	)
 	default boolean containThis(){ return false; }
@@ -98,7 +116,7 @@ public interface SpoonNexConfig extends Config {
 			keyName = "wrathWarning",
 			name = "Wrath Warning",
 			description = "Inshallah habibi",
-			position = 8,
+			position = 10,
 			section = specSection
 	)
 	default boolean wrathWarning() { return false; }
@@ -272,6 +290,10 @@ public interface SpoonNexConfig extends Config {
 
 	enum NoEscapeMode {
 		NEX, CCR
+	}
+
+	enum NoEscapeRunwayMode {
+		OFF, COLOR, RAVE, RAVEST
 	}
 
 	enum KillTimerMode {

@@ -88,6 +88,7 @@ public class SpoonNexPlugin extends Plugin {
 	public int ratJamFrame = 1;
 	public int ratJamTicks = 0;
 	public Point ratJamPoint = null;
+	public ArrayList<Color> raveRunway = new ArrayList<Color>();
 
 	@Provides
 	SpoonNexConfig provideConfig(ConfigManager configManager) {
@@ -122,6 +123,7 @@ public class SpoonNexPlugin extends Plugin {
 		client.clearHintArrow();
 		covidList.clear();
 		sacrificeTarget = false;
+		raveRunway.clear();
 		if(timerTicksLeft == 0)
 			infoBoxManager.removeInfoBox(timerBox);
 	}
@@ -189,14 +191,12 @@ public class SpoonNexPlugin extends Plugin {
 
 	@Subscribe
 	private void onOverheadTextChanged(OverheadTextChanged event) {
-		if (event.getActor() instanceof Player && config.olmPTSD()){
-			if (event.getActor().getOverheadText().equals("*Cough*")) {
-				if (config.olmPTSD()) {
-					event.getActor().setOverheadText(new Random().nextInt(2) == 0 ? "Burn with me!" : "I will burn with you!");
-				}
-				covidList.remove(event.getActor().getName());
-				covidList.put(event.getActor().getName(), 5);
+		if (event.getActor() instanceof Player && event.getActor().getOverheadText().equals("*Cough*") && nex != null){
+			if (config.olmPTSD()) {
+				event.getActor().setOverheadText(new Random().nextInt(2) == 0 ? "Burn with me!" : "I will burn with you!");
 			}
+			covidList.remove(event.getActor().getName());
+			covidList.put(event.getActor().getName(), 5);
 		} else if (event.getActor().getName() != null && event.getActor().getName().equals("Nex") && event.getOverheadText().contains("Taste my wrath!")
 				&& client.getLocalPlayer() != null && client.getLocalPlayer().getName() != null && client.getLocalPlayer().getName().equals("Null God")) {
 			event.getActor().setOverheadText("Allahuakbar! *Click*");
@@ -243,6 +243,11 @@ public class SpoonNexPlugin extends Plugin {
 				covidList.replace(name, covidList.get(name), ticks);
 			}
 			covidList.entrySet().removeIf(entry -> entry.getValue() == 0);
+
+			raveRunway.clear();
+			for(int i=0; i<30; i++){
+				raveRunway.add(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
+			}
 		}
 
 		if(timerTicksLeft > 0) {
@@ -351,6 +356,7 @@ public class SpoonNexPlugin extends Plugin {
 				nex.currentSpecial = "no escape";
 				nex.nextSpecial = "virus";
 				nex.attacksTilSpecial = 5;
+				nex.specialTicksLeft = 7;
 				playAudio = config.noEscape() == SpoonNexConfig.NoEscapeMode.NEX ? "thereIs.wav" : "backInNam.wav";
 			}  else if (text.contains("NO ESCAPE!")) {
 				if(config.noEscape() == SpoonNexConfig.NoEscapeMode.NEX)

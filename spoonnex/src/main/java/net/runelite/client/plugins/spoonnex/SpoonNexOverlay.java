@@ -3,6 +3,7 @@ package net.runelite.client.plugins.spoonnex;
 import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.ui.overlay.*;
 import net.runelite.client.util.ImageUtil;
 
@@ -16,7 +17,7 @@ import java.util.Random;
 class SpoonNexOverlay extends Overlay {
 	private final SpoonNexPlugin plugin;
 	private final Client client;
-	private SpoonNexConfig config;
+	private final SpoonNexConfig config;
 
 	@Inject
 	SpoonNexOverlay(final SpoonNexPlugin plugin, final Client client, final SpoonNexConfig config) {
@@ -32,7 +33,7 @@ class SpoonNexOverlay extends Overlay {
 	public Dimension render(Graphics2D graphics) {
 		if(plugin.nex != null) {
 			Font oldFont = graphics.getFont();
-			graphics.setFont(new Font("Arial", 1, config.textSize()));
+			graphics.setFont(new Font("Arial", Font.BOLD, config.textSize()));
 
 			LocalPoint nexLp = plugin.nex.npc.getLocalLocation();
 			if(!plugin.nex.npc.isDead()) {
@@ -149,9 +150,63 @@ class SpoonNexOverlay extends Overlay {
 						renderPoly(graphics, color, poly);
 					}
 				}
+
+				if (config.noEscapeRunway() != SpoonNexConfig.NoEscapeRunwayMode.OFF && plugin.nex != null && plugin.nex.currentSpecial.equals("no escape")
+						&& (plugin.nex.specialTicksLeft > 0 && plugin.nex.specialTicksLeft <= 4)) {
+					WorldPoint leftTop;
+					WorldPoint rightBottom;
+					WorldPoint middle;
+					int angle = plugin.nex.npc.getOrientation();
+					int round = angle >>> 9;
+					int up = angle & 0x100;
+					if (up != 0)
+						round++;
+					int directionNum = round & 0x3;
+					Color color = Color.WHITE;
+
+					if(config.noEscapeRunway() == SpoonNexConfig.NoEscapeRunwayMode.COLOR){
+						color = config.noEscapeRunwayColor();
+					}else if(config.noEscapeRunway() == SpoonNexConfig.NoEscapeRunwayMode.RAVE){
+						color = plugin.raveRunway.get(0);
+					}
+
+					WorldPoint bossLoc = plugin.nex.npc.getWorldLocation();
+					int raveIndex = 0;
+					for (int i = 0; i < 10; i++) {
+						//0 = South
+						//1 = West
+						//2 = North
+						//3 = East
+						if (directionNum == 0) {
+							leftTop = new WorldPoint(bossLoc.getX(), bossLoc.getY() - 1 - i, client.getPlane());
+							middle = new WorldPoint(bossLoc.getX() + 1, bossLoc.getY() - 1 - i, client.getPlane());
+							rightBottom = new WorldPoint(bossLoc.getX() + 2, bossLoc.getY() - 1 - i, client.getPlane());
+							drawRunwayTiles(graphics, leftTop, middle, rightBottom, raveIndex, color);
+							raveIndex += 3;
+						} else if (directionNum == 1) {
+							leftTop = new WorldPoint(bossLoc.getX() - 1 - i, bossLoc.getY() + 2, client.getPlane());
+							middle = new WorldPoint(bossLoc.getX() - 1 - i, bossLoc.getY() + 1, client.getPlane());
+							rightBottom = new WorldPoint(bossLoc.getX() - 1 - i, bossLoc.getY(), client.getPlane());
+							drawRunwayTiles(graphics, leftTop, middle, rightBottom, raveIndex, color);
+							raveIndex += 3;
+						} else if (directionNum == 2) {
+							leftTop = new WorldPoint(bossLoc.getX(), bossLoc.getY() + 3 + i, client.getPlane());
+							middle = new WorldPoint(bossLoc.getX() + 1, bossLoc.getY() + 3 + i, client.getPlane());
+							rightBottom = new WorldPoint(bossLoc.getX() + 2, bossLoc.getY() + 3 + i, client.getPlane());
+							drawRunwayTiles(graphics, leftTop, middle, rightBottom, raveIndex, color);
+							raveIndex += 3;
+						} else {
+							leftTop = new WorldPoint(bossLoc.getX() + 3 + i, bossLoc.getY() + 2, client.getPlane());
+							middle = new WorldPoint(bossLoc.getX() + 3 + i, bossLoc.getY() + 1, client.getPlane());
+							rightBottom = new WorldPoint(bossLoc.getX() + 3 + i, bossLoc.getY(), client.getPlane());
+							drawRunwayTiles(graphics, leftTop, middle, rightBottom, raveIndex, color);
+							raveIndex += 3;
+						}
+					}
+				}
 			}
 
-			if(plugin.nex.currentSpecial.equals("wrath") && config.wrathWarning()) {
+			if(plugin.nex != null && plugin.nex.currentSpecial.equals("wrath") && config.wrathWarning()) {
 				if (nexLp != null) {
 					Polygon tilePoly = Perspective.getCanvasTileAreaPoly(this.client, nexLp, 7);
 					if (tilePoly != null) {
@@ -186,6 +241,42 @@ class SpoonNexOverlay extends Overlay {
 		if (polygon != null) {
 			graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 64));
 			graphics.fill(polygon);
+		}
+	}
+
+	private void drawRunwayTiles(Graphics2D graphics, WorldPoint leftTop, WorldPoint middle, WorldPoint rightBottom, int index, Color color) {
+        if(config.noEscapeRunway() == SpoonNexConfig.NoEscapeRunwayMode.RAVEST){
+            color = plugin.raveRunway.get(index);
+            drawTile(graphics, leftTop, color);
+            index++;
+            color = plugin.raveRunway.get(index);
+            drawTile(graphics, middle, color);
+            index++;
+            color = plugin.raveRunway.get(index);
+            drawTile(graphics, rightBottom, color);
+        }else {
+            drawTile(graphics, leftTop, color);
+            drawTile(graphics, middle, color);
+            drawTile(graphics, rightBottom, color);
+        }
+    }
+
+	protected void drawTile(Graphics2D graphics, WorldPoint point, Color color) {
+		if(client.getLocalPlayer() != null) {
+			WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
+			if (point.distanceTo(playerLocation) < 32) {
+				LocalPoint lp = LocalPoint.fromWorld(client, point);
+				if (lp != null) {
+					Polygon poly = Perspective.getCanvasTilePoly(client, lp);
+					if (poly != null) {
+						graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0));
+						graphics.setStroke(new BasicStroke(0));
+						graphics.draw(poly);
+						graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 120));
+						graphics.fill(poly);
+					}
+				}
+			}
 		}
 	}
 }
