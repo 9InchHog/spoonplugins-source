@@ -3,82 +3,112 @@ package net.runelite.client.plugins.socket.plugins.socketDPS;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.text.DecimalFormat;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.MenuAction;
-import net.runelite.api.Player;
-import net.runelite.client.plugins.socket.plugins.socketDPS.table.SocketTableAlignment;
-import net.runelite.client.plugins.socket.plugins.socketDPS.table.SocketTableComponent;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.components.ComponentConstants;
-import net.runelite.client.util.ColorUtil;
+import net.runelite.client.ui.overlay.components.LineComponent;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.client.ws.PartyService;
 
 class SocketDpsOverlay extends OverlayPanel {
-    private static final DecimalFormat DPS_FORMAT = new DecimalFormat("#0.0");
-
-    private static final int PANEL_WIDTH_OFFSET = 10;
+    static final OverlayMenuEntry RESET_ENTRY = new OverlayMenuEntry(MenuAction.RUNELITE_OVERLAY, "Reset", "DPS counter");
+    private final SocketDpsCounterPlugin plugin;
+    private final SocketDpsConfig config;
+    private final Client client;
 
     @Inject
     SocketDpsOverlay(SocketDpsCounterPlugin socketDpsCounterPlugin, SocketDpsConfig socketDpsConfig, PartyService partyService, Client client) {
         super(socketDpsCounterPlugin);
-        this.socketDpsCounterPlugin = socketDpsCounterPlugin;
-        this.socketDpsConfig = socketDpsConfig;
+        this.plugin = socketDpsCounterPlugin;
+        this.config = socketDpsConfig;
         this.client = client;
         getMenuEntries().add(RESET_ENTRY);
     }
 
     public Dimension render(Graphics2D graphics) {
-        if (this.socketDpsConfig.displayOverlay() && !this.socketDpsCounterPlugin.getMembers().isEmpty() && this.client.getLocalPlayer() != null) {
-                Map<String, Integer> dpsMembers = this.socketDpsCounterPlugin.getMembers();
-                this.panelComponent.getChildren().clear();
-                int tot = 0;
-                String localName = this.client.getLocalPlayer().getName();
-                if (dpsMembers.containsKey("Total")) {
-                    tot = dpsMembers.get("Total");
-                    dpsMembers.remove("Total");
-                }
-                SocketTableComponent tableComponent = new SocketTableComponent();
-                tableComponent.setColumnAlignments(SocketTableAlignment.LEFT, SocketTableAlignment.RIGHT);
-                int maxWidth = 129;
-                dpsMembers.forEach((k, v) -> {
-                    String right = QuantityFormatter.formatNumber(v);
-                    if (k.equalsIgnoreCase(this.client.getLocalPlayer().getName()) && this.socketDpsConfig.highlightSelf()) {
-                        tableComponent.addRow(ColorUtil.prependColorTag(k, Color.green), ColorUtil.prependColorTag(right, Color.green));
-                    } else if (this.socketDpsConfig.highlightOtherPlayer() && this.socketDpsCounterPlugin.getHighlights().contains(k.toLowerCase())) {
-                        tableComponent.addRow(ColorUtil.prependColorTag(k, this.socketDpsConfig.getHighlightColor()), ColorUtil.prependColorTag(right, this.socketDpsConfig.getHighlightColor()));
-                    } else {
-                        tableComponent.addRow(ColorUtil.prependColorTag(k, Color.white), ColorUtil.prependColorTag(right, Color.white));
-                    }
-                });
-                this.panelComponent.setPreferredSize(new Dimension(maxWidth + 10, 0));
-                dpsMembers.put("Total", tot);
-                if (localName != null && dpsMembers.containsKey(localName) && tot > dpsMembers.get(localName) && this.socketDpsConfig.showTotal())
-                    tableComponent.addRow(ColorUtil.prependColorTag("Total", Color.red), ColorUtil.prependColorTag(dpsMembers.get("Total").toString(), Color.red));
-                if (!tableComponent.isEmpty())
-                    this.panelComponent.getChildren().add(tableComponent);
+        if (this.config.displayOverlay() && !this.plugin.getMembers().isEmpty() && this.client.getLocalPlayer() != null) {
+            Map<String, Integer> dpsMembers = this.plugin.getMembers();
+            this.panelComponent.getChildren().clear();
+            int tot = 0;
+            String localName = this.client.getLocalPlayer().getName();
+            if (dpsMembers.containsKey("Total")) {
+                tot = dpsMembers.get("Total");
+                dpsMembers.remove("Total");
+            }
 
-            if (this.socketDpsConfig.backgroundStyle() == SocketDpsConfig.backgroundMode.HIDE) {
+            AtomicReference<String> highlightedPlayer = new AtomicReference<>("");
+            int maxWidth = 129;
+            dpsMembers.forEach((k, v) -> {
+                String right = QuantityFormatter.formatNumber(v);
+                if (k.equalsIgnoreCase(this.client.getLocalPlayer().getName())) {
+                    if(config.showDifference() == SocketDpsConfig.ShowDifferenceMode.OFF) {
+                        Color color = this.config.highlightSelf() ? Color.GREEN : Color.WHITE;
+                        this.panelComponent.getChildren().add(LineComponent.builder()
+                                .leftColor(color)
+                                .left(k)
+                                .rightColor(color)
+                                .right(right)
+                                .build());
+                    }
+                } else if (this.config.highlightOtherPlayer() && this.plugin.getHighlights().contains(k.toLowerCase())) {
+                    highlightedPlayer.set(k);
+                    if(config.showDifference() == SocketDpsConfig.ShowDifferenceMode.OFF) {
+                        this.panelComponent.getChildren().add(LineComponent.builder()
+                                .leftColor(this.config.getHighlightColor())
+                                .left(k)
+                                .rightColor(this.config.getHighlightColor())
+                                .right(right)
+                                .build());
+                    }
+                } else {
+                    if(config.showDifference() == SocketDpsConfig.ShowDifferenceMode.OFF) {
+                        this.panelComponent.getChildren().add(LineComponent.builder()
+                                .left(k)
+                                .right(right)
+                                .build());
+                    }
+                }
+            });
+            this.panelComponent.setPreferredSize(new Dimension(maxWidth + 10, 0));
+            dpsMembers.put("Total", tot);
+            if (localName != null && dpsMembers.containsKey(localName) && tot > dpsMembers.get(localName) && this.config.showTotal() && config.showDifference() == SocketDpsConfig.ShowDifferenceMode.OFF) {
+                this.panelComponent.getChildren().add(LineComponent.builder()
+                        .leftColor(Color.RED)
+                        .left("Total")
+                        .rightColor(Color.RED)
+                        .right(dpsMembers.get("Total").toString())
+                        .build());
+            }
+
+            if (config.showDifference() != SocketDpsConfig.ShowDifferenceMode.OFF && dpsMembers.get(client.getLocalPlayer().getName()) != null) {
+                int boosteeDmg = 0;
+                if (dpsMembers.get(highlightedPlayer.toString()) != null) {
+                    boosteeDmg = dpsMembers.get(highlightedPlayer.toString());
+                }
+                int difference = dpsMembers.get(client.getLocalPlayer().getName()) - boosteeDmg;
+                Color color = difference < 0 ? Color.GREEN : Color.RED;
+                this.panelComponent.getChildren().add(LineComponent.builder()
+                        .leftColor(color)
+                        .left(config.showDifference() == SocketDpsConfig.ShowDifferenceMode.SIMPLE ? "" : client.getLocalPlayer().getName())
+                        .rightColor(color)
+                        .right(String.valueOf(difference))
+                        .build());
+            }
+
+            if (this.config.backgroundStyle() == SocketDpsConfig.backgroundMode.HIDE) {
                 panelComponent.setBackgroundColor(null);
-            } else if (this.socketDpsConfig.backgroundStyle() == SocketDpsConfig.backgroundMode.STANDARD) {
+            } else if (this.config.backgroundStyle() == SocketDpsConfig.backgroundMode.STANDARD) {
                 panelComponent.setBackgroundColor(ComponentConstants.STANDARD_BACKGROUND_COLOR);
-            } else if (this.socketDpsConfig.backgroundStyle() == SocketDpsConfig.backgroundMode.CUSTOM) {
-                panelComponent.setBackgroundColor(new Color(socketDpsConfig.backgroundColor().getRed(), socketDpsConfig.backgroundColor().getGreen(), socketDpsConfig.backgroundColor().getBlue(), socketDpsConfig.backgroundColor().getAlpha()));
+            } else if (this.config.backgroundStyle() == SocketDpsConfig.backgroundMode.CUSTOM) {
+                panelComponent.setBackgroundColor(new Color(config.backgroundColor().getRed(), config.backgroundColor().getGreen(), config.backgroundColor().getBlue(), config.backgroundColor().getAlpha()));
             }
             return this.panelComponent.render(graphics);
         }
         return null;
     }
-
-    static final OverlayMenuEntry RESET_ENTRY = new OverlayMenuEntry(MenuAction.RUNELITE_OVERLAY, "Reset", "DPS counter");
-
-    private final SocketDpsCounterPlugin socketDpsCounterPlugin;
-
-    private final SocketDpsConfig socketDpsConfig;
-
-    private final Client client;
 }

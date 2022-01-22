@@ -132,6 +132,7 @@ public class SocketBAPlugin extends Plugin {
 		arrowEquiped = 0;
 		roleWidgetText = "";
 		eggMap.clear();
+		queen = null;
     }
 
 	@Subscribe
@@ -341,13 +342,13 @@ public class SocketBAPlugin extends Plugin {
 						if(data.getString("role").equals("Attacker")){
 							attCall = data.getString("call");
 							if(attCall.contains("Defensive")) {
-								Objects.requireNonNull(client.getWidget(31784967)).setText("Defensive");
+								Objects.requireNonNull(client.getWidget(31784967)).setText("Defensive/");
 							}else if(attCall.contains("Aggressive")) {
-								Objects.requireNonNull(client.getWidget(31784967)).setText("Aggressive");
+								Objects.requireNonNull(client.getWidget(31784967)).setText("Aggressive/");
 							}else if(attCall.contains("Accurate")) {
-								Objects.requireNonNull(client.getWidget(31784967)).setText("Accurate");
+								Objects.requireNonNull(client.getWidget(31784967)).setText("Accurate/");
 							}else {
-								Objects.requireNonNull(client.getWidget(31784967)).setText("Controlled");
+								Objects.requireNonNull(client.getWidget(31784967)).setText("Controlled/");
 							}
 						}else if(data.getString("role").equals("Defender")){
 							defCall = data.getString("call");
@@ -435,7 +436,7 @@ public class SocketBAPlugin extends Plugin {
 				}else if(rng == 1) {
 					sendFlag("<col=ff0000>" + this.client.getLocalPlayer().getName() + " has room temp IQ");
 				}else {
-					sendFlag("<col=ff0000>Either they are greedy with the ticks.... or " + this.client.getLocalPlayer().getName() + " can't tell whats" + healCall.replace("Pois. ", ""));
+					sendFlag("<col=ff0000>Either they are greedy with the ticks.... or " + this.client.getLocalPlayer().getName() + " can't tell whats " + healCall.replace("Pois. ", ""));
 				}
 			}
 		}
@@ -452,7 +453,7 @@ public class SocketBAPlugin extends Plugin {
 				}else if(rng == 1) {
 					sendFlag("<col=ff0000>Hehe point go brrrrrrrrrrrrrrrrrrr  -" + this.client.getLocalPlayer().getName());
 				}else {
-					sendFlag("<col=ff0000>Just kick him now. " + this.client.getLocalPlayer().getName() + " is bing chillin");
+					sendFlag("<col=ff0000>Just kick him now. " + this.client.getLocalPlayer().getName() + " is bing chillin'");
 				}
 			}
 		}
@@ -589,9 +590,9 @@ public class SocketBAPlugin extends Plugin {
 
 		if (this.config.leftClickEggs() && type >= 18 && type <= 22 && (id == 10531 || id == 10532 || id == 10533 || id == 10534)) {
 			if(!role.equals("Collector")
-					|| ((colCall.equals("Green egg") && (id == 10532 || id == 10533))
-					|| (colCall.equals("Red egg") && (id == 10531 || id == 10533))
-					|| (colCall.equals("Blue egg") && (id == 10531 || id == 10532)))){
+					|| ((colCall.equalsIgnoreCase("Green egg") && (id == 10532 || id == 10533))
+					|| (colCall.equalsIgnoreCase("Red egg") && (id == 10531 || id == 10533))
+					|| (colCall.equalsIgnoreCase("Blue egg") && (id == 10531 || id == 10532)))){
 				return false;
 			}
 		}
@@ -599,10 +600,6 @@ public class SocketBAPlugin extends Plugin {
 		if(config.hideAttack() && (target.contains("penance fighter") || target.contains("penance ranger"))){
 			if(option.contains("attack")) {
 				WeaponType wepType =  WeaponType.getWeaponType(equippedWeaponTypeVarbit);
-				System.out.println("Arrow: " + arrowEquiped);
-				System.out.println("wepType: " + wepType);
-				System.out.println("attCall: " + attCall);
-				System.out.println("Style: " + attackStyle.getName());
 				if (!role.equals("Attacker")){
 					System.out.println("Hide Not attack\n");
 					return false;
@@ -611,11 +608,9 @@ public class SocketBAPlugin extends Plugin {
 							|| (arrowEquiped == 22228 && !attCall.contains("Accurate"))
 							|| (arrowEquiped == 22229 && !attCall.contains("Aggressive"))
 							|| (arrowEquiped == 22230 && !attCall.contains("Defensive"))) {
-						System.out.println("Hide Wrong arrow\n");
 						return false;
 					}
 				} else if (!attCall.contains(attackStyle.getName())) {
-					System.out.println("Hide wrong melee\n");
 					return false;
 				}
 			}else if(option.contains("cast ") && target.contains(" -> ")){

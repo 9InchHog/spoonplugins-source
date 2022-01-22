@@ -2,7 +2,6 @@ package net.runelite.client.plugins.socket.plugins.socketDPS;
 
 import com.google.inject.Provides;
 import net.runelite.api.*;
-import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.NpcDespawned;
@@ -21,7 +20,6 @@ import net.runelite.client.plugins.socket.org.json.JSONObject;
 import net.runelite.client.plugins.socket.packet.SocketBroadcastPacket;
 import net.runelite.client.plugins.socket.packet.SocketReceivePacket;
 import net.runelite.client.ui.overlay.Overlay;
-import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 import org.slf4j.Logger;

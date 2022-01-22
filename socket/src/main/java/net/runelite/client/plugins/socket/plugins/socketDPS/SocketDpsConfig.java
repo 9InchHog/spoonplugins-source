@@ -48,7 +48,7 @@ public interface SocketDpsConfig extends Config {
         return true;
     }
 
-    @ConfigItem(position = 4, keyName = "playersToHighlight", name = "Players to Highlight", description = "List of player names to highlight")
+    @ConfigItem(position = 4, keyName = "playersToHighlight", name = "Player to Highlight", description = "Sets the player to highlight - the boostee")
     default String getPlayerToHighlight() {
         return "";
     }
@@ -68,9 +68,18 @@ public interface SocketDpsConfig extends Config {
     @ConfigItem(position = 8, keyName = "backgroundColor", name = "Background Color", description = "Sets the overlay color on the custom setting")
     default Color backgroundColor() { return new Color(23, 23,23, 156); }
 
+    @ConfigItem(position = 9, keyName = "showDifference", name = "Show Difference", description = "Shows the difference between your damage and the boostee")
+    default ShowDifferenceMode showDifference() {
+        return ShowDifferenceMode.OFF;
+    }
+
     @Getter
     @RequiredArgsConstructor
     enum backgroundMode {
-        STANDARD, CUSTOM, HIDE;
+        STANDARD, CUSTOM, HIDE
+    }
+
+    enum ShowDifferenceMode {
+        OFF, SIMPLE, DETAILED
     }
 }
