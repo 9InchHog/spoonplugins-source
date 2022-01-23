@@ -27,7 +27,7 @@ public class SpoonTobStatsOverlay extends OverlayPanel {
     public Dimension render(Graphics2D graphics) { {
             if (config.timerOverlay() && plugin.isTobInside()) {
                 if (!config.fontName().equals("")) {
-                    graphics.setFont(new Font(config.fontName(), 0, config.fontSize()));
+                    graphics.setFont(new Font(config.fontName(), config.fontWeight().weight, config.fontSize()));
                 }
 
                 LineComponent lineComponent = null;

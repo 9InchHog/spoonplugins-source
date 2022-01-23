@@ -1,9 +1,6 @@
 package net.runelite.client.plugins.spoontobstats;
 
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigSection;
+import net.runelite.client.config.*;
 
 @ConfigGroup("spoontobstats")
 public interface SpoonTobStatsConfig extends Config
@@ -160,10 +157,18 @@ public interface SpoonTobStatsConfig extends Config
     default int fontSize() { return 11; }
 
     @ConfigItem(
+            name = "Custom Weight",
+            keyName = "fontWeight",
+            description = "Sets the custom font weight",
+            position = 104
+    )
+    default FontWeight fontWeight() { return FontWeight.PLAIN; }
+
+    @ConfigItem(
             name = "Maiden Flash",
             keyName = "flash",
             description = "Flash the screen on fast maiden procs (north all mager cannot freeze 1+2)",
-            position = 104
+            position = 105
     )
     default boolean flash() { return true; }
 
@@ -171,11 +176,24 @@ public interface SpoonTobStatsConfig extends Config
             name = "Time Exporter",
             keyName = "timeExporter",
             description = "Exports Tob times to .txt files in .openosrs/times",
-            position = 105
+            position = 106
     )
     default boolean timeExporter() { return false; }
 
     public static enum msgTimeMode {
         ACTIVE, ROOM_END
+    }
+
+    enum FontWeight {
+        PLAIN(0), BOLD(1), ITALIC(2);
+
+        public int weight;
+        FontWeight(int i) {
+            weight = i;
+        }
+
+        public int getWeight() {
+            return weight;
+        }
     }
 }

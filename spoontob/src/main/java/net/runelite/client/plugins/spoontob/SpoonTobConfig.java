@@ -1555,6 +1555,17 @@ public interface SpoonTobConfig extends Config {
 
     @ConfigItem(
             position = 10,
+            keyName = "staminaRequirement",
+            name = "Xarpus - Stamina Requirement",
+            description = "Doesn't let you go to Xarpus if you don't have a stamina potion",
+            section = misc
+    )
+    default boolean staminaRequirement() {
+        return false;
+    }
+
+    @ConfigItem(
+            position = 11,
             keyName = "oldHpThreshold",
             name = "Old HP Colors",
             description = "Changes HP overlays from a gradual change to set colors <br>" +

@@ -5,6 +5,7 @@ import net.runelite.api.Point;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
+import net.runelite.api.util.Text;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.SkillIconManager;
@@ -333,6 +334,18 @@ public class Sotetseg extends Room {
                 }
             }
         }
+    }
+
+    @Subscribe
+    public void onMenuEntryAdded(MenuEntryAdded event) {
+        if (!isInOverWorld())
+            return;
+        if (client.getItemContainer(InventoryID.INVENTORY) == null)
+            return;
+        String target = Text.removeTags(event.getTarget()).toLowerCase();
+        MenuEntry[] entries = client.getMenuEntries();
+        if (config.staminaRequirement() && target.contains("formidable passage") && !client.getItemContainer(InventoryID.INVENTORY).contains(12625))
+            client.setMenuEntries(Arrays.copyOf(entries, entries.length - 1));
     }
 
     /*@Subscribe
