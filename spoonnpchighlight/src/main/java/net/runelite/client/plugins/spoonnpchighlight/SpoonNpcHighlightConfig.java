@@ -507,6 +507,16 @@ public interface SpoonNpcHighlightConfig extends Config {
 
     @ConfigItem(
             position = 16,
+            keyName = "ignoreDeadExclusion",
+            name = "Ignore Dead Exclusion List",
+            description = "List of npc's to not remove highlight when dead"
+    )
+    default String ignoreDeadExclusion() {
+        return "";
+    }
+
+    @ConfigItem(
+            position = 17,
             keyName = "deadNpcMenuColor",
             name = "Dead NPC Menu Color",
             description = "Highlights names in right click menu entry when NPC is dead"
@@ -514,7 +524,7 @@ public interface SpoonNpcHighlightConfig extends Config {
     Color deadNpcMenuColor();
 
     @ConfigItem(
-            position = 17,
+            position = 18,
             keyName = "respawnTimer",
             name = "Respawn Timer",
             description = "Marks tile and shows timer for when a marker NPC will respawn"
@@ -525,7 +535,7 @@ public interface SpoonNpcHighlightConfig extends Config {
 
     @Alpha
     @ConfigItem(
-            position = 18,
+            position = 19,
             keyName = "respawnTimerColor",
             name = "Respawn Time Color",
             description = "Sets the color of the text for Respawn Timer"
@@ -535,7 +545,7 @@ public interface SpoonNpcHighlightConfig extends Config {
     }
 
     @ConfigItem(
-            position = 19,
+            position = 20,
             keyName = "displayName",
             name = "Display Name",
             description = "Shows name of NPC's in the list above them"
@@ -545,7 +555,7 @@ public interface SpoonNpcHighlightConfig extends Config {
     }
 
     @ConfigItem(
-            position = 20,
+            position = 21,
             keyName = "npcMinimapMode",
             name = "Highlight Minimap",
             description = "Highlights NPC on minimap and or displays name"

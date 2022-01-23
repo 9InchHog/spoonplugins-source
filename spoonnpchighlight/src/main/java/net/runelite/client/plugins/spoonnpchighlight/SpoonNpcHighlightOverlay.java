@@ -33,7 +33,26 @@ public class SpoonNpcHighlightOverlay extends Overlay {
 
     public Dimension render(Graphics2D graphics) {
         for(NPC npc : this.client.getNpcs()) {
-            if (npc.getHealthRatio() != 0 || !config.ignoreDeadNpcs()) {
+            boolean notIgnored = false;
+            if(npc.getName() != null) {
+                String name = npc.getName().toLowerCase();
+                if(config.ignoreDeadNpcs()) {
+                    for (String str : plugin.ignoreDeadExclusionList) {
+                        if (str.equalsIgnoreCase(name) || (str.contains("*")
+                                && ((str.startsWith("*") && str.endsWith("*") && name.contains(str.replace("*", "")))
+                                || (str.startsWith("*") && name.endsWith(str.replace("*", ""))) || name.startsWith(str.replace("*", ""))))) {
+                            notIgnored = true;
+                            break;
+                        }
+                    }
+                } else {
+                    notIgnored = true;
+                }
+            } else {
+                notIgnored = true;
+            }
+
+            if (npc.getHealthRatio() != 0 || (!config.ignoreDeadNpcs() || notIgnored)) {
                 boolean foundNpc = false;
                 Color outlineColor = config.highlightColor();
                 Color fillColor = config.fillColor();

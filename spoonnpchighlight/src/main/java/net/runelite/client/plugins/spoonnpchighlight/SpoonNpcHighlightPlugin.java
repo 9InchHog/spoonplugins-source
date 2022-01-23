@@ -72,6 +72,7 @@ public class SpoonNpcHighlightPlugin extends Plugin {
     public ArrayList<Color> turboColors = new ArrayList<Color>();
     public ArrayList<NpcSpawn> npcSpawns = new ArrayList<NpcSpawn>();
     public ArrayList<String> namesToDisplay = new ArrayList<String>();
+    public ArrayList<String> ignoreDeadExclusionList = new ArrayList<String>();
     public Instant lastTickUpdate;
     public int turboModeStyle = 0;
     public int turboTileWidth = 0;
@@ -102,7 +103,7 @@ public class SpoonNpcHighlightPlugin extends Plugin {
         splitNameList(config.turboNames(), turboNames);
         splitIdList(config.turboIds(), turboIds);
         splitNameList(config.displayName(), namesToDisplay);
-
+        splitNameList(config.ignoreDeadExclusion(), ignoreDeadExclusionList);
         parseBlueliteNpcConfig();
     }
 
@@ -131,6 +132,7 @@ public class SpoonNpcHighlightPlugin extends Plugin {
         turboOutlineWidth = 0;
         turboOutlineFeather = 0;
         namesToDisplay.clear();
+        ignoreDeadExclusionList.clear();
     }
 
     private void splitNameList(String configStr, ArrayList<String> strList) {
@@ -204,6 +206,9 @@ public class SpoonNpcHighlightPlugin extends Plugin {
         } else if (event.getKey().equals("displayName")) {
             namesToDisplay.clear();
             splitNameList(config.displayName(), namesToDisplay);
+        } else if (event.getKey().equals("ignoreDeadExclusion")) {
+            ignoreDeadExclusionList.clear();
+            splitNameList(config.ignoreDeadExclusion(), ignoreDeadExclusionList);
         }
     }
 

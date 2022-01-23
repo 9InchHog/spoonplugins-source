@@ -25,10 +25,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.2"
+version = "1.0.1"
 
-project.extra["PluginName"] = "Spoon NPC Highlight"
-project.extra["PluginDescription"] = "Additional features for NPC highlighting"
+project.extra["PluginName"] = "Cursed"
+project.extra["PluginDescription"] = "For this shall be... my masterpiece"
 
 dependencies {
     annotationProcessor(Libraries.lombok)
