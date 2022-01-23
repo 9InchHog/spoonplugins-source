@@ -65,4 +65,12 @@ public interface sOpponentInfoConfig extends Config {
     default boolean hpHud() {
         return false;
     }
+
+    @ConfigItem(
+            keyName = "showDumbStar",
+            name = "Show dumb star",
+            description = "Adds that stupid fucking star next to the NPC name. The star breaks some plugins",
+            position = 6
+    )
+    default boolean showDumbStar() { return false; }
 }

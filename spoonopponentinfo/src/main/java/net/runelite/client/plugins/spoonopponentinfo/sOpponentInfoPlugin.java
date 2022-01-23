@@ -165,6 +165,11 @@ public class sOpponentInfoPlugin extends Plugin
     @Subscribe
     public void onMenuEntryAdded(MenuEntryAdded menuEntryAdded)
     {
+        if (!config.showDumbStar())
+        {
+            return;
+        }
+
         if (menuEntryAdded.getType() != MenuAction.NPC_SECOND_OPTION.getId()
                 || !menuEntryAdded.getOption().equals("Attack")
                 || !config.showOpponentsInMenu())
