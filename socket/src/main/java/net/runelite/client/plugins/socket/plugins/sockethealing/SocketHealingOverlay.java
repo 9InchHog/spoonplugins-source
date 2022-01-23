@@ -29,7 +29,7 @@ public class SocketHealingOverlay extends OverlayPanel {
         this.modelOutlineRenderer = modelOutlineRenderer;
         setPosition(OverlayPosition.DYNAMIC);
         setPriority(OverlayPriority.HIGH);
-        setLayer(OverlayLayer.ABOVE_SCENE);
+        setLayer(config.setHighestPriority() ? OverlayLayer.ABOVE_WIDGETS : OverlayLayer.ABOVE_SCENE);
     }
 
     public Dimension render(Graphics2D graphics) {
@@ -49,74 +49,74 @@ public class SocketHealingOverlay extends OverlayPanel {
                 String playerName = p.getName();
                 SocketHealingPlayer player = this.plugin.getPartyMembers().get(playerName);
                 int health = player.getHealth();
-                if (!config.dontShowHp() || health < config.dontShowHpThreshold()) {
-                    Color highlightColor = Color.WHITE;
-                    Color textColor;
+                Color highlightColor = Color.WHITE;
+                Color textColor;
 
-                    if (health > this.config.greenZone())
-                        if (config.separateOpactiy()) {
-                            highlightColor = config.greenZoneColor();
-                        } else {
-                            highlightColor = new Color(this.config.greenZoneColor().getRed(), this.config.greenZoneColor().getGreen(), this.config.greenZoneColor().getBlue(), config.opacity());
-                        }
-                        textColor = config.greenZoneColor();
-                    if (health <= this.config.greenZone() && health > this.config.orangeZone()) {
-                        if (config.separateOpactiy()) {
-                            highlightColor = config.orangeZoneColor();
-                        } else {
-                            highlightColor = new Color(this.config.orangeZoneColor().getRed(), this.config.orangeZoneColor().getGreen(), this.config.orangeZoneColor().getBlue(), config.opacity());
-                        }
-                        textColor = config.orangeZoneColor();
-                    } else if (health <= this.config.orangeZone()) {
-                        if (config.separateOpactiy()) {
-                            highlightColor = config.redZoneColor();
-                        } else {
-                            highlightColor = new Color(this.config.redZoneColor().getRed(), this.config.redZoneColor().getGreen(), this.config.redZoneColor().getBlue(), config.opacity());
-                        }
-                        textColor = config.redZoneColor();
+                if (health > this.config.greenZone())
+                    if (config.separateOpactiy()) {
+                        highlightColor = config.greenZoneColor();
+                    } else {
+                        highlightColor = new Color(this.config.greenZoneColor().getRed(), this.config.greenZoneColor().getGreen(), this.config.greenZoneColor().getBlue(), config.opacity());
                     }
-
-                    if (this.config.displayHealth() || (!this.config.hpPlayerNames().equals("") && this.plugin.playerNames.contains(playerName.toLowerCase()))) {
-                        String text = "";
-                        if (config.showName()) {
-                            text = playerName + " - " + health;
-                        } else {
-                            text = String.valueOf(health);
-                        }
-                        int offsetHp = 0;
-                        for (LocalPoint lp : playerPoints) {
-                            if (lp.getX() == p.getLocalLocation().getX() && lp.getY() == p.getLocalLocation().getY()) {
-                                offsetHp++;
-                            }
-                        }
-                        int xOffset = this.config.getIndicatorXOffset();
-                        int yOffset = this.config.getIndicatorYOffset();
-                        Point point = p.getCanvasTextLocation(graphics, text, 0);
-
-                        if (point != null) {
-                            point = new Point(point.getX() + xOffset, point.getY() - yOffset);
-                            if (offsetHp != 0) {
-                                int x = point.getX();
-                                int y = point.getY() - (15 * offsetHp);
-                                point = new Point(x, y);
-                            }
-                            OverlayUtil.renderTextLocation(graphics, point, text, textColor);
-                        }
-                        playerPoints.add(p.getLocalLocation());
+                    textColor = config.greenZoneColor();
+                if (health <= this.config.greenZone() && health > this.config.orangeZone()) {
+                    if (config.separateOpactiy()) {
+                        highlightColor = config.orangeZoneColor();
+                    } else {
+                        highlightColor = new Color(this.config.orangeZoneColor().getRed(), this.config.orangeZoneColor().getGreen(), this.config.orangeZoneColor().getBlue(), config.opacity());
                     }
+                    textColor = config.orangeZoneColor();
+                } else if (health <= this.config.orangeZone()) {
+                    if (config.separateOpactiy()) {
+                        highlightColor = config.redZoneColor();
+                    } else {
+                        highlightColor = new Color(this.config.redZoneColor().getRed(), this.config.redZoneColor().getGreen(), this.config.redZoneColor().getBlue(), config.opacity());
+                    }
+                    textColor = config.redZoneColor();
+                }
 
-                    if (config.highlightedPlayerNames().toLowerCase().contains(playerName.toLowerCase())) {
-                        if (config.highlightOutline()) {
-                            this.modelOutlineRenderer.drawOutline(p, config.hpThiCC(), highlightColor, config.glow());
-                        } else if (config.highlightHull()) {
-                            Shape poly = p.getConvexHull();
-                            if (poly != null) {
-                                graphics.setColor(highlightColor);
-                                graphics.setStroke(new BasicStroke(this.config.hpThiCC()));
-                                graphics.draw(poly);
-                                graphics.setColor(new Color(highlightColor.getRed(), highlightColor.getGreen(), highlightColor.getBlue(), 0));
-                                graphics.fill(poly);
-                            }
+                if ((this.config.displayHealth() || (!this.config.hpPlayerNames().equals("") && this.plugin.playerNames.contains(playerName.toLowerCase())))
+                        && (!config.dontShowHp() || health < config.dontShowHpThreshold() || config.dontShowHpMode() == SocketHealingConfig.DontShowHpMode.OUTLINE)) {
+                    String text = "";
+                    if (config.showName()) {
+                        text = playerName + " - " + health;
+                    } else {
+                        text = String.valueOf(health);
+                    }
+                    int offsetHp = 0;
+                    for (LocalPoint lp : playerPoints) {
+                        if (lp.getX() == p.getLocalLocation().getX() && lp.getY() == p.getLocalLocation().getY()) {
+                            offsetHp++;
+                        }
+                    }
+                    int xOffset = this.config.getIndicatorXOffset();
+                    int yOffset = this.config.getIndicatorYOffset();
+                    Point point = p.getCanvasTextLocation(graphics, text, 0);
+
+                    if (point != null) {
+                        point = new Point(point.getX() + xOffset, point.getY() - yOffset);
+                        if (offsetHp != 0) {
+                            int x = point.getX();
+                            int y = point.getY() - (15 * offsetHp);
+                            point = new Point(x, y);
+                        }
+                        OverlayUtil.renderTextLocation(graphics, point, text, textColor);
+                    }
+                    playerPoints.add(p.getLocalLocation());
+                }
+
+                if (config.highlightedPlayerNames().toLowerCase().contains(playerName.toLowerCase())
+                        && (!config.dontShowHp() || health < config.dontShowHpThreshold() || config.dontShowHpMode() == SocketHealingConfig.DontShowHpMode.TEXT)) {
+                    if (config.highlightOutline()) {
+                        this.modelOutlineRenderer.drawOutline(p, config.hpThiCC(), highlightColor, config.glow());
+                    } else if (config.highlightHull()) {
+                        Shape poly = p.getConvexHull();
+                        if (poly != null) {
+                            graphics.setColor(highlightColor);
+                            graphics.setStroke(new BasicStroke(this.config.hpThiCC()));
+                            graphics.draw(poly);
+                            graphics.setColor(new Color(highlightColor.getRed(), highlightColor.getGreen(), highlightColor.getBlue(), 0));
+                            graphics.fill(poly);
                         }
                     }
                 }

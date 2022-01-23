@@ -52,6 +52,9 @@ public class SocketDpsCounterPlugin extends Plugin {
     private SocketDpsOverlay socketDpsOverlay;
 
     @Inject
+    private SocketDpsDifferenceOverlay differenceOverlay;
+
+    @Inject
     private SocketDpsConfig socketDpsConfig;
 
     @Inject
@@ -86,6 +89,7 @@ public class SocketDpsCounterPlugin extends Plugin {
     protected void startUp() {
         this.members.clear();
         this.overlayManager.add(this.socketDpsOverlay);
+        this.overlayManager.add(this.differenceOverlay);
         this.clientThread.invoke(this::rebuildAllPlayers);
         BOSSES.addAll(Arrays.asList(5886, 5887, 5888, 5889, 5890, 5891, 5908, 6503, 6609, 5862,
                 5863, 5866, 2054, 6505, 319, 2215, 6494, 5779, 6499, 128,
@@ -105,7 +109,8 @@ public class SocketDpsCounterPlugin extends Plugin {
     }
 
     protected void shutDown() {
-        this.overlayManager.remove((Overlay)this.socketDpsOverlay);
+        this.overlayManager.remove(this.socketDpsOverlay);
+        this.overlayManager.remove(differenceOverlay);
         this.members.clear();
     }
 

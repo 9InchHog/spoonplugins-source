@@ -123,10 +123,21 @@ public interface SocketHealingConfig extends Config {
             hidden = true, unhide = "dontShowHp")
     default int dontShowHpThreshold() { return 100; }
 
+    @ConfigItem(position = 25, keyName = "dontShowHpMode", name = "Dont Show HP Mode", description = "Don't display overlay if their hp is at or above a threshold",
+            hidden = true, unhide = "dontShowHp")
+    default DontShowHpMode dontShowHpMode() { return DontShowHpMode.BOTH; }
+
+    @ConfigItem(position = 26, keyName = "setHighestPriority", name = "Set Highest Priority", description = "Displays overlays above widgets(Bank, inventory, teleport menus)<br>Must turn plugin off and on to work")
+    default boolean setHighestPriority() { return false; }
+
     /*@ConfigItem(position = 25, keyName = "healOtherMES", name = "Heal Other MES", description = "Prioritizes the lowest hp player in socket for heal other")
     default boolean healOtherMES() { return false; }*/
 
-    public enum SocketFontType {
+    enum SocketFontType {
         REGULAR, BOLD, SMALL, CUSTOM;
+    }
+
+    enum DontShowHpMode {
+        OUTLINE, TEXT, BOTH
     }
 }
