@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -182,6 +183,9 @@ public class Verzik extends Room {
     public boolean greenBallOut = false;
     public int greenBallDelay = 0;
 
+    List<GameObject> pillarsPendingRemoval;
+    public List<WorldPoint> pillarLocations;
+
     private boolean mirrorMode;
 
     BufferedImage icon = ImageUtil.loadImageResource(SpoonTobPlugin.class, "chinkspeak.png");
@@ -214,6 +218,8 @@ public class Verzik extends Room {
         greenBallBounces = 0;
         greenBallOut = false;
         greenBallDelay = 0;
+        pillarsPendingRemoval = new ArrayList<>();
+        pillarLocations = new ArrayList<>();
     }
 
     public void load() {
@@ -448,12 +454,26 @@ public class Verzik extends Room {
 
     @Subscribe
     public void onGameObjectSpawned(GameObjectSpawned event){
+        GameObject gameObject = event.getGameObject();
+        removeGameObjectsFromScene(gameObject);
+
         if (TheatreRegions.inRegion(client, TheatreRegions.VERZIK)) {
             if (config.showVerzikAcid() && event.getGameObject().getId() == HM_ACID) {
                 acidSpots.add(event.getGameObject());
                 acidSpotsTimer.add(14);
             }
+            if (gameObject.getId() == 32687) {
+                pillarLocations.add(gameObject.getWorldLocation());
+                pillarsPendingRemoval.add(gameObject);
+            }
+            if (gameObject.getId() == 29733)
+                pillarLocations.remove(gameObject.getWorldLocation());
         }
+    }
+
+    public void removeGameObjectsFromScene(GameObject gameObject) {
+        Scene scene = client.getScene();
+        scene.removeGameObject(gameObject);
     }
 
     @Subscribe
@@ -614,6 +634,12 @@ public class Verzik extends Room {
                 for(int i=0; i<acidSpotsTimer.size(); i++){
                     acidSpotsTimer.set(i, acidSpotsTimer.get(i) - 1);
                 }
+            }
+
+            if (config.deletePillars()) {
+                for (GameObject pillar : pillarsPendingRemoval)
+                    removeGameObjectsFromScene(pillar);
+                pillarsPendingRemoval.clear();
             }
 
             if (!verzikRangeProjectiles.isEmpty()) {
@@ -944,6 +970,8 @@ public class Verzik extends Room {
         greenBallBounces = 0;
         greenBallOut = false;
         greenBallDelay = 0;
+        pillarsPendingRemoval = new ArrayList<>();
+        pillarLocations = new ArrayList<>();
     }
 
     static enum SpecialAttack {

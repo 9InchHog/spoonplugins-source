@@ -29,7 +29,7 @@ public class MaidenMaxHitToolTip extends Overlay {
     }
 
     public Dimension render(Graphics2D graphics) {
-        if (config.maidenMaxHit() && !client.isMenuOpen() && maiden.isMaidenActive()) {
+        if (config.maidenMaxHit() != SpoonTobConfig.MaidenMaxHitTTMode.OFF && !client.isMenuOpen() && maiden.isMaidenActive()) {
             NPC maidenNpc = maiden.getMaidenNPC();
             Model model = maidenNpc.getModel();
             LocalPoint localPoint = maidenNpc.getLocalLocation();
@@ -40,12 +40,27 @@ public class MaidenMaxHitToolTip extends Overlay {
                         int noPrayerMaxHit = (int) Math.floor(maiden.getMaxHit());
                         int prayerMaxHit = noPrayerMaxHit / 2;
                         int elyMaxHit = prayerMaxHit - (int) Math.floor((double) prayerMaxHit * 0.25D);
-                        tooltipManager.add(new Tooltip(ColorUtil.wrapWithColorTag("No Prayer:", new Color(255, 109, 97))
-                                + ColorUtil.wrapWithColorTag(" +" + noPrayerMaxHit, new Color(-7278960)) + "</br>"
-                                + ColorUtil.wrapWithColorTag("Prayer:", Color.ORANGE) + ColorUtil.wrapWithColorTag(" +" + prayerMaxHit, new Color(-7278960)) + "</br>"
-                                + ColorUtil.wrapWithColorTag("Elysian:", Color.CYAN) + ColorUtil.wrapWithColorTag(" +" + elyMaxHit, new Color(-7278960))));
+                        switch(config.maidenMaxHit()) {
+                            case REGULAR:
+                                tooltipManager.add(new Tooltip(ColorUtil.wrapWithColorTag("No Prayer:", new Color(255, 109, 97))
+                                        + ColorUtil.wrapWithColorTag(" +" + noPrayerMaxHit, new Color(-7278960)) + "</br>"
+                                        + ColorUtil.wrapWithColorTag("Prayer:", Color.ORANGE) + ColorUtil.wrapWithColorTag(" +" + prayerMaxHit, new Color(-7278960))));
+                                break;
+                            case ELY:
+                                tooltipManager.add(new Tooltip(ColorUtil.wrapWithColorTag("No Prayer:", new Color(255, 109, 97))
+                                        + ColorUtil.wrapWithColorTag(" +" + noPrayerMaxHit, new Color(-7278960)) + "</br>"
+                                        + ColorUtil.wrapWithColorTag("Elysian:", Color.CYAN) + ColorUtil.wrapWithColorTag(" +" + elyMaxHit, new Color(-7278960))));
+                                break;
+                            case BOTH:
+                                tooltipManager.add(new Tooltip(ColorUtil.wrapWithColorTag("No Prayer:", new Color(255, 109, 97))
+                                        + ColorUtil.wrapWithColorTag(" +" + noPrayerMaxHit, new Color(-7278960)) + "</br>"
+                                        + ColorUtil.wrapWithColorTag("Prayer:", Color.ORANGE) + ColorUtil.wrapWithColorTag(" +" + prayerMaxHit, new Color(-7278960)) + "</br>"
+                                        + ColorUtil.wrapWithColorTag("Elysian:", Color.CYAN) + ColorUtil.wrapWithColorTag(" +" + elyMaxHit, new Color(-7278960))));
+                                break;
+                            default:
+                                throw new IllegalStateException("Invalid 'maidenMaxHit' config state -> state: " + config.maidenMaxHit().getName());
+                        }
                     }
-
                 }
             }
         }

@@ -44,6 +44,19 @@ public class VerzikOverlay extends RoomOverlay {
                 }
             }
 
+            if (verzik.verzikPhase == Verzik.Phase.PHASE1 && config.deletePillars()) {
+                for (WorldPoint pillar : this.verzik.pillarLocations) {
+                    int size = 1;
+                    int thick_size = 1;
+                    size = 3 * thick_size;
+                    Polygon tilePoly;
+                    LocalPoint lp;
+                    if ((lp = LocalPoint.fromWorld(client, pillar.dx(0).dy(0))) != null
+                            && (tilePoly = getCanvasTileAreaPoly(client, lp = new LocalPoint(lp.getX() - thick_size * 128, lp.getY() - thick_size * 128), size, false)) != null)
+                        renderPoly(graphics, (verzik.getVerzikTicksUntilAttack() == 13) ? Color.GREEN : Color.orange, tilePoly);
+                }
+            }
+
             if (config.verzikMelee() != SpoonTobConfig.meleeTileMode.OFF) {
                 int size = 1;
                 NPCComposition composition = verzik.getVerzikNPC().getTransformedComposition();

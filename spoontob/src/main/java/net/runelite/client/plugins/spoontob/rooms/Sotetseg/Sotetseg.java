@@ -12,7 +12,6 @@ import net.runelite.client.game.SkillIconManager;
 import net.runelite.client.plugins.spoontob.Room;
 import net.runelite.client.plugins.spoontob.SpoonTobConfig;
 import net.runelite.client.plugins.spoontob.SpoonTobPlugin;
-import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.client.ws.PartyService;
@@ -344,7 +343,8 @@ public class Sotetseg extends Room {
             return;
         String target = Text.removeTags(event.getTarget()).toLowerCase();
         MenuEntry[] entries = client.getMenuEntries();
-        if (config.staminaRequirement() && target.contains("formidable passage") && !client.getItemContainer(InventoryID.INVENTORY).contains(12625))
+        if (((config.stamReq() == SpoonTobConfig.stamReqMode.XARPUS || config.stamReq() == SpoonTobConfig.stamReqMode.BOTH) && config.stamReq() != SpoonTobConfig.stamReqMode.OFF)
+                && target.contains("formidable passage") && !client.getItemContainer(InventoryID.INVENTORY).contains(12625))
             client.setMenuEntries(Arrays.copyOf(entries, entries.length - 1));
     }
 

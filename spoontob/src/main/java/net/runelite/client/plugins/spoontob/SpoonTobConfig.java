@@ -299,8 +299,8 @@ public interface SpoonTobConfig extends Config {
             description = "When hovering over Maiden's clickbox it will display her max hits for:<br>No Prayer<br>Prayer<br>Elysian Spirit Shield",
             section = maiden
     )
-    default boolean maidenMaxHit() {
-        return false;
+    default MaidenMaxHitTTMode maidenMaxHit() {
+        return MaidenMaxHitTTMode.OFF;
     }
 
     @ConfigItem(
@@ -1446,6 +1446,18 @@ public interface SpoonTobConfig extends Config {
         return false;
     }
 
+    @ConfigItem(
+            position = 37,
+            keyName = "deletePillars",
+            name = "Delete Pillars",
+            description = "Delete the pillars at verzik, replacing them with tile outlines <br> " +
+                    "Turns green on tick 13",
+            section = verzik
+    )
+    default boolean deletePillars() {
+        return false;
+    }
+
     //------------------------------------------------------------//
     // Misc
     //------------------------------------------------------------//
@@ -1555,13 +1567,13 @@ public interface SpoonTobConfig extends Config {
 
     @ConfigItem(
             position = 10,
-            keyName = "staminaRequirement",
-            name = "Xarpus - Stamina Requirement",
-            description = "Doesn't let you go to Xarpus if you don't have a stamina potion",
+            keyName = "stamReq",
+            name = "Stamina Requirement",
+            description = "Doesn't let you go to the next room if you don't have a stamina potion",
             section = misc
     )
-    default boolean staminaRequirement() {
-        return false;
+    default stamReqMode stamReq() {
+        return stamReqMode.OFF;
     }
 
     @ConfigItem(
@@ -1726,6 +1738,27 @@ public interface SpoonTobConfig extends Config {
 
     enum maidenBloodsMode{
         OFF, CAST, ATTACK, BOTH
+    }
+
+    public enum MaidenMaxHitTTMode {
+        OFF("Off"),
+        REGULAR("Regular"),
+        ELY("Elysian"),
+        BOTH("Both");
+
+        private final String name;
+
+        public String toString() {
+            return this.name;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        private MaidenMaxHitTTMode(String name) {
+            this.name = name;
+        }
     }
 
     public enum MaidenMaxHit {
@@ -1901,6 +1934,10 @@ public interface SpoonTobConfig extends Config {
 
     enum instancerTimerMode {
         OFF, OVERHEAD, OVERLAY
+    }
+
+    enum stamReqMode {
+        OFF, NYLO, XARPUS, BOTH
     }
 
     enum lootReminderMode {

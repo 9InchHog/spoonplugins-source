@@ -5,6 +5,7 @@ import lombok.Getter;
 import net.runelite.api.*;
 import net.runelite.api.coords.*;
 import net.runelite.api.events.*;
+import net.runelite.api.util.Text;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -434,6 +435,19 @@ public class Bloat extends Room {
 
     private boolean isInRegion() {
         return client.getMapRegions() != null && client.getMapRegions().length > 0 && Arrays.stream(client.getMapRegions()).anyMatch((s) -> s == 13125);
+    }
+
+    @Subscribe
+    public void onMenuEntryAdded(MenuEntryAdded event) {
+        if (!isInRegion())
+            return;
+        if (client.getItemContainer(InventoryID.INVENTORY) == null)
+            return;
+        String target = Text.removeTags(event.getTarget()).toLowerCase();
+        MenuEntry[] entries = client.getMenuEntries();
+        if ((config.stamReq() == SpoonTobConfig.stamReqMode.NYLO || config.stamReq() == SpoonTobConfig.stamReqMode.BOTH)
+                && target.contains("formidable passage") && !client.getItemContainer(InventoryID.INVENTORY).contains(12625))
+            client.setMenuEntries(Arrays.copyOf(entries, entries.length - 1));
     }
 
     /*@Subscribe
