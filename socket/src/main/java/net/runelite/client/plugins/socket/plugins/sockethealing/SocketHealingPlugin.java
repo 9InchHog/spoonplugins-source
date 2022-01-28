@@ -192,16 +192,6 @@ public class SocketHealingPlugin extends Plugin {
         return partyMembers;
     }
 
-    /*@Subscribe
-    private void onClientTick(ClientTick event) {
-        if (client.isMirrored() && !mirrorMode) {
-            socketHealingOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(socketHealingOverlay);
-            overlayManager.add(socketHealingOverlay);
-            mirrorMode = true;
-        }
-    }*/
-
     @Subscribe
     public void onMenuEntryAdded(MenuEntryAdded event) {
         if (config.hpMenu()) {
@@ -226,6 +216,46 @@ public class SocketHealingPlugin extends Plugin {
                     String hpAdded = ColorUtil.prependColorTag(" - " + playerHealth, color);
                     menuEntry.setTarget(event.getTarget() + hpAdded);
                     client.setMenuEntries(menuEntries);
+                }
+            }
+        }
+    }
+
+    @Subscribe
+    public void onClientTick(ClientTick event) {
+        /*if (client.isMirrored() && !mirrorMode) {
+            socketHealingOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
+            overlayManager.remove(socketHealingOverlay);
+            overlayManager.add(socketHealingOverlay);
+            mirrorMode = true;
+        }*/
+
+        if (client.getSelectedSpellName() != null && Text.removeTags(client.getSelectedSpellName()).equalsIgnoreCase("heal other") && config.healOtherMES()) {
+            String lowestHpName = "";
+            int lowestHp = 130;
+            MenuEntry[] menuEntries = client.getMenuEntries();
+
+            for (MenuEntry me : menuEntries) {
+                String option = Text.removeTags(me.getOption()).toLowerCase();
+                String target = Text.removeTags(me.getTarget()).toLowerCase();
+                if (option.contains("cast") && target.contains("heal other ->")) {
+                    for (String playerName : getPartyMembers().keySet()) {
+                        if(target.contains(playerName.toLowerCase())) {
+                            if(partyMembers.get(playerName).getHealth() < lowestHp) {
+                                lowestHpName = playerName;
+                                lowestHp = partyMembers.get(playerName).getHealth();
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            for (MenuEntry me : menuEntries) {
+                String option = Text.removeTags(me.getOption()).toLowerCase();
+                String target = Text.removeTags(me.getTarget()).toLowerCase();
+                if (option.contains("cast") && target.contains("heal other ->") && !target.contains(lowestHpName.toLowerCase())) {
+                    me.setDeprioritized(true);
                 }
             }
         }

@@ -27,10 +27,8 @@
 package net.runelite.client.plugins.spoonitemcharges;
 
 import java.awt.Color;
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigSection;
+
+import net.runelite.client.config.*;
 
 @ConfigGroup(SpoonItemChargeConfig.GROUP)
 public interface SpoonItemChargeConfig extends Config
@@ -433,4 +431,25 @@ public interface SpoonItemChargeConfig extends Config
             section = chargesSection
     )
     default boolean showCoxPotionDoseCount() { return false; }
+
+    @ConfigItem(
+            keyName = "hideDosePotionCharges",
+            name = "Hide Dose Charges",
+            description = "Hides the potion charge overlay if potion has greater than or equal to the charges you select",
+            position = 31,
+            section = chargesSection
+    )
+    default boolean hideDosePotionCharges() { return false; }
+
+    @Range(min = 1, max = 4)
+    @ConfigItem(
+            keyName = "potionCharges",
+            name = "Dose Charges",
+            description = "",
+            position = 32,
+            section = chargesSection,
+            hidden = true,
+            unhide = "hideDosePotionCharges"
+    )
+    default int potionCharges() { return 4; }
 }

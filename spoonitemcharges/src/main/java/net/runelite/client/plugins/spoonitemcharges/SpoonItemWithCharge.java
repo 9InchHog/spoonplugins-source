@@ -1,8 +1,11 @@
 package net.runelite.client.plugins.spoonitemcharges;
 
 import com.google.common.collect.ImmutableMap;
+import lombok.Getter;
+
 import java.util.Map;
 import javax.annotation.Nullable;
+import javax.inject.Singleton;
 
 enum SpoonItemWithCharge {
 	ABRACE1(SpoonItemChargeType.ABYSSAL_BRACELET, 11103, 1),
@@ -494,35 +497,26 @@ enum SpoonItemWithCharge {
 		this.charges = charges;
 	}
 
+	@Getter
 	private final SpoonItemChargeType type;
 
+	@Getter
 	private final int id;
 
+	@Getter
 	private final int charges;
 
 	private static final Map<Integer, SpoonItemWithCharge> ID_MAP;
 
-	public SpoonItemChargeType getType() {
-		return this.type;
-	}
-
-	public int getId() {
-		return this.id;
-	}
-
-	public int getCharges() {
-		return this.charges;
-	}
-
 	static {
 		ImmutableMap.Builder<Integer, SpoonItemWithCharge> builder = new ImmutableMap.Builder();
 		for (SpoonItemWithCharge itemCharge : values())
-			builder.put(Integer.valueOf(itemCharge.getId()), itemCharge);
+			builder.put(itemCharge.getId(), itemCharge);
 		ID_MAP = (Map<Integer, SpoonItemWithCharge>)builder.build();
 	}
 
 	@Nullable
 	static SpoonItemWithCharge findItem(int itemId) {
-		return ID_MAP.get(Integer.valueOf(itemId));
+		return ID_MAP.get(itemId);
 	}
 }

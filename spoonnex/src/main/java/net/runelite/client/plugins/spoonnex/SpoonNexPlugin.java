@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.events.*;
+import net.runelite.api.queries.GameObjectQuery;
+import net.runelite.api.queries.NPCQuery;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -501,6 +503,20 @@ public class SpoonNexPlugin extends Plugin {
 		if(config.nexWheelchair() && event.getMenuOption().contains("Attack") && event.getMenuTarget().contains("Nex") && nex != null && nex.invulnerableTicks > 2) {
 			event.consume();
 		}
+	}
+
+	public boolean isInNexChamber() { // banker isn't visible if inside nex room
+		NPC Banker = new NPCQuery()
+				.idEquals(11289)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
+
+		GameObject Altar = new GameObjectQuery()
+				.idEquals(42965)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
+
+		return Altar != null && Banker == null;
 	}
 
 	public String ticksToTime(int ticks) {

@@ -69,6 +69,9 @@ public class SpoonEzSwapsPlugin extends Plugin {
 	private MinionOverlay overlay;
 
 	@Inject
+	private SkillingOverlay skillingOverlay;
+
+	@Inject
 	private PluginManager pluginManager;
 
 	@Inject
@@ -164,6 +167,11 @@ public class SpoonEzSwapsPlugin extends Plugin {
 	@Getter
 	NPC boss = null;
 
+	protected int strungAmuletCount;
+	protected int totalAmuletCount;
+	protected int cookedPieCount;
+	protected int totalPieCount;
+
 	@Provides
 	SpoonEzSwapsConfig provideConfig(ConfigManager configManager)
 	{
@@ -173,11 +181,12 @@ public class SpoonEzSwapsPlugin extends Plugin {
 	@Override
 	public void startUp() {
 		reset();
-		parseOldFormatConfig();
+		//parseOldFormatConfig();
 		parseZCustomSwapperConfig();
 		eventBus.register(customswaps);
 		customswaps.startup();
 		overlayManager.add(overlay);
+		overlayManager.add(skillingOverlay);
 
 		if (!config.customDrop().equals("")){
 			for (String str : config.customDrop().split(",")) {
@@ -198,6 +207,7 @@ public class SpoonEzSwapsPlugin extends Plugin {
 		swaps.clear();
 		trackedMinions.clear();
 		overlayManager.remove(overlay);
+		overlayManager.remove(skillingOverlay);
 	}
 
 	private void reset() {
@@ -894,6 +904,37 @@ public class SpoonEzSwapsPlugin extends Plugin {
 		client.setMenuEntries(newEntries);
 	}
 
+	private void updateitemCounts() {
+		if (config.getStringAmulet() || config.getBakePie()) {
+			totalAmuletCount = 0;
+			strungAmuletCount = 0;
+			cookedPieCount = 0;
+			totalPieCount = 0;
+			Item[] items = new Item[0];
+			ItemContainer itemContainer = client.getItemContainer(InventoryID.INVENTORY);
+			try {
+				items = itemContainer.getItems();
+			} catch (NullPointerException ignored) {}
+			for (int i = 0; i < 28; i++) {
+				if (i < items.length) {
+					Item item = items[i];
+					if (item.getQuantity() > 0)
+						if (item.getId() == 1692) {
+							totalAmuletCount++;
+							strungAmuletCount++;
+						} else if (item.getId() == 1673) {
+							totalAmuletCount++;
+						} else if (item.getId() == 7216) {
+							totalPieCount++;
+						} else if (item.getId() == 7218) {
+							totalPieCount++;
+							cookedPieCount++;
+						}
+				}
+			}
+		}
+	}
+
 	//------------------------------------------------------------//
 	// Pvm shit
 	//------------------------------------------------------------//
@@ -1088,6 +1129,8 @@ public class SpoonEzSwapsPlugin extends Plugin {
 				depositTab = true;
 			}
 		}
+
+		updateitemCounts();
 	}
 
 	@Subscribe
@@ -1296,7 +1339,7 @@ public class SpoonEzSwapsPlugin extends Plugin {
 		return client.isKeyPressed(KeyCode.KC_SHIFT);
 	}
 
-	private void parseOldFormatConfig()
+	/*private void parseOldFormatConfig()
 	{
 		if (config.customSwapsString().trim().isEmpty())
 		{
@@ -1315,7 +1358,7 @@ public class SpoonEzSwapsPlugin extends Plugin {
 		{
 			configManager.setConfiguration("menuentryswapperextended", "customSwaps", newFormatString);
 		}
-	}
+	}*/
 
 	private void parseZCustomSwapperConfig() {
 		if (config.customSwapsString().trim().isEmpty() && configManager.getConfiguration("zmenuentryswapper", "customSwapsStr") != null)

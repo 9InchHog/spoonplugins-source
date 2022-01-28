@@ -123,10 +123,32 @@ public interface SpoonEzSwapsConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "stringAmulet",
+			name = "String Amulet Overlay",
+			description = "Overlay indicating how many amulets in your invent are strung",
+			position = 2,
+			section = skillingSection
+	)
+	default boolean getStringAmulet() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "cookPie",
+			name = "Bake Pie Overlay",
+			description = "Overlay indicating how many summer pies in your inventory are baked",
+			position = 3,
+			section = skillingSection
+	)
+	default boolean getBakePie() {
+		return false;
+	}
+
+	@ConfigItem(
 			keyName = "swapPickpocket",
 			name = "Pickpocket",
 			description = "Swap Talk-to with Pickpocket on NPC<br>Example: Man, Woman",
-			position = 2,
+			position = 4,
 			section = skillingSection
 	)
 	default boolean swapPickpocket()
@@ -138,7 +160,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "swapHerblore",
 			name = "Herblore",
 			description = "Removes the `drink` option on herblore potions - for herblore training",
-			position = 3,
+			position = 5,
 			section = skillingSection
 	)
 	default boolean swapHerblore()
@@ -150,7 +172,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "karambwans",
 			name = "Karambwans",
 			description = "Swaps max cape left click teleports depending on location.",
-			position = 4,
+			position = 6,
 			section = skillingSection,
 			disabledBy = "swapMaxCape"
 	)
@@ -163,7 +185,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "customDrop",
 			name = "Left Click Drop",
 			description = "Anything in the list will be dropped on left click",
-			position = 5,
+			position = 7,
 			section = skillingSection
 	)
 	default String customDrop()

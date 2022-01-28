@@ -22,6 +22,7 @@ import net.runelite.client.plugins.socket.hash.AES256;
 import net.runelite.client.plugins.socket.org.json.JSONArray;
 import net.runelite.client.plugins.socket.org.json.JSONObject;
 import net.runelite.client.plugins.socket.packet.*;
+import net.runelite.client.plugins.spoontobstats.SpoonTobStatsInfobox;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.ImageUtil;
@@ -82,11 +83,14 @@ public class SocketPlugin extends Plugin {
     private long nextConnection;
 
     // This variables controls the current active connection.
-    private SocketConnection connection = null;
+    public SocketConnection connection = null;
 
-    private SocketConfig.ConnectionInfobox box = null;
-    public static BufferedImage CONNECTED = ImageUtil.resizeCanvas(ImageUtil.loadImageResource(SocketPlugin.class, "connected.png"), 60, 60);
-    public static BufferedImage DISCONNECTED = ImageUtil.resizeCanvas(ImageUtil.loadImageResource(SocketPlugin.class, "disconnected.png"), 60, 60);
+    private SocketInfobox connectionIB = null;
+    final BufferedImage icon_Connected = ImageUtil.loadImageResource(getClass(), "icon_Connected.png");
+    final BufferedImage icon_Disconnected = ImageUtil.loadImageResource(getClass(), "icon_Disconnected.png");
+    final BufferedImage icon_Ready = ImageUtil.loadImageResource(getClass(), "icon_Ready.png");
+    public String connectionState = "";
+
 
     //Player status extended
     private DeferredCheck deferredCheck;
@@ -94,7 +98,7 @@ public class SocketPlugin extends Plugin {
     @Override
     protected void startUp()
     {
-        infoBoxManager.removeInfoBox(box);
+        infoBoxManager.removeInfoBox(connectionIB);
 
         this.nextConnection = 0L;
 
@@ -108,12 +112,13 @@ public class SocketPlugin extends Plugin {
         eventBus.register(SocketShutdown.class);
 
         eventBus.post(new SocketStartup());
+        connectionState = "";
     }
 
     @Override
     protected void shutDown()
     {
-        infoBoxManager.removeInfoBox(box);
+        infoBoxManager.removeInfoBox(connectionIB);
 
         eventBus.post(new SocketShutdown());
 
@@ -128,6 +133,12 @@ public class SocketPlugin extends Plugin {
 
         if (connection != null)
             connection.terminate(true);
+
+        connectionState = "";
+    }
+
+    private SocketInfobox createInfoBox(BufferedImage image, String status) {
+        return new SocketInfobox(image, config, this, status);
     }
 
     @Subscribe
@@ -138,18 +149,23 @@ public class SocketPlugin extends Plugin {
 
             if (connection != null) { // If an connection is already being established, ignore.
                 if (config.infobox()) {
-                    if (connection.getState() == SocketState.DISCONNECTED || connection.getState() == SocketState.TERMINATED) {
-                        infoBoxManager.removeInfoBox(box);
-                        box = new SocketConfig.ConnectionInfobox(DISCONNECTED, this);
-                        box.setTooltip(ColorUtil.wrapWithColorTag("Disconnected", Color.RED));
-                        infoBoxManager.addInfoBox(box);
-                    } else if (connection.getState() == SocketState.CONNECTED) {
-                        infoBoxManager.removeInfoBox(box);
-                        box = new SocketConfig.ConnectionInfobox(CONNECTED, this);
-                        box.setTooltip(ColorUtil.wrapWithColorTag("Connected", Color.GREEN));
-                        infoBoxManager.addInfoBox(box);
-                    } else {
-                        infoBoxManager.removeInfoBox(box);
+                    if (!connection.getState().toString().equals(connectionState)) {
+                        connectionState = connection.getState().toString();
+                        infoBoxManager.removeInfoBox(connectionIB);
+
+                        switch (connection.getState()) {
+                            case DISCONNECTED:
+                            case TERMINATED:
+                                connectionIB = createInfoBox(icon_Disconnected, "Disconnected");
+                                break;
+                            case CONNECTING:
+                                connectionIB = createInfoBox(icon_Ready, "Connecting...");
+                                break;
+                            case CONNECTED:
+                                connectionIB = createInfoBox(icon_Connected, "Connected");
+                                break;
+                        }
+                        infoBoxManager.addInfoBox(connectionIB);
                     }
                 }
 
@@ -170,9 +186,9 @@ public class SocketPlugin extends Plugin {
     public void onConfigChanged(ConfigChanged event) {
         if (event.getKey().equals("infobox")) {
             if (config.infobox()) {
-                infoBoxManager.addInfoBox(box);
+                infoBoxManager.addInfoBox(connectionIB);
             } else {
-                infoBoxManager.removeInfoBox(box);
+                infoBoxManager.removeInfoBox(connectionIB);
             }
         }
 

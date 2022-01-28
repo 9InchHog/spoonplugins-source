@@ -85,21 +85,4 @@ public interface SocketConfig extends Config {
             this.name = name;
         }
     }
-
-    public class ConnectionInfobox extends InfoBox {
-        private SocketPlugin plugin;
-
-        ConnectionInfobox(BufferedImage image, SocketPlugin plugin) {
-            super(image, plugin);
-            this.plugin = plugin;
-        }
-
-        public String getText() {
-            return null;
-        }
-
-        public Color getTextColor() {
-            return Color.WHITE;
-        }
-    }
 }

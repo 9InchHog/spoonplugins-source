@@ -1,6 +1,8 @@
 package net.runelite.client.plugins.spoonitemcharges;
 
 import com.google.common.collect.ImmutableMap;
+import lombok.Getter;
+
 import java.util.Map;
 import javax.annotation.Nullable;
 
@@ -24,35 +26,26 @@ enum SpoonItemWithConfig {
 		this.type = type;
 	}
 
+	@Getter
 	private final int itemId;
 
+	@Getter
 	private final String configKey;
 
+	@Getter
 	private final SpoonItemChargeType type;
 
 	private static final Map<Integer, SpoonItemWithConfig> ID_MAP;
 
-	public int getItemId() {
-		return this.itemId;
-	}
-
-	public String getConfigKey() {
-		return this.configKey;
-	}
-
-	public SpoonItemChargeType getType() {
-		return this.type;
-	}
-
 	static {
 		ImmutableMap.Builder<Integer, SpoonItemWithConfig> builder = new ImmutableMap.Builder();
 		for (SpoonItemWithConfig item : values())
-			builder.put(Integer.valueOf(item.getItemId()), item);
+			builder.put(item.getItemId(), item);
 		ID_MAP = (Map<Integer, SpoonItemWithConfig>)builder.build();
 	}
 
 	@Nullable
 	static SpoonItemWithConfig findItem(int itemId) {
-		return ID_MAP.get(Integer.valueOf(itemId));
+		return ID_MAP.get(itemId);
 	}
 }

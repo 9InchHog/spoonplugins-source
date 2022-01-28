@@ -38,6 +38,16 @@ class SpoonItemChargeOverlay extends WidgetItemOverlay {
 				return;
 			charges = chargeItem.getCharges();
 		}
+		if (config.hideDosePotionCharges() && charges >= config.potionCharges()) {
+			SpoonItemWithCharge chargeItem = SpoonItemWithCharge.findItem(itemId);
+			if (chargeItem != null) {
+				SpoonItemChargeType type = chargeItem.getType();
+				if (type == SpoonItemChargeType.POTION || type == SpoonItemChargeType.DIVINE_POTION
+						|| type == SpoonItemChargeType.GUTHIX_REST || type == SpoonItemChargeType.COX_POTION) {
+					return;
+				}
+			}
+		}
 		graphics.setFont(FontManager.getRunescapeSmallFont());
 		Rectangle bounds = widgetItem.getCanvasBounds();
 		TextComponent textComponent = new TextComponent();
