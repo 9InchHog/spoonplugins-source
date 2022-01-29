@@ -7,23 +7,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public enum StunnerSpot {
-    STUNNER(new WorldPoint(2992, 4386, 2));
+public enum StunHealerSpots {
+    STUN_HEALER(new WorldPoint(2992, 4384, 2));
 
     @Getter
-    private static final List<WorldPoint> stunnerSpots = new ArrayList<>();
+    private static final List<WorldPoint> stunHealerSpots = new ArrayList<>();
 
     static
     {
-        for (StunnerSpot stunnerspot : values())
+        for (StunHealerSpots stunHealerSpot : values())
         {
-            stunnerSpots.addAll(Arrays.asList(stunnerspot.spots));
+            stunHealerSpots.addAll(Arrays.asList(stunHealerSpot.spots));
         }
     }
 
     private final WorldPoint[] spots;
 
-    StunnerSpot(WorldPoint... spots)
+    StunHealerSpots(WorldPoint... spots)
     {
         this.spots = spots;
     }

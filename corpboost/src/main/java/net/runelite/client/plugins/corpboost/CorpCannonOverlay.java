@@ -44,7 +44,7 @@ public class CorpCannonOverlay extends Overlay {
     public Dimension render(Graphics2D graphics) {
         List<WorldPoint> spotPoints = plugin.getCannonSpotPoints();
 
-        if (hidden || spotPoints.isEmpty() || !config.showCannon() || plugin.isCannonPlaced()) {
+        if (hidden || spotPoints.isEmpty() || !config.customer() || plugin.isCannonPlaced()) {
             return null;
         }
 
@@ -57,7 +57,7 @@ public class CorpCannonOverlay extends Overlay {
             LocalPoint localLocation = client.getLocalPlayer().getLocalLocation();
 
             if (spotPoint != null && localLocation.distanceTo(spotPoint) <= MAX_DISTANCE) {
-                renderCannonSpot(graphics, client, spotPoint, itemManager.getImage(CANNONBALL), Color.RED);
+                renderCannonSpot(graphics, client, spotPoint, itemManager.getImage(CANNONBALL), config.customerTileColor());
             }
         }
 
@@ -69,7 +69,7 @@ public class CorpCannonOverlay extends Overlay {
         Polygon poly = Perspective.getCanvasTilePoly(client, point);
 
         if (poly != null) {
-            OverlayUtil.renderPolygon(graphics, poly, color);
+            renderTile(graphics, poly, color, config.tileWidth(), config.tileFillOpacity(), color.getAlpha());
         }
 
         //Render icon
@@ -78,5 +78,18 @@ public class CorpCannonOverlay extends Overlay {
         if (imageLoc != null) {
             OverlayUtil.renderImageLocation(graphics, imageLoc, image);
         }
+    }
+
+    private void renderTile(Graphics2D graphics, Shape polygon, Color color, final double borderWidth, int opacity, int outlineAlpha) {
+        if (polygon == null)
+            return;
+        if (borderWidth == 0) {
+            outlineAlpha = 0;
+        }
+        graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), outlineAlpha));
+        graphics.setStroke(new BasicStroke((float) borderWidth));
+        graphics.draw(polygon);
+        graphics.setColor(new Color(0, 0, 0, opacity));
+        graphics.fill(polygon);
     }
 }

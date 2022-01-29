@@ -23,16 +23,13 @@ public interface CorpBoostConfig extends Config{
     String boostingSection = "boosting";
 
     @ConfigItem(
-            keyName = "showCannon",
-            name = "Mark Cannon Tiles",
-            description = "Marks where you should place your cannon when boosting.",
+            keyName = "boosterRole",
+            name = "Booster Role",
+            description = "Booster role helps determine which tiles per role to highlight",
             position = 1,
             section = boostingSection
     )
-    default boolean showCannon()
-    {
-        return false;
-    }
+    default boosterRoleMode boosterRole() {return boosterRoleMode.OFF;}
 
     @ConfigItem(
             keyName = "spearAlt",
@@ -41,81 +38,86 @@ public interface CorpBoostConfig extends Config{
             position = 2,
             section = boostingSection
     )
-    default boolean spearAlt()
-    {
-        return false;
-    }
+    default boolean spearAlt() {return false;}
 
     @ConfigItem(
-            keyName = "spearHealer",
-            name = "Mark Spear Healer Tiles",
-            description = "Marks where you should stand on spear healers.",
+            keyName = "healer",
+            name = "Mark Healer Tiles",
+            description = "Marks where you should stand on spear healers. <br> Depends on xfer/stunner role highlights",
             position = 3,
             section = boostingSection
     )
-    default boolean spearHealer()
-    {
-        return false;
-    }
-
-    @ConfigItem(
-            keyName = "bowHealer",
-            name = "Mark Bow Healer Tiles",
-            description = "Marks where you should stand on bow healers.",
-            position = 4,
-            section = boostingSection
-    )
-    default boolean bowHealer()
-    {
-        return false;
-    }
+    default boolean healer() {return false;}
 
     @ConfigItem(
             keyName = "dwh",
-            name = "Mark Dragon Warhammer Tiles",
-            description="Marks where you should stand on Dragon Warhammer Accounts.",
+            name = "Mark DWH Tiles",
+            description="Marks where you should stand on dwh/inq Accounts.",
             position = 5,
             section = "boosting"
     )
-    default boolean dwh() {
-        return false;
-    }
-
-    @ConfigItem(
-            keyName = "dwh2",
-            name = "Mark Backup Hammers",
-            description = "Marks where you should stand on backup hammer accounts.",
-            position = 6,
-            section = "boosting"
-    )
-    default boolean dwh2() {
-        return false;
-    }
-
-    @ConfigItem(
-            keyName = "stunner",
-            name = "Mark Stunner Tiles",
-            description = "Marks where you should stand as the stunner.",
-            position = 7,
-            section = "boosting"
-    )
-    default boolean stunner() {
-        return false;
-    }
+    default boolean dwh() {return false;}
 
     @ConfigItem(
             keyName = "customer",
             name = "Mark Customer Tiles",
-            description = "Marks where you should stand as the customer.",
-            position = 5,
+            description = "Marks where you should stand and place the cannon as the customer.",
+            position = 6,
             section = boostingSection
     )
-    default boolean customer()
-    {
-        return false;
-    }
+    default boolean customer() {return false;}
 
-    //Core Section
+    @Alpha
+    @ConfigItem(
+            keyName = "stunTileColor",
+            name = "Stunner Role Tile Color",
+            description = "Sets the color for the booster doing the stunner role.",
+            position = 7,
+            section = boostingSection
+    )
+    default Color stunTileColor() {return new Color(37, 197, 79, 150);}
+
+    @Alpha
+    @ConfigItem(
+            keyName = "xferTileColor",
+            name = "Xfer Role Tile Color",
+            description = "Sets the color for the booster doing the xfer role.",
+            position = 8,
+            section = boostingSection
+    )
+    default Color xferTileColor() {return new Color(0, 255, 255, 150);}
+
+    @Alpha
+    @ConfigItem(
+            keyName = "customerTileColor",
+            name = "Customer Tile Color",
+            description = "Sets the color for the customer's tiles.",
+            position = 9,
+            section = boostingSection
+    )
+    default Color customerTileColor() {return new Color(255, 200, 0, 150);}
+
+    @ConfigItem(
+            keyName = "tileWidth",
+            name = "Tile Width",
+            description = "Sets the width for the role tiles.",
+            position = 10,
+            section = boostingSection
+    )
+    default double tileWidth() { return 2; }
+
+    @ConfigItem(
+            keyName = "tileFillOpacity",
+            name = "Tile Fill Opacity",
+            description = "Sets the fill opacity for the role tiles.",
+            position = 11,
+            section = boostingSection
+    )
+    default int tileFillOpacity() { return 50; }
+
+    //------------------------------------------------------------//
+    // Core Section
+    //------------------------------------------------------------//
     @ConfigItem(
             keyName = "coreArrow",
             name = "Core Hint Arrow",
@@ -130,7 +132,7 @@ public interface CorpBoostConfig extends Config{
 
     @ConfigItem(
             keyName = "coreHighlight",
-            name = "Core Highlight",
+            name = "Core Highlight Style",
             description = "Highlight Core",
             position = 2,
             section = coreSection
@@ -192,7 +194,38 @@ public interface CorpBoostConfig extends Config{
     )
     default boolean bpCore() { return true; }
 
-    public enum CoreHighlightMode {
+    @ConfigItem(
+            keyName = "unchargedSerp",
+            name = "Uncharged Serp Warning",
+            description = "Warns when a player has an uncharged serp helm.",
+            position = 8,
+            section = coreSection
+    )
+    default boolean unchargedSerp() { return true; }
+
+    @ConfigItem(
+            keyName = "serpColor",
+            name = "Uncharged Serp Color",
+            description = "Color to highlight a player who has an uncharged serp helm.",
+            position = 9,
+            section = coreSection
+    )
+    default Color serpColor() { return Color.RED; }
+
+    @ConfigItem(
+            keyName = "serpWidth",
+            name = "Uncharged Serp Width",
+            description = "Width of the uncharged serp highlight",
+            position = 10,
+            section = coreSection
+    )
+    default double serpWidth() { return 2; }
+
+    enum CoreHighlightMode {
         OFF, AREA, HULL, TILE, TRUE_LOCATION, OUTLINE;
+    }
+
+    enum boosterRoleMode {
+        OFF, XFER, STUNNER, BOTH
     }
 }

@@ -344,8 +344,13 @@ public class SpecialCounterExtendedPlugin extends Plugin {
 
     private void updateCounter(String player, SpecialWeapon specialWeapon, String name, int hit) {
         // Hotfix for Bandos Godsword (OR)
-        if (specialWeapon == SpecialWeapon.BANDOS_GODSWORD_OR)
+        if (specialWeapon == SpecialWeapon.BANDOS_GODSWORD_OR) {
             specialWeapon = SpecialWeapon.BANDOS_GODSWORD;
+        }
+
+        if (specialWeapon == SpecialWeapon.ZARYTE_CROSSBOW && !inTobRegion()) {
+            return;
+        }
 
         SpecialCounter counter = specialCounter[specialWeapon.ordinal()];
 
@@ -445,5 +450,20 @@ public class SpecialCounterExtendedPlugin extends Plugin {
     private boolean isInUnderWorld()
     {
         return ((this.client.getMapRegions()).length > 0 && this.client.getMapRegions()[0] == 13379);
+    }
+
+    public boolean inTobRegion() {
+        return inRegion(12611, 12612, 12613, 12687, 13122, 13123, 13125, 13379);
+    }
+
+    public boolean inRegion(int... regions) {
+        if (client.getMapRegions() != null)
+            for (int i : client.getMapRegions()) {
+                for (int j : regions) {
+                    if (i == j)
+                        return true;
+                }
+            }
+        return false;
     }
 }

@@ -7,6 +7,7 @@ import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.api.kit.KitType;
+import net.runelite.api.util.Text;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -18,7 +19,6 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.corpboost.spots.*;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
-import net.runelite.client.util.Text;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
@@ -50,28 +50,28 @@ public class CorpBoostPlugin extends Plugin
     private GameObject cannon;
 
     @Getter
-    private List<WorldPoint> cannonSpotPoints = new ArrayList<>();
+    private final List<WorldPoint> cannonSpotPoints = new ArrayList<>();
 
     @Getter
-    private List<WorldPoint> spearHealerPoints = new ArrayList<>();
+    private final List<WorldPoint> stunSpearPoints = new ArrayList<>();
 
     @Getter
-    private List<WorldPoint> spearAltPoints = new ArrayList<>();
+    private final List<WorldPoint> xferSpearPoints = new ArrayList<>();
 
     @Getter
-    private List<WorldPoint> tbowHealerPoints = new ArrayList<>();
+    private final List<WorldPoint> stunHealerPoints = new ArrayList<>();
 
     @Getter
-    private List<WorldPoint> stunnerPoints = new ArrayList<>();
+    private final List<WorldPoint> xferHealerPoints = new ArrayList<>();
 
     @Getter
-    private List<WorldPoint> dwhAltPoints = new ArrayList<>();
+    private final List<WorldPoint> stunDwhPoints = new ArrayList<>();
 
     @Getter
-    private List<WorldPoint> dwhAltPoints2 = new ArrayList<>();
+    private final List<WorldPoint> xferDwhPoints = new ArrayList<>();
 
     @Getter
-    private List<WorldPoint> customerPoints = new ArrayList<>();
+    private final List<WorldPoint> customerPoints = new ArrayList<>();
 
     @Inject
     private ItemManager itemManager;
@@ -128,13 +128,13 @@ public class CorpBoostPlugin extends Plugin
         cannonWorld = -1;
         cannonPosition = null;
         cannonSpotPoints.clear();
-        spearHealerPoints.clear();
-        spearAltPoints.clear();
-        tbowHealerPoints.clear();
         customerPoints.clear();
-        dwhAltPoints.clear();
-        dwhAltPoints2.clear();
-        stunnerPoints.clear();
+        stunSpearPoints.clear();
+        xferSpearPoints.clear();
+        stunHealerPoints.clear();
+        xferHealerPoints.clear();
+        stunDwhPoints.clear();
+        xferDwhPoints.clear();
         core = null;
         corp = null;
     }
@@ -142,7 +142,7 @@ public class CorpBoostPlugin extends Plugin
     @Subscribe
     public void onConfigChanged(ConfigChanged event) {
         if(!config.coreArrow() && core != null){
-            this.client.clearHintArrow();
+            client.clearHintArrow();
         }
     }
 
@@ -213,33 +213,6 @@ public class CorpBoostPlugin extends Plugin
             }
         }
 
-        spearHealerPoints.clear();
-        for (WorldPoint healerSpot : SpearHealerSpots.getSpearHealerSpots())
-        {
-            if (WorldPoint.isInScene(client, healerSpot.getX(), healerSpot.getY()))
-            {
-                spearHealerPoints.add(healerSpot);
-            }
-        }
-
-        spearAltPoints.clear();
-        for (WorldPoint spearSpot : SpearAltSpots.getSpearAltSpots())
-        {
-            if (WorldPoint.isInScene(client, spearSpot.getX(), spearSpot.getY()))
-            {
-                spearAltPoints.add(spearSpot);
-            }
-        }
-
-        tbowHealerPoints.clear();
-        for (WorldPoint bowSpot : TbowHealerSpots.getTbowHealerSpots())
-        {
-            if (WorldPoint.isInScene(client, bowSpot.getX(), bowSpot.getY()))
-            {
-                tbowHealerPoints.add(bowSpot);
-            }
-        }
-
         customerPoints.clear();
         for (WorldPoint customerSpot : CustomerSpot.getCustomerSpots())
         {
@@ -250,33 +223,59 @@ public class CorpBoostPlugin extends Plugin
             }
         }
 
-        dwhAltPoints.clear();
-        for (WorldPoint dwhAltSpot : DwhAltSpots.getDwhAltSpots())
+        stunSpearPoints.clear();
+        for (WorldPoint stunSpearSpot : StunSpearSpots.getStunSpearSpots())
         {
-            if (client.getLocalPlayer().getWorldLocation().equals(dwhAltPoints)){
-                dwhAltPoints.clear();
-            }else if (WorldPoint.isInScene(client, dwhAltSpot.getX(), dwhAltSpot.getY())) {
-                dwhAltPoints.add(dwhAltSpot);
+            if (WorldPoint.isInScene(client, stunSpearSpot.getX(), stunSpearSpot.getY()))
+            {
+                stunSpearPoints.add(stunSpearSpot);
             }
         }
 
-        dwhAltPoints2.clear();
-        for (WorldPoint dwhAltSpot2 : DwhAltSpots2.getDwhAltSpots2())
+        xferSpearPoints.clear();
+        for (WorldPoint xferSpearSpot : XferSpearSpots.getXferSpearSpots())
         {
-            if (client.getLocalPlayer().getWorldLocation().equals(dwhAltPoints2)){
-                dwhAltPoints2.clear();
-            }else if (WorldPoint.isInScene(client, dwhAltSpot2.getX(), dwhAltSpot2.getY())) {
-                dwhAltPoints2.add(dwhAltSpot2);
+            if (WorldPoint.isInScene(client, xferSpearSpot.getX(), xferSpearSpot.getY()))
+            {
+                xferSpearPoints.add(xferSpearSpot);
             }
         }
 
-        stunnerPoints.clear();
-        for (WorldPoint stunnerSpot : StunnerSpot.getStunnerSpots())
+        stunHealerPoints.clear();
+        for (WorldPoint stunHealerSpot : StunHealerSpots.getStunHealerSpots())
         {
-            if (client.getLocalPlayer().getWorldLocation().equals(stunnerPoints)){
-                stunnerPoints.clear();
-            }else if (WorldPoint.isInScene(client, stunnerSpot.getX(), stunnerSpot.getY())) {
-                stunnerPoints.add(stunnerSpot);
+            if (WorldPoint.isInScene(client, stunHealerSpot.getX(), stunHealerSpot.getY()))
+            {
+                stunHealerPoints.add(stunHealerSpot);
+            }
+        }
+
+        xferHealerPoints.clear();
+        for (WorldPoint xferHealerSpot : XferHealerSpots.getXferHealerSpots())
+        {
+            if (WorldPoint.isInScene(client, xferHealerSpot.getX(), xferHealerSpot.getY()))
+            {
+                xferHealerPoints.add(xferHealerSpot);
+            }
+        }
+
+        stunDwhPoints.clear();
+        for (WorldPoint stunDwhSpot : StunDwhSpots.getStunDwhSpots())
+        {
+            if (client.getLocalPlayer().getWorldLocation().equals(stunDwhPoints)){
+                stunDwhPoints.clear();
+            } else if (WorldPoint.isInScene(client, stunDwhSpot.getX(), stunDwhSpot.getY())) {
+                stunDwhPoints.add(stunDwhSpot);
+            }
+        }
+
+        xferDwhPoints.clear();
+        for (WorldPoint xferDwhSpot : XferDwhSpots.getXferDwhSpots())
+        {
+            if (client.getLocalPlayer().getWorldLocation().equals(xferDwhPoints)){
+                xferDwhPoints.clear();
+            }else if (WorldPoint.isInScene(client, xferDwhSpot.getX(), xferDwhSpot.getY())) {
+                xferDwhPoints.add(xferDwhSpot);
             }
         }
     }
@@ -322,57 +321,57 @@ public class CorpBoostPlugin extends Plugin
 
     @Subscribe
     public void onNpcSpawned(NpcSpawned event) {
-        if(event.getNpc().getId() == 319){
+        if (event.getNpc().getId() == 319){
             corp = event.getNpc();
         }
 
-        if(event.getNpc().getId() == 320){
+        if (event.getNpc().getId() == 320){
             core = event.getNpc();
-            if(config.coreArrow()) {
-                this.client.setHintArrow(event.getNpc());
+            if (config.coreArrow()) {
+                client.setHintArrow(event.getNpc());
             }
         }
     }
 
     @Subscribe
     public void onNpcDespawned(NpcDespawned event) {
-        if(event.getNpc().getId() == 319){
+        if (event.getNpc().getId() == 319){
             corp = null;
         }
 
-        if(event.getNpc().getId() == 320 && event.getNpc().isDead()){
+        if (event.getNpc().getId() == 320 && event.getNpc().isDead()){
             core = null;
-            if(config.coreArrow()) {
-                this.client.clearHintArrow();
+            if (config.coreArrow()) {
+                client.clearHintArrow();
             }
         }
     }
 
     private void swapMenuEntry(int index, MenuEntry menuEntry) {
-        String option = Text.removeTags(menuEntry.getOption()).toLowerCase();
-        String target = Text.removeTags(menuEntry.getTarget()).toLowerCase();
+        String option = Text.standardize(menuEntry.getOption(), true).toLowerCase();
+        String target = Text.standardize(menuEntry.getTarget(), true).toLowerCase();
 
-        if(config.bpCore() && this.client.getLocalPlayer() != null && this.client.getLocalPlayer().getPlayerComposition() != null &&
-                option.contains("attack") && target.equals("dark energy core  (level-75)")){
-            int weapon = Objects.requireNonNull(this.client.getLocalPlayer()).getPlayerComposition().getEquipmentId(KitType.WEAPON);
-            int helm = Objects.requireNonNull(this.client.getLocalPlayer()).getPlayerComposition().getEquipmentId(KitType.HEAD);
+        if (config.bpCore() && client.getLocalPlayer() != null && client.getLocalPlayer().getPlayerComposition() != null &&
+                option.contains("attack") && target.equals("dark energy core")){
+            int weapon = Objects.requireNonNull(client.getLocalPlayer()).getPlayerComposition().getEquipmentId(KitType.WEAPON);
+            int helm = Objects.requireNonNull(client.getLocalPlayer()).getPlayerComposition().getEquipmentId(KitType.HEAD);
 
-            if (weapon == 12926 && (helm == 12931 || helm == 13197 || helm == 13199)){
-                this.client.setMenuEntries(new MenuEntry[]{menuEntry});
+            if (weapon == ItemID.TOXIC_BLOWPIPE && (helm == ItemID.SERPENTINE_HELM || helm == ItemID.TANZANITE_HELM || helm == ItemID.MAGMA_HELM)){
+                client.setMenuEntries(new MenuEntry[]{menuEntry});
             }
         }
     }
 
     @Subscribe
     public void onClientTick(ClientTick clientTick) {
-        if (this.client.getGameState() != GameState.LOGGED_IN || this.client.isMenuOpen())
+        if (this.client.getGameState() != GameState.LOGGED_IN || client.isMenuOpen())
             return;
-        MenuEntry[] menuEntries = this.client.getMenuEntries();
+        MenuEntry[] menuEntries = client.getMenuEntries();
         int idx = 0;
-        this.optionIndexes.clear();
+        optionIndexes.clear();
         for (MenuEntry entry : menuEntries) {
             String option = Text.removeTags(entry.getOption()).toLowerCase();
-            this.optionIndexes.put(option, Integer.valueOf(idx++));
+            optionIndexes.put(option, idx++);
         }
         idx = 0;
         for (MenuEntry entry : menuEntries)

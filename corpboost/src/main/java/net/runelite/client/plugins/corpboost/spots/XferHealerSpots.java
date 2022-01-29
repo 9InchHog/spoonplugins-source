@@ -7,23 +7,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public enum TbowHealerSpots {
-    TBOW_HEALER_1(new WorldPoint(2989, 4382, 2));
+public enum XferHealerSpots {
+    XFER_HEALER(new WorldPoint(2995, 4381, 2));
 
     @Getter
-    private static final List<WorldPoint> tbowHealerSpots = new ArrayList<>();
+    private static final List<WorldPoint> xferHealerSpots = new ArrayList<>();
 
     static
     {
-        for (TbowHealerSpots tbowHealerSpot : values())
+        for (XferHealerSpots xferHealerSpot : values())
         {
-            tbowHealerSpots.addAll(Arrays.asList(tbowHealerSpot.spots));
+            xferHealerSpots.addAll(Arrays.asList(xferHealerSpot.spots));
         }
     }
 
     private final WorldPoint[] spots;
 
-    TbowHealerSpots(WorldPoint... spots)
+    XferHealerSpots(WorldPoint... spots)
     {
         this.spots = spots;
     }

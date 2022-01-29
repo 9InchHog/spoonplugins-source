@@ -4,6 +4,7 @@ import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.kit.KitType;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.SpriteManager;
 import net.runelite.client.ui.overlay.Overlay;
@@ -15,6 +16,8 @@ import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 import javax.inject.Inject;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static net.runelite.api.ItemID.*;
@@ -35,6 +38,8 @@ public class CorpBoostOverlay extends Overlay {
 
     BufferedImage heal = ImageUtil.loadImageResource(CorpBoostOverlay.class, "Heal_Other.png");
 
+    ArrayList<Integer> unchargedSerps = new ArrayList<>(Arrays.asList(SERPENTINE_HELM_UNCHARGED, TANZANITE_HELM_UNCHARGED, MAGMA_HELM_UNCHARGED));
+
     @Inject
     CorpBoostOverlay(Client client, CorpBoostPlugin plugin, CorpBoostConfig config, ModelOutlineRenderer modelOutlineRenderer) {
         setPosition(OverlayPosition.DYNAMIC);
@@ -46,14 +51,14 @@ public class CorpBoostOverlay extends Overlay {
 
     @Override
     public Dimension render(Graphics2D graphics) {
-        List<WorldPoint> spearAltPoints = plugin.getSpearAltPoints();
-        List<WorldPoint> spearHealerPoints = plugin.getSpearHealerPoints();
-        List<WorldPoint> tbowHealerPoints = plugin.getTbowHealerPoints();
-        List<WorldPoint> dwhAltPoints = plugin.getDwhAltPoints();
-        List<WorldPoint> dwhAltPoints2 = plugin.getDwhAltPoints2();
-        List<WorldPoint> stunnerPoints = plugin.getStunnerPoints();
+        List<WorldPoint> stunSpearPoints = plugin.getStunSpearPoints();
+        List<WorldPoint> xferSpearPoints = plugin.getXferSpearPoints();
+        List<WorldPoint> stunHealerPoints = plugin.getStunHealerPoints();
+        List<WorldPoint> xferHealerPoints = plugin.getXferHealerPoints();
+        List<WorldPoint> stunDwhPoints = plugin.getStunDwhPoints();
+        List<WorldPoint> xferDwhPoints = plugin.getXferDwhPoints();
         List<WorldPoint> customerPoints = plugin.getCustomerPoints();
-        Player player = this.client.getLocalPlayer();
+        Player player = client.getLocalPlayer();
         LocalPoint localLocation = null;
 
         if(player != null){
@@ -61,86 +66,98 @@ public class CorpBoostOverlay extends Overlay {
         }
 
         if(localLocation != null) {
-            if (config.spearAlt() && spearAltPoints.size() > 0) {
-                for (WorldPoint spot : spearAltPoints) {
-                    if (spot.getPlane() != client.getPlane()) {
-                        continue;
+            if (config.spearAlt()) {
+                if ((config.boosterRole() == CorpBoostConfig.boosterRoleMode.STUNNER || config.boosterRole() == CorpBoostConfig.boosterRoleMode.BOTH)
+                        && stunSpearPoints.size() > 0) {
+                    for (WorldPoint spot : stunSpearPoints) {
+                        if (spot.getPlane() != client.getPlane()) {
+                            continue;
+                        }
+
+                        LocalPoint spearAltPoint = LocalPoint.fromWorld(client, spot);
+
+                        if (spearAltPoint != null && localLocation.distanceTo(spearAltPoint) <= MAX_DISTANCE && spearAltPoint.distanceTo(localLocation) > 0) {
+                            renderSpot(graphics, client, spearAltPoint, itemManager.getImage(ZAMORAKIAN_SPEAR), config.stunTileColor());
+                        }
                     }
+                }
 
-                    LocalPoint spearAltPoint = LocalPoint.fromWorld(client, spot);
+                if ((config.boosterRole() == CorpBoostConfig.boosterRoleMode.XFER || config.boosterRole() == CorpBoostConfig.boosterRoleMode.BOTH)
+                        && xferSpearPoints.size() > 0) {
+                    for (WorldPoint spot : xferSpearPoints) {
+                        if (spot.getPlane() != client.getPlane()) {
+                            continue;
+                        }
 
-                    if (spearAltPoint != null && localLocation.distanceTo(spearAltPoint) <= MAX_DISTANCE && spearAltPoint.distanceTo(localLocation) > 0) {
-                        renderSpot(graphics, client, spearAltPoint, itemManager.getImage(ZAMORAKIAN_SPEAR), Color.BLACK);
+                        LocalPoint spearAltPoint = LocalPoint.fromWorld(client, spot);
+
+                        if (spearAltPoint != null && localLocation.distanceTo(spearAltPoint) <= MAX_DISTANCE && spearAltPoint.distanceTo(localLocation) > 0) {
+                            renderSpot(graphics, client, spearAltPoint, itemManager.getImage(ZAMORAKIAN_SPEAR), config.xferTileColor());
+                        }
                     }
                 }
             }
 
-            if (config.spearHealer() && spearHealerPoints.size() > 0) {
-                for (WorldPoint spot : spearHealerPoints) {
-                    if (spot.getPlane() != client.getPlane()) {
-                        continue;
+            if (config.healer()) {
+                if ((config.boosterRole() == CorpBoostConfig.boosterRoleMode.STUNNER || config.boosterRole() == CorpBoostConfig.boosterRoleMode.BOTH)
+                        && stunHealerPoints.size() > 0) {
+                    for (WorldPoint spot : stunHealerPoints) {
+                        if (spot.getPlane() != client.getPlane()) {
+                            continue;
+                        }
+
+                        LocalPoint stunHealerPoint = LocalPoint.fromWorld(client, spot);
+
+                        if (stunHealerPoint != null && localLocation.distanceTo(stunHealerPoint) <= MAX_DISTANCE && stunHealerPoint.distanceTo(localLocation) > 0) {
+                            renderSpot(graphics, client, stunHealerPoint, itemManager.getImage(TANZANITE_HELM), config.stunTileColor());
+                        }
                     }
+                }
 
-                    LocalPoint spearHealerPoint = LocalPoint.fromWorld(client, spot);
+                if ((config.boosterRole() == CorpBoostConfig.boosterRoleMode.XFER || config.boosterRole() == CorpBoostConfig.boosterRoleMode.BOTH)
+                        && xferHealerPoints.size() > 0) {
+                    for (WorldPoint spot : xferHealerPoints) {
+                        if (spot.getPlane() != client.getPlane()) {
+                            continue;
+                        }
 
-                    if (spearHealerPoint != null && localLocation.distanceTo(spearHealerPoint) <= MAX_DISTANCE && spearHealerPoint.distanceTo(localLocation) > 0) {
-                        renderSpot(graphics, client, spearHealerPoint, heal, Color.GREEN);
+                        LocalPoint xferHealerPoint = LocalPoint.fromWorld(client, spot);
+
+                        if (xferHealerPoint != null && localLocation.distanceTo(xferHealerPoint) <= MAX_DISTANCE && xferHealerPoint.distanceTo(localLocation) > 0) {
+                            renderSpot(graphics, client, xferHealerPoint, heal, config.xferTileColor());
+                        }
                     }
                 }
             }
 
-            if (config.bowHealer() && tbowHealerPoints.size() > 0) {
-                for (WorldPoint spot : tbowHealerPoints) {
-                    if (spot.getPlane() != client.getPlane()) {
-                        continue;
-                    }
+            if (config.dwh()) {
+                if ((config.boosterRole() == CorpBoostConfig.boosterRoleMode.STUNNER || config.boosterRole() == CorpBoostConfig.boosterRoleMode.BOTH)
+                        && stunDwhPoints.size() > 0) {
+                    for (WorldPoint spot : stunDwhPoints) {
+                        if (spot.getPlane() != client.getPlane()) {
+                            continue;
+                        }
 
-                    LocalPoint tbowHealerPoint = LocalPoint.fromWorld(client, spot);
+                        LocalPoint stunDwhPoint = LocalPoint.fromWorld(client, spot);
 
-                    if (tbowHealerPoint != null && localLocation.distanceTo(tbowHealerPoint) <= MAX_DISTANCE && tbowHealerPoint.distanceTo(localLocation) > 0) {
-                        renderSpot(graphics, client, tbowHealerPoint, itemManager.getImage(TWISTED_BOW), Color.BLACK);
-                    }
-                }
-            }
-
-            if (this.config.dwh() && dwhAltPoints.size() > 0) {
-                for (WorldPoint spot : dwhAltPoints) {
-                    if (spot.getPlane() != client.getPlane()) {
-                        continue;
-                    }
-
-                    LocalPoint dwhAltPoint = LocalPoint.fromWorld(client, spot);
-
-                    if (dwhAltPoint != null && localLocation.distanceTo(dwhAltPoint) <= MAX_DISTANCE && dwhAltPoint.distanceTo(localLocation) > 0) {
-                        renderSpot(graphics, client, dwhAltPoint, itemManager.getImage(DRAGON_WARHAMMER), Color.BLACK);
+                        if (stunDwhPoint != null && localLocation.distanceTo(stunDwhPoint) <= MAX_DISTANCE && stunDwhPoint.distanceTo(localLocation) > 0) {
+                            renderSpot(graphics, client, stunDwhPoint, itemManager.getImage(DRAGON_WARHAMMER), config.stunTileColor());
+                        }
                     }
                 }
-            }
 
-            if (this.config.dwh2() && dwhAltPoints2.size() > 0) {
-                for (WorldPoint spot : dwhAltPoints2) {
-                    if (spot.getPlane() != client.getPlane()) {
-                        continue;
-                    }
+                if ((config.boosterRole() == CorpBoostConfig.boosterRoleMode.XFER || config.boosterRole() == CorpBoostConfig.boosterRoleMode.BOTH)
+                        && xferDwhPoints.size() > 0) {
+                    for (WorldPoint spot : xferDwhPoints) {
+                        if (spot.getPlane() != client.getPlane()) {
+                            continue;
+                        }
 
-                    LocalPoint dwhAltPoint2 = LocalPoint.fromWorld(client, spot);
+                        LocalPoint xferDwhPoint = LocalPoint.fromWorld(client, spot);
 
-                    if (dwhAltPoint2 != null && localLocation.distanceTo(dwhAltPoint2) <= MAX_DISTANCE && dwhAltPoint2.distanceTo(localLocation) > 0) {
-                        renderSpot(graphics, client, dwhAltPoint2, itemManager.getImage(DRAGON_WARHAMMER), Color.RED);
-                    }
-                }
-            }
-
-            if (this.config.stunner() && stunnerPoints.size() > 0) {
-                for (WorldPoint spot : stunnerPoints) {
-                    if (spot.getPlane() != client.getPlane()) {
-                        continue;
-                    }
-
-                    LocalPoint stunnerPoint = LocalPoint.fromWorld(client, spot);
-
-                    if (stunnerPoint != null && localLocation.distanceTo(stunnerPoint) <= MAX_DISTANCE && stunnerPoint.distanceTo(localLocation) > 0) {
-                        renderSpot(graphics, client, stunnerPoint, itemManager.getImage(TANZANITE_HELM), Color.CYAN);
+                        if (xferDwhPoint != null && localLocation.distanceTo(xferDwhPoint) <= MAX_DISTANCE && xferDwhPoint.distanceTo(localLocation) > 0) {
+                            renderSpot(graphics, client, xferDwhPoint, itemManager.getImage(DRAGON_WARHAMMER), config.xferTileColor());
+                        }
                     }
                 }
             }
@@ -154,7 +171,7 @@ public class CorpBoostOverlay extends Overlay {
                     LocalPoint customerPoint = LocalPoint.fromWorld(client, spot);
 
                     if (customerPoint != null && localLocation.distanceTo(customerPoint) <= MAX_DISTANCE && customerPoint.distanceTo(localLocation) > 0) {
-                        renderSpot(graphics, client, customerPoint, itemManager.getImage(COIN_POUCH), Color.BLUE);
+                        renderSpot(graphics, client, customerPoint, itemManager.getImage(COIN_POUCH), config.customerTileColor());
                     }
                 }
             }
@@ -196,7 +213,17 @@ public class CorpBoostOverlay extends Overlay {
             }
 
             if (this.config.coreHighlight() == CorpBoostConfig.CoreHighlightMode.OUTLINE) {
-                this.modelOutlineRenderer.drawOutline(plugin.core, this.config.coreHighlightWidth(), config.coreHighlightColor(), config.coreHighlightGlow());
+                modelOutlineRenderer.drawOutline(plugin.core, config.coreHighlightWidth(), config.coreHighlightColor(), config.coreHighlightGlow());
+            }
+        }
+
+        if (config.unchargedSerp() && client.getLocalPlayer() != null && client.getLocalPlayer().getWorldLocation().getRegionID() == 11844) {
+            for (Player p : client.getPlayers()) {
+                if (p.getPlayerComposition() != null && unchargedSerps.contains(p.getPlayerComposition().getEquipmentId(KitType.HEAD))) {
+                    Polygon tilePoly = Perspective.getCanvasTilePoly(client, p.getLocalLocation(), 0);
+                    if(tilePoly != null)
+                        renderTile(graphics, tilePoly, config.serpColor(), config.serpWidth(), 0, 255);
+                }
             }
         }
         return null;
@@ -207,7 +234,7 @@ public class CorpBoostOverlay extends Overlay {
         Polygon poly = Perspective.getCanvasTilePoly(client, point);
 
         if (poly != null) {
-            OverlayUtil.renderPolygon(graphics, poly, color);
+            renderTile(graphics, poly, color, config.tileWidth(), config.tileFillOpacity(), color.getAlpha());
         }
 
         //Render icon
@@ -234,5 +261,18 @@ public class CorpBoostOverlay extends Overlay {
             graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), config.coreHighlightOpacity()));
             graphics.fill(polygon);
         }
+    }
+
+    private void renderTile(Graphics2D graphics, Shape polygon, Color color, final double borderWidth, int opacity, int outlineAlpha) {
+        if (polygon == null)
+            return;
+        if (borderWidth == 0) {
+            outlineAlpha = 0;
+        }
+        graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), outlineAlpha));
+        graphics.setStroke(new BasicStroke((float) borderWidth));
+        graphics.draw(polygon);
+        graphics.setColor(new Color(0, 0, 0, opacity));
+        graphics.fill(polygon);
     }
 }

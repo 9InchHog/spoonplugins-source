@@ -37,7 +37,8 @@ enum SpecialWeapon {
     DARKLIGHT("Darklight", ItemID.DARKLIGHT, false),
     BANDOS_GODSWORD("Bandos Godsword", ItemID.BANDOS_GODSWORD, true),
     BANDOS_GODSWORD_OR("Bandos Godsword", ItemID.BANDOS_GODSWORD_OR, true),
-    DAWNBRINGER("Dawnbringer", ItemID.DAWNBRINGER, true);
+    DAWNBRINGER("Dawnbringer", ItemID.DAWNBRINGER, true),
+    ZARYTE_CROSSBOW("Zaryte Crossbow", ItemID.ZARYTE_CROSSBOW, true);
 
     private final String name;
     private final int itemID;
