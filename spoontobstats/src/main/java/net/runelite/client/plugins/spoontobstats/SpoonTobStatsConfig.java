@@ -50,6 +50,15 @@ public interface SpoonTobStatsConfig extends Config
 
     @ConfigItem(
             position = 4,
+            keyName = "preciseTimers",
+            name = "Precise Timers",
+            description = "Respect in-game precise timer setting",
+            section = chatSettings
+    )
+    default PreciseTimersSetting preciseTimers() {return PreciseTimersSetting.INGAME_SETTING;}
+
+    @ConfigItem(
+            position = 5,
             keyName = "oldRoomMsg",
             name = "Old Room Messages",
             description = "Remove the mode in () from room complete message and makes it a single line",
@@ -180,8 +189,12 @@ public interface SpoonTobStatsConfig extends Config
     )
     default boolean timeExporter() { return false; }
 
-    public static enum msgTimeMode {
+    enum msgTimeMode {
         ACTIVE, ROOM_END
+    }
+
+    enum PreciseTimersSetting {
+        TICKS, SECONDS, INGAME_SETTING
     }
 
     enum FontWeight {

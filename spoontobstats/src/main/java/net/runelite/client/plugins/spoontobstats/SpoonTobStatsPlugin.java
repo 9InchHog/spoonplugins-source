@@ -10,12 +10,14 @@ import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.client.RuneLite;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -140,6 +142,9 @@ public class SpoonTobStatsPlugin extends Plugin {
     @Inject
     private MaidenFlash flashOverlay;
 
+    @Inject
+    private ClientThread clientThread;
+
     private int prevRegion;
     @Getter
     private boolean tobInside;
@@ -240,8 +245,12 @@ public class SpoonTobStatsPlugin extends Plugin {
         int tobVar = client.getVar(Varbits.THEATRE_OF_BLOOD);
         tobInside = tobVar == 2 || tobVar == 3;
 
-        int preciseTimerVar = client.getVarbitValue(11866);
-        preciseTimers = preciseTimerVar == 1 ;
+        /*boolean ingame_setting = client.getVarbitValue(11866) == 1;
+        if (config.preciseTimers() == SpoonTobStatsConfig.PreciseTimersSetting.TICKS
+                || (config.preciseTimers() == SpoonTobStatsConfig.PreciseTimersSetting.INGAME_SETTING && ingame_setting)) {
+            System.out.println("Varbit Changed: " + preciseTimers);
+            preciseTimers = true;
+        }*/
 
         if (!tobInside) {
             resetAll();
@@ -263,16 +272,14 @@ public class SpoonTobStatsPlugin extends Plugin {
 
         int bosshp = client.getVarbitValue(THEATRE_OF_BLOOD_BOSS_HP);
 
-        switch (region) {
-            case TOB_LOBBY:
-                resetMaiden();
-                resetBloat();
-                resetNylo();
-                resetSote();
-                resetXarpus();
-                resetVerzik();
-                resetTimer();
-                break;
+        if (region == TOB_LOBBY) {
+            resetMaiden();
+            resetBloat();
+            resetNylo();
+            resetSote();
+            resetXarpus();
+            resetVerzik();
+            resetTimer();
         }
     }
 
@@ -329,25 +336,38 @@ public class SpoonTobStatsPlugin extends Plugin {
 
                     if (config.msgTiming() == SpoonTobStatsConfig.msgTimeMode.ROOM_END) {
                         if (config.simpleMessage()) {
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "70% - <col=ff0000>" + to_mmss_precise(maiden70time) + "</col>", null);
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "50% - <col=ff0000>" + to_mmss_precise(maiden50time)
-                                    + "</col> (<col=ff0000>" + to_mmss_precise(maiden50time - maiden70time) + "</col>)", null);
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "30% - <col=ff0000>" + to_mmss_precise(maiden30time)
-                                    + "</col> (<col=ff0000>" + to_mmss_precise(maiden30time - maiden50time) + "</col>)", null);
-                            timeFileStr.add("70% - " + to_mmss_precise(maiden70time));
-                            timeFileStr.add("50% - " + to_mmss_precise(maiden50time));
-                            timeFileStr.add("30% - " + to_mmss_precise(maiden30time));
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "70% - <col=ff0000>" + formatTime(maiden70time) + "</col>", null);
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "50% - <col=ff0000>" + formatTime(maiden50time)
+                                    + "</col> (<col=ff0000>" + formatTime(maiden50time - maiden70time) + "</col>)", null);
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "30% - <col=ff0000>" + formatTime(maiden30time)
+                                    + "</col> (<col=ff0000>" + formatTime(maiden30time - maiden50time) + "</col>)", null);
+                            timeFileStr.add("70% - " + formatTime(maiden70time));
+                            timeFileStr.add("50% - " + formatTime(maiden50time));
+                            timeFileStr.add("30% - " + formatTime(maiden30time));
                         } else {
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Maiden - 70%' completed! Duration: <col=ff0000>"
-                                    + to_mmss_precise(maiden70time) + "</col>", null);
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Maiden - 50%' completed! Duration: <col=ff0000>"
-                                    + to_mmss_precise(maiden50time) + "</col> (<col=ff0000>" + to_mmss_precise(maiden50time - maiden70time) + "</col>)", null);
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Maiden - 30%' completed! Duration: <col=ff0000>"
-                                    + to_mmss_precise(maiden30time) + "</col> (<col=ff0000>" + to_mmss_precise(maiden30time - maiden50time) + "</col>)", null);
-                            timeFileStr.add("Wave 'Maiden - 70%' completed! Duration: " + to_mmss_precise(maiden70time));
-                            timeFileStr.add("Wave 'Maiden - 50%' completed! Duration: " + to_mmss_precise(maiden50time));
-                            timeFileStr.add("Wave 'Maiden - 30%' completed! Duration: " + to_mmss_precise(maiden30time));
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Maiden - 70%' completed! Duration: <col=ff0000>"
+                                    + formatTime(maiden70time) + "</col>", null);
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Maiden - 50%' completed! Duration: <col=ff0000>"
+                                    + formatTime(maiden50time) + "</col> (<col=ff0000>" + formatTime(maiden50time - maiden70time) + "</col>)", null);
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Maiden - 30%' completed! Duration: <col=ff0000>"
+                                    + formatTime(maiden30time) + "</col> (<col=ff0000>" + formatTime(maiden30time - maiden50time) + "</col>)", null);
+                            timeFileStr.add("Wave 'Maiden - 70%' completed! Duration: " + formatTime(maiden70time));
+                            timeFileStr.add("Wave 'Maiden - 50%' completed! Duration: " + formatTime(maiden50time));
+                            timeFileStr.add("Wave 'Maiden - 30%' completed! Duration: " + formatTime(maiden30time));
                         }
+                    }
+                }
+
+                if (personal > 0) {
+                    damage = "Personal Boss Damage - " + DMG_FORMAT.format(personal);
+                    if (config.dmgMsg()) {
+                        messages.add(
+                                new ChatMessageBuilder()
+                                        .append(ChatColorType.NORMAL)
+                                        .append("Personal Boss Damage - ")
+                                        .append(Color.RED, DMG_FORMAT.format(personal) + " (" + DECIMAL_FORMAT.format(percent) + "%)")
+                                        .build()
+                        );
                     }
                 }
 
@@ -428,24 +448,24 @@ public class SpoonTobStatsPlugin extends Plugin {
 
                     if (config.msgTiming() == SpoonTobStatsConfig.msgTimeMode.ROOM_END) {
                         if (config.simpleMessage()) {
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Waves - <col=ff0000>" + to_mmss_precise(waveTime) + "</col>", null);
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Cleanup - <col=ff0000>" + to_mmss_precise(cleanupTime)
-                                    + "</col> (<col=ff0000>" + to_mmss_precise(cleanupTime-waveTime) + "</col>)", null);
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Boss Spawn - <col=ff0000>" + to_mmss_precise(bossSpawnTime)
-                                    + "</col> (<col=ff0000>" + to_mmss_precise(bossSpawnTime-cleanupTime) + "</col>)", null);
-                            timeFileStr.add("Waves - " + to_mmss_precise(waveTime));
-                            timeFileStr.add("Cleanup - " + to_mmss_precise(cleanupTime) + " (" + to_mmss_precise(cleanupTime-waveTime) + ")");
-                            timeFileStr.add("Boss Spawn - " + to_mmss_precise(bossSpawnTime) + " (" + to_mmss_precise(bossSpawnTime-cleanupTime) + ")");
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Waves - <col=ff0000>" + formatTime(waveTime) + "</col>", null);
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Cleanup - <col=ff0000>" + formatTime(cleanupTime)
+                                    + "</col> (<col=ff0000>" + formatTime(cleanupTime-waveTime) + "</col>)", null);
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Boss Spawn - <col=ff0000>" + formatTime(bossSpawnTime)
+                                    + "</col> (<col=ff0000>" + formatTime(bossSpawnTime-cleanupTime) + "</col>)", null);
+                            timeFileStr.add("Waves - " + formatTime(waveTime));
+                            timeFileStr.add("Cleanup - " + formatTime(cleanupTime) + " (" + formatTime(cleanupTime-waveTime) + ")");
+                            timeFileStr.add("Boss Spawn - " + formatTime(bossSpawnTime) + " (" + formatTime(bossSpawnTime-cleanupTime) + ")");
                         } else {
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Nylo - Waves' completed! Duration: <col=ff0000>"
-                                    + to_mmss_precise(waveTime) + "</col>", null);
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Nylo - Cleanup' completed! Duration: <col=ff0000>"
-                                    + to_mmss_precise(cleanupTime) + "</col> (<col=ff0000>" + to_mmss_precise(cleanupTime-waveTime) + "</col>)", null);
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Nylo - Boss Spawn' completed! Duration: <col=ff0000>"
-                                    + to_mmss_precise(bossSpawnTime) + "</col> (<col=ff0000>" + to_mmss_precise(bossSpawnTime-cleanupTime) + "</col>)", null);
-                            timeFileStr.add("Wave 'Nylo - Waves' completed! Duration: " + to_mmss_precise(waveTime));
-                            timeFileStr.add("Wave 'Nylo - Cleanup' completed! Duration: " + to_mmss_precise(cleanupTime) + " (" + to_mmss_precise(cleanupTime-waveTime) + ")");
-                            timeFileStr.add("Wave 'Nylo - Boss Spawn' completed! Duration: " + to_mmss_precise(bossSpawnTime) + " (" + to_mmss_precise(bossSpawnTime-cleanupTime) + ")");
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Nylo - Waves' completed! Duration: <col=ff0000>"
+                                    + formatTime(waveTime) + "</col>", null);
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Nylo - Cleanup' completed! Duration: <col=ff0000>"
+                                    + formatTime(cleanupTime) + "</col> (<col=ff0000>" + formatTime(cleanupTime-waveTime) + "</col>)", null);
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Nylo - Boss Spawn' completed! Duration: <col=ff0000>"
+                                    + formatTime(bossSpawnTime) + "</col> (<col=ff0000>" + formatTime(bossSpawnTime-cleanupTime) + "</col>)", null);
+                            timeFileStr.add("Wave 'Nylo - Waves' completed! Duration: " + formatTime(waveTime));
+                            timeFileStr.add("Wave 'Nylo - Cleanup' completed! Duration: " + formatTime(cleanupTime) + " (" + formatTime(cleanupTime-waveTime) + ")");
+                            timeFileStr.add("Wave 'Nylo - Boss Spawn' completed! Duration: " + formatTime(bossSpawnTime) + " (" + formatTime(bossSpawnTime-cleanupTime) + ")");
                         }
                     }
                 }
@@ -498,18 +518,18 @@ public class SpoonTobStatsPlugin extends Plugin {
 
                     if (config.msgTiming() == SpoonTobStatsConfig.msgTimeMode.ROOM_END) {
                         if (config.simpleMessage()) {
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "P1 - <col=ff0000>" + to_mmss_precise(sote66time) + "</col>", null);
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "P2 - <col=ff0000>" + to_mmss_precise(sote33time - sote66time)
-                                    + "</col> (<col=ff0000>" + to_mmss_precise(sote33time) + "</col>)", null);
-                            timeFileStr.add("P1 - " + to_mmss_precise(sote66time));
-                            timeFileStr.add("P2 - " + to_mmss_precise(sote33time - sote66time) + " (" + to_mmss_precise(sote33time) + ")");
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "P1 - <col=ff0000>" + formatTime(sote66time) + "</col>", null);
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "P2 - <col=ff0000>" + formatTime(sote33time - sote66time)
+                                    + "</col> (<col=ff0000>" + formatTime(sote33time) + "</col>)", null);
+                            timeFileStr.add("P1 - " + formatTime(sote66time));
+                            timeFileStr.add("P2 - " + formatTime(sote33time - sote66time) + " (" + formatTime(sote33time) + ")");
                         } else {
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Sote - P1' completed!" + " Duration: <col=ff0000>"
-                                    + to_mmss_precise(sote66time) + "</col>", null);
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Sote - P2' completed!" + " Duration: <col=ff0000>"
-                                    + to_mmss_precise(sote33time) + "</col> (<col=ff0000>" + to_mmss_precise(sote33time - sote66time) + "</col>)", null);
-                            timeFileStr.add("Wave 'Sote - P1' completed!" + " Duration: " + to_mmss_precise(sote66time));
-                            timeFileStr.add("Wave 'Sote - P2' completed!" + " Duration: " + to_mmss_precise(sote33time) + " (" + to_mmss_precise(sote33time - sote66time) + ")");
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Sote - P1' completed!" + " Duration: <col=ff0000>"
+                                    + formatTime(sote66time) + "</col>", null);
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Sote - P2' completed!" + " Duration: <col=ff0000>"
+                                    + formatTime(sote33time) + "</col> (<col=ff0000>" + formatTime(sote33time - sote66time) + "</col>)", null);
+                            timeFileStr.add("Wave 'Sote - P1' completed!" + " Duration: " + formatTime(sote66time));
+                            timeFileStr.add("Wave 'Sote - P2' completed!" + " Duration: " + formatTime(sote33time) + " (" + formatTime(sote33time - sote66time) + ")");
                         }
                     }
                 }
@@ -557,18 +577,18 @@ public class SpoonTobStatsPlugin extends Plugin {
 
                     if (config.msgTiming() == SpoonTobStatsConfig.msgTimeMode.ROOM_END) {
                         if (config.simpleMessage()){
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Recovery - <col=ff0000>" + to_mmss_precise(xarpusRecoveryTime) + "</col>", null);
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Acid - <col=ff0000>" + to_mmss_precise(xarpusAcidTime)
-                                    + "</col> (<col=ff0000>" + to_mmss_precise(xarpusAcidTime - xarpusRecoveryTime) + "</col>)", null);
-                            timeFileStr.add("Recovery - " + to_mmss_precise(xarpusRecoveryTime));
-                            timeFileStr.add("Acid - " + to_mmss_precise(xarpusAcidTime) + " (" + to_mmss_precise(xarpusAcidTime - xarpusRecoveryTime) + ")");
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Recovery - <col=ff0000>" + formatTime(xarpusRecoveryTime) + "</col>", null);
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Acid - <col=ff0000>" + formatTime(xarpusAcidTime)
+                                    + "</col> (<col=ff0000>" + formatTime(xarpusAcidTime - xarpusRecoveryTime) + "</col>)", null);
+                            timeFileStr.add("Recovery - " + formatTime(xarpusRecoveryTime));
+                            timeFileStr.add("Acid - " + formatTime(xarpusAcidTime) + " (" + formatTime(xarpusAcidTime - xarpusRecoveryTime) + ")");
                         } else {
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Xarpus - Recovery' completed! Duration: <col=ff0000>"
-                                    + to_mmss_precise(xarpusRecoveryTime) + "</col>", null);
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Xarpus - Acid' completed! Duration: <col=ff0000>"
-                                    + to_mmss_precise(xarpusAcidTime) + "</col> (<col=ff0000>" + to_mmss_precise(xarpusAcidTime - xarpusRecoveryTime) + "</col>)", null);
-                            timeFileStr.add("Wave 'Xarpus - Recovery' completed! Duration: " + to_mmss_precise(xarpusRecoveryTime));
-                            timeFileStr.add("Wave 'Xarpus - Acid' completed! Duration: " + to_mmss_precise(xarpusAcidTime) + " (" + to_mmss_precise(xarpusAcidTime - xarpusRecoveryTime) + ")");
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Xarpus - Recovery' completed! Duration: <col=ff0000>"
+                                    + formatTime(xarpusRecoveryTime) + "</col>", null);
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Xarpus - Acid' completed! Duration: <col=ff0000>"
+                                    + formatTime(xarpusAcidTime) + "</col> (<col=ff0000>" + formatTime(xarpusAcidTime - xarpusRecoveryTime) + "</col>)", null);
+                            timeFileStr.add("Wave 'Xarpus - Recovery' completed! Duration: " + formatTime(xarpusRecoveryTime));
+                            timeFileStr.add("Wave 'Xarpus - Acid' completed! Duration: " + formatTime(xarpusAcidTime) + " (" + formatTime(xarpusAcidTime - xarpusRecoveryTime) + ")");
                         }
                     }
                 }
@@ -659,24 +679,24 @@ public class SpoonTobStatsPlugin extends Plugin {
 
                     if (config.msgTiming() == SpoonTobStatsConfig.msgTimeMode.ROOM_END) {
                         if (config.simpleMessage()) {
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "P1 - <col=ff0000>" + to_mmss_precise(verzikP1time) + "</col>", null);
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Reds - <col=ff0000>" + to_mmss_precise(verzikRedCrabTime)
-                                    + "</col> (<col=ff0000>" + to_mmss_precise(verzikRedCrabTime - verzikP1time) + "</col>)", null);
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "P2 - <col=ff0000>" + to_mmss_precise(verzikP2time - verzikP1time)
-                                    + "</col> (<col=ff0000>" + to_mmss_precise(verzikP2time) + "</col>)", null);
-                            timeFileStr.add("P1 - " + to_mmss_precise(verzikP1time));
-                            timeFileStr.add("Reds - " + to_mmss_precise(verzikRedCrabTime) + " (" + to_mmss_precise(verzikRedCrabTime - verzikP1time) + ")");
-                            timeFileStr.add("P2 - " + to_mmss_precise(verzikP2time - verzikP1time) + " (" + to_mmss_precise(verzikP2time) + ")");
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "P1 - <col=ff0000>" + formatTime(verzikP1time) + "</col>", null);
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Reds - <col=ff0000>" + formatTime(verzikRedCrabTime)
+                                    + "</col> (<col=ff0000>" + formatTime(verzikRedCrabTime - verzikP1time) + "</col>)", null);
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "P2 - <col=ff0000>" + formatTime(verzikP2time - verzikP1time)
+                                    + "</col> (<col=ff0000>" + formatTime(verzikP2time) + "</col>)", null);
+                            timeFileStr.add("P1 - " + formatTime(verzikP1time));
+                            timeFileStr.add("Reds - " + formatTime(verzikRedCrabTime) + " (" + formatTime(verzikRedCrabTime - verzikP1time) + ")");
+                            timeFileStr.add("P2 - " + formatTime(verzikP2time - verzikP1time) + " (" + formatTime(verzikP2time) + ")");
                         } else {
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Verzik - P1' completed! Duration: <col=ff0000>"
-                                    + to_mmss_precise(verzikP1time) + "</col>", null);
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Verzik - Reds' completed! Duration: <col=ff0000>"
-                                    + to_mmss_precise(verzikRedCrabTime) + "</col> (<col=ff0000>" + to_mmss_precise(verzikRedCrabTime - verzikP1time) + "</col>)", null);
-                            this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Verzik - P2' completed! Duration: <col=ff0000>"
-                                    + to_mmss_precise(verzikP2time) + "</col> (<col=ff0000>" + to_mmss_precise(verzikP2time - verzikP1time) + "</col>)", null);
-                            timeFileStr.add("Wave 'Verzik - P1' completed! Duration: " + to_mmss_precise(verzikP1time));
-                            timeFileStr.add("Wave 'Verzik - Reds' completed! Duration: " + to_mmss_precise(verzikRedCrabTime) + " (" + to_mmss_precise(verzikRedCrabTime - verzikP1time) + ")");
-                            timeFileStr.add("Wave 'Verzik - P2' completed! Duration: " + to_mmss_precise(verzikP2time) + " (" + to_mmss_precise(verzikP2time - verzikP1time) + ")");
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Verzik - P1' completed! Duration: <col=ff0000>"
+                                    + formatTime(verzikP1time) + "</col>", null);
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Verzik - Reds' completed! Duration: <col=ff0000>"
+                                    + formatTime(verzikRedCrabTime) + "</col> (<col=ff0000>" + formatTime(verzikRedCrabTime - verzikP1time) + "</col>)", null);
+                            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'Verzik - P2' completed! Duration: <col=ff0000>"
+                                    + formatTime(verzikP2time) + "</col> (<col=ff0000>" + formatTime(verzikP2time - verzikP1time) + "</col>)", null);
+                            timeFileStr.add("Wave 'Verzik - P1' completed! Duration: " + formatTime(verzikP1time));
+                            timeFileStr.add("Wave 'Verzik - Reds' completed! Duration: " + formatTime(verzikRedCrabTime) + " (" + formatTime(verzikRedCrabTime - verzikP1time) + ")");
+                            timeFileStr.add("Wave 'Verzik - P2' completed! Duration: " + formatTime(verzikP2time) + " (" + formatTime(verzikP2time - verzikP1time) + ")");
                         }
                     }
                 }
@@ -911,7 +931,7 @@ public class SpoonTobStatsPlugin extends Plugin {
         int npcId = npc.getId();
         if (npc.getName() != null && npc.getName().equals("Verzik Vitur"))
         {
-            this.verziknpc = npc;
+            verziknpc = npc;
         }
 
         switch (npcId)
@@ -1079,6 +1099,15 @@ public class SpoonTobStatsPlugin extends Plugin {
                 phase("Reds", verzikRedCrabTime, true, VERZIK, null);
                 verzikRedTimerFlag = true;
             }
+        }
+    }
+
+    @Subscribe
+    public void onClientTick(ClientTick event) {
+        if (tobInside) {
+            boolean ingame_setting = client.getVarbitValue(11866) == 1;
+            preciseTimers = config.preciseTimers() == SpoonTobStatsConfig.PreciseTimersSetting.TICKS
+                    || (config.preciseTimers() == SpoonTobStatsConfig.PreciseTimersSetting.INGAME_SETTING && ingame_setting);
         }
     }
 
@@ -1345,7 +1374,7 @@ public class SpoonTobStatsPlugin extends Plugin {
     }
 
     private void exportTimes() throws Exception {
-        String fileName = TIMES_DIR + "\\" + this.client.getLocalPlayer().getName() + "_" + mode + "_TobTimes.txt";
+        String fileName = TIMES_DIR + "\\" + client.getLocalPlayer().getName() + "_" + mode + "_TobTimes.txt";
         FileWriter writer = new FileWriter(fileName, true);
         try {
             for (String msg : timeFileStr){
