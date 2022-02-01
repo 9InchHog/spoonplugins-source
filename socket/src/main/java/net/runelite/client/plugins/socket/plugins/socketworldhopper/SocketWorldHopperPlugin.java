@@ -449,21 +449,21 @@ public class SocketWorldHopperPlugin extends Plugin {
     }
 
     @Subscribe
-    public void onPlayerDespawned(PlayerDespawned playerDespawned) {
-        if (!playerDespawned.getPlayer().equals(client.getLocalPlayer())) {
-            SetHopAbility(playerDespawned.getPlayer().getName().toLowerCase(), true);
+    public void onPlayerDespawned(PlayerDespawned event) {
+        if (!event.getPlayer().equals(client.getLocalPlayer()) && event.getPlayer().getName() != null) {
+            SetHopAbility(event.getPlayer().getName().toLowerCase(), true);
         }
     }
 
     @Subscribe
-    public void onPlayerSpawned(PlayerSpawned playerSpawned) {
-        if (!playerSpawned.getPlayer().equals(client.getLocalPlayer())) {
-            SetHopAbility(playerSpawned.getPlayer().getName().toLowerCase(), false);
+    public void onPlayerSpawned(PlayerSpawned event) {
+        if (!event.getPlayer().equals(client.getLocalPlayer()) && event.getPlayer().getName() != null) {
+            SetHopAbility(event.getPlayer().getName().toLowerCase(), false);
         }
     }
 
     void SetHopAbility(String name, boolean enabled) {
-        if (!name.isEmpty() && (name.equals(config.getHopperName().toLowerCase()) || name.equals(config.getHopperName2().toLowerCase()))) {
+        if (!name.isEmpty() && (name.equalsIgnoreCase(config.getHopperName().trim()) || name.equalsIgnoreCase(config.getHopperName2().trim()))) {
             logOutNotifTick = enabled ? client.getTickCount() : -1;
             allowHopping = enabled;
         }

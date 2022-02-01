@@ -91,6 +91,7 @@ public class SocketPlugin extends Plugin {
     final BufferedImage icon_Ready = ImageUtil.loadImageResource(getClass(), "icon_Ready.png");
     public String connectionState = "";
 
+    public static SocketPlugin instance = null;
 
     //Player status extended
     private DeferredCheck deferredCheck;
@@ -98,6 +99,8 @@ public class SocketPlugin extends Plugin {
     @Override
     protected void startUp()
     {
+        instance = this;
+
         infoBoxManager.removeInfoBox(connectionIB);
 
         this.nextConnection = 0L;
@@ -118,6 +121,8 @@ public class SocketPlugin extends Plugin {
     @Override
     protected void shutDown()
     {
+        instance = null;
+
         infoBoxManager.removeInfoBox(connectionIB);
 
         eventBus.post(new SocketShutdown());
