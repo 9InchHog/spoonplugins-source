@@ -172,4 +172,44 @@ public interface NexConfig extends Config {
     default boolean showTargetLocalPlayerOnly() {
         return true;
     }
+
+    @ConfigItem(
+            position = 13,
+            keyName = "showTenTile",
+            name = "Ten Tile Range",
+            description = "range of nex's sight"
+    )
+    default boolean showTenTile() {
+        return false;
+    }
+
+    @ConfigItem(
+            position = 14,
+            keyName = "showTrueTile",
+            name = "true Tile Range",
+            description = "nex true tile"
+    )
+    default boolean showTrueTile() {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "SetInputName",
+            name = "Set Input Name",
+            description = "Set Input of nex instance name",
+            position = 0
+    )
+    default String setInputName() {
+        return "";
+    }
+
+    @ConfigItem(
+            keyName = "shouldSetInput",
+            name = "Should Set Input",
+            description = "Set Input of nex instance name",
+            position = 1
+    )
+    default boolean getShouldSetInput() {
+        return false;
+    }
 }

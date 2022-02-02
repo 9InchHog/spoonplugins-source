@@ -36,11 +36,11 @@ public class YellowGrouperOverlay extends Overlay {
             String text = String.valueOf(verzik.yellowTimer);
 
             if(config.yellowTicksOnPlayer() && client.getLocalPlayer() != null) {
-                Point point = Perspective.getCanvasTextLocation(client, graphics, client.getLocalPlayer().getLocalLocation(), "#", 0);
+                Point point = Perspective.getCanvasTextLocation(client, graphics, client.getLocalPlayer().getLocalLocation(), "#", config.yellowsOffset());
                 if (config.fontStyle()) {
                     renderTextLocation(graphics, text, Color.WHITE, point);
                 } else {
-                    renderSteroidsTextLocation(graphics, text, 14, 1, Color.WHITE, point);
+                    renderSteroidsTextLocation(graphics, text, config.yellowsSize(), Font.BOLD, Color.WHITE, point);
                 }
             }
 
@@ -88,7 +88,7 @@ public class YellowGrouperOverlay extends Overlay {
                             if (config.fontStyle()) {
                                 renderTextLocation(graphics, text, Color.WHITE, point);
                             } else {
-                                renderSteroidsTextLocation(graphics, text, 12, 1, Color.WHITE, point);
+                                renderSteroidsTextLocation(graphics, text, 12, Font.BOLD, Color.WHITE, point);
                             }
                         }
                     }

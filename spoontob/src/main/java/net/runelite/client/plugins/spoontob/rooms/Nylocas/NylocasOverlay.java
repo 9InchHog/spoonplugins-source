@@ -60,7 +60,7 @@ public class NylocasOverlay extends RoomOverlay {
                             if (config.fontStyle()) {
                                 renderTextLocation(graphics, healthStr, c, canvasPoint);
                             } else {
-                                renderSteroidsTextLocation(graphics, healthStr, 13, 1, c, canvasPoint);
+                                renderSteroidsTextLocation(graphics, healthStr, 13, Font.BOLD, c, canvasPoint);
                             }
                         }
                     }
@@ -108,13 +108,13 @@ public class NylocasOverlay extends RoomOverlay {
                                             if (config.fontStyle()){
                                                 renderTextLocation(graphics, String.valueOf(ticksAlive), Color.RED, textLocation);
                                             }else {
-                                                renderSteroidsTextLocation(graphics, String.valueOf(ticksAlive), 13, 1, Color.RED, textLocation);
+                                                renderSteroidsTextLocation(graphics, String.valueOf(ticksAlive), 13, Font.BOLD, Color.RED, textLocation);
                                             }
                                         } else {
                                             if (config.fontStyle()){
                                                 renderTextLocation(graphics, String.valueOf(ticksAlive), Color.WHITE, textLocation);
                                             } else {
-                                                renderSteroidsTextLocation(graphics, String.valueOf(ticksAlive), 13, 1, Color.WHITE, textLocation);
+                                                renderSteroidsTextLocation(graphics, String.valueOf(ticksAlive), 13, Font.BOLD, Color.WHITE, textLocation);
                                             }
                                         }
                                     }
@@ -198,7 +198,7 @@ public class NylocasOverlay extends RoomOverlay {
                         if (config.fontStyle()) {
                             renderTextLocation(graphics, Integer.toString(ticks), Color.WHITE, textLocation);
                         } else {
-                            renderTextLocation(graphics, textLocation, Integer.toString(ticks), Color.WHITE, 13, 1);
+                            renderTextLocation(graphics, textLocation, Integer.toString(ticks), Color.WHITE, 13, Font.BOLD);
                         }
                     }
                 });
@@ -225,7 +225,7 @@ public class NylocasOverlay extends RoomOverlay {
 					if (config.fontStyle()){
 						renderTextLocation(graphics, str, Color.WHITE, loc);
 					} else {
-						renderSteroidsTextLocation(graphics, str, 14, 1, Color.WHITE, loc);
+						renderSteroidsTextLocation(graphics, str, 14, Font.BOLD, Color.WHITE, loc);
 					}
 				}
 			}

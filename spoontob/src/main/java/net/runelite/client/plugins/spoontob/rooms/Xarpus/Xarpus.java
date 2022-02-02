@@ -35,20 +35,22 @@ import java.io.BufferedInputStream;
 import java.util.List;
 import java.util.*;
 
+import static net.runelite.api.NpcID.*;
+
 public class Xarpus extends Room {
     private static BufferedImage EXHUMED_COUNT_ICON;
     private static final int GROUNDOBJECT_ID_EXHUMED = 32743;
     protected static final Set<Integer> P0_IDS = ImmutableSet.of(
-            NpcID.XARPUS, NpcID.XARPUS_10766, NpcID.XARPUS_10770
+            XARPUS, XARPUS_10766, XARPUS_10770
     );
     protected static final Set<Integer> P1_IDS = ImmutableSet.of(
-            NpcID.XARPUS_8339, NpcID.XARPUS_10767, NpcID.XARPUS_10771
+            XARPUS_8339, XARPUS_10767, XARPUS_10771
     );
     protected static final Set<Integer> P2_IDS = ImmutableSet.of(
-            NpcID.XARPUS_8340, NpcID.XARPUS_10768, NpcID.XARPUS_10772
+            XARPUS_8340, XARPUS_10768, XARPUS_10772
     );
     protected static final Set<Integer> P3_IDS = ImmutableSet.of(
-            NpcID.XARPUS_8341, NpcID.XARPUS_10769, NpcID.XARPUS_10773
+            XARPUS_8341, XARPUS_10769, XARPUS_10773
     );
     @Inject
     private XarpusOverlay xarpusOverlay;
@@ -181,19 +183,19 @@ public class Xarpus extends Room {
         NPC npc = npcSpawned.getNpc();
         switch (npc.getId())
         {
-            case NpcID.XARPUS_10770:
-            case NpcID.XARPUS_10771:
-            case NpcID.XARPUS_10772:
-            case NpcID.XARPUS_10773:
+            case XARPUS_10770:
+            case XARPUS_10771:
+            case XARPUS_10772:
+            case XARPUS_10773:
                 isHM = true;
-            case NpcID.XARPUS:
-            case NpcID.XARPUS_8339:
-            case NpcID.XARPUS_8340:
-            case NpcID.XARPUS_8341:
-            case NpcID.XARPUS_10766:
-            case NpcID.XARPUS_10767:
-            case NpcID.XARPUS_10768:
-            case NpcID.XARPUS_10769:
+            case XARPUS:
+            case XARPUS_8339:
+            case XARPUS_8340:
+            case XARPUS_8341:
+            case XARPUS_10766:
+            case XARPUS_10767:
+            case XARPUS_10768:
+            case XARPUS_10769:
                 xarpusActive = true;
                 xarpusNPC = npc;
                 xarpusStare = false;
@@ -208,18 +210,18 @@ public class Xarpus extends Room {
     public void onNpcDespawned(NpcDespawned npcDespawned) {
         NPC npc = npcDespawned.getNpc();
         switch(npc.getId()) {
-            case NpcID.XARPUS:
-            case NpcID.XARPUS_8339:
-            case NpcID.XARPUS_8340:
-            case NpcID.XARPUS_8341:
-            case NpcID.XARPUS_10766: //Story mode
-            case NpcID.XARPUS_10767:
-            case NpcID.XARPUS_10768:
-            case NpcID.XARPUS_10769:
-            case NpcID.XARPUS_10770: //Hard mode
-            case NpcID.XARPUS_10771:
-            case NpcID.XARPUS_10772:
-            case NpcID.XARPUS_10773:
+            case XARPUS:
+            case XARPUS_8339:
+            case XARPUS_8340:
+            case XARPUS_8341:
+            case XARPUS_10766: //Story mode
+            case XARPUS_10767:
+            case XARPUS_10768:
+            case XARPUS_10769:
+            case XARPUS_10770: //Hard mode
+            case XARPUS_10771:
+            case XARPUS_10772:
+            case XARPUS_10773:
                 xarpusActive = false;
                 xarpusNPC = null;
                 xarpusStare = false;

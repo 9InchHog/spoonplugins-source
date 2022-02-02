@@ -28,6 +28,8 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.util.*;
 
+import static net.runelite.api.NpcID.*;
+
 public class Sotetseg extends Room {
     private static final Logger log = LoggerFactory.getLogger(Sotetseg.class);
     @Inject
@@ -158,12 +160,12 @@ public class Sotetseg extends Room {
     public void onNpcSpawned(NpcSpawned npcSpawned) {
         NPC npc = npcSpawned.getNpc();
         switch(npc.getId()) {
-            case NpcID.SOTETSEG:
-            case NpcID.SOTETSEG_8388:
-            case NpcID.SOTETSEG_10864: //Story mode
-            case NpcID.SOTETSEG_10865:
-			case NpcID.SOTETSEG_10867: //Hard Mode
-            case NpcID.SOTETSEG_10868:
+            case SOTETSEG:
+            case SOTETSEG_8388:
+            case SOTETSEG_10864: //Story mode
+            case SOTETSEG_10865:
+			case SOTETSEG_10867: //Hard Mode
+            case SOTETSEG_10868:
                 sotetsegNPC = npc;
                 if(!sotetsegActive) {
                     sotetsegActive = true;
@@ -177,12 +179,12 @@ public class Sotetseg extends Room {
     public void onNpcDespawned(NpcDespawned npcDespawned) {
         NPC npc = npcDespawned.getNpc();
         switch(npc.getId()) {
-            case NpcID.SOTETSEG:
-            case NpcID.SOTETSEG_8388:
-            case NpcID.SOTETSEG_10864: //Story mode
-            case NpcID.SOTETSEG_10865:
-            case NpcID.SOTETSEG_10867: //Hard Mode
-            case NpcID.SOTETSEG_10868:
+            case SOTETSEG:
+            case SOTETSEG_8388:
+            case SOTETSEG_10864: //Story mode
+            case SOTETSEG_10865:
+            case SOTETSEG_10867: //Hard Mode
+            case SOTETSEG_10868:
                 if (client.getPlane() != 3) {
                     sotetsegActive = false;
                     sotetsegNPC = null;

@@ -33,21 +33,21 @@ public class SituationalTickOverlay extends Overlay {
                 if (isInBloatRegion(client)) {
                     Integer tick = plugin.situationalTicksList.get(p);
                     if (tick != null) {
-                        Point canvasPoint = client.getLocalPlayer().getCanvasTextLocation(graphics, String.valueOf(tick), 60);
+                        Point canvasPoint = client.getLocalPlayer().getCanvasTextLocation(graphics, String.valueOf(tick), config.situationalTicksOffset());
                         if (config.fontStyle()) {
                             renderTextLocation(graphics, String.valueOf(tick), (tick == 1) ? Color.GREEN : Color.WHITE, canvasPoint);
                         } else {
-                            renderSteroidsTextLocation(graphics, String.valueOf(tick), 14, 1, (tick == 1) ? Color.GREEN : Color.WHITE, canvasPoint);
+                            renderSteroidsTextLocation(graphics, String.valueOf(tick), config.situationalTicksSize(), Font.BOLD, (tick == 1) ? Color.GREEN : Color.WHITE, canvasPoint);
                         }
                     }
                 } else if (isInXarpRegion(client)) {
                     for (Player p2 : plugin.getSituationalTicksList().keySet()) {
                         int tick = plugin.getSituationalTicksList().get(p2);
-                        Point canvasPoint = p2.getCanvasTextLocation(graphics, String.valueOf(tick), 60);
+                        Point canvasPoint = p2.getCanvasTextLocation(graphics, String.valueOf(tick), config.situationalTicksOffset());
                         if (config.fontStyle()) {
                             renderTextLocation(graphics, String.valueOf(tick), (tick == 1) ? Color.GREEN : Color.WHITE, canvasPoint);
                         } else {
-                            renderSteroidsTextLocation(graphics, String.valueOf(tick), 14, 1, (tick == 1) ? Color.GREEN : Color.WHITE, canvasPoint);
+                            renderSteroidsTextLocation(graphics, String.valueOf(tick), config.situationalTicksSize(), Font.BOLD, (tick == 1) ? Color.GREEN : Color.WHITE, canvasPoint);
                         }
                     }
                 }

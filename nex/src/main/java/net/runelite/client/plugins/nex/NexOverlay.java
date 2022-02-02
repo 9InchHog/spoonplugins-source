@@ -40,98 +40,94 @@ public class NexOverlay extends Overlay {
         setLayer(OverlayLayer.ALWAYS_ON_TOP);
     }
 
+    void RenderTile(Client client, WorldPoint point, int size, Color color, Graphics2D graphics) {
+        LocalPoint nexLoc;
+        Polygon nexPoly;
+        if ((nexLoc = LocalPoint.fromWorld(client, point)) != null && (nexPoly = Perspective.getCanvasTileAreaPoly(
+                client, nexLoc = new LocalPoint(nexLoc.getX() - 128, nexLoc.getY() - 128), size)) != null)
+            drawPoly(graphics, nexPoly, color, 2, 255, 0);
+    }
+
     public Dimension render(Graphics2D graphics) {
+        if (plugin.nexBoss != null) {
+            if (config.showTenTile())
+                RenderTile(client, plugin.nexBoss.getWorldLocation().dx(2).dy(2), 23, Color.black, graphics);
+            if (config.showTrueTile())
+                RenderTile(client, plugin.nexBoss.getWorldLocation().dx(2).dy(2), 3, Color.red, graphics);
+        }
         Font fontCache = graphics.getFont();
-        graphics.setFont(new Font("Arial", 1, config.getFontSize()));
+        graphics.setFont(new Font("Arial", Font.BOLD, config.getFontSize()));
         if (config.highlightShadows())
-            plugin.getShadowObjects()
-                    .forEach(obj -> drawTile(graphics, obj.getWorldLocation(), Color.CYAN, 2, 255, 64));
+            plugin.getShadowObjects().forEach(obj -> drawTile(graphics, obj.getWorldLocation(), Color.CYAN, 2, 255, 32));
         if (config.showIceShardTimer() && plugin.getIceCageTimer() > 0)
             plugin.getIceObjects().forEach(obj -> {
                 Color color = healthColorCode((int)(100.0D * plugin.getIceCageTimer() / 8.0D));
-                LocalPoint lp = obj.getLocalLocation();
-                if (lp != null) {
-                    Polygon poly = Perspective.getCanvasTileAreaPoly(client, lp, 3);
-                    if (poly != null)
-                        drawPoly(graphics, poly, color, 2, 255, 64);
-                    String txt = Integer.toString(plugin.getIceCageTimer());
-                    Point loc = Perspective.getCanvasTextLocation(client, graphics, lp, txt, 0);
-                    if (loc != null)
-                        OverlayUtil.renderTextLocation(graphics, loc, txt, Color.WHITE);
+                LocalPoint lp3 = obj.getLocalLocation();
+                if (lp3 != null) {
+                    Polygon poly3 = Perspective.getCanvasTileAreaPoly(client, lp3, 3);
+                    if (poly3 != null)
+                        drawPoly(graphics, poly3, color, 2, 255, 32);
+                    String txt3;
+                    Point loc3;
+                    if ((loc3 = Perspective.getCanvasTextLocation(client, graphics, lp3, txt3 = Integer.toString(plugin.getIceCageTimer()), 0)) != null)
+                        OverlayUtil.renderTextLocation(graphics, loc3, txt3, Color.WHITE);
                 }
             });
-        if (config.showBloodSacrificeRange() && plugin.getBloodSacrificeTimer() > 0 && plugin.getBloodSacrificeLocation() != null) {
-            LocalPoint lp = LocalPoint.fromWorld(client, plugin.getBloodSacrificeLocation());
-            Polygon poly = Perspective.getCanvasTileAreaPoly(client, lp, 13);
-            if (poly != null) {
-                Color color = healthColorCode((int)(100.0D * plugin.getBloodSacrificeTimer() / 10.0D) - 20);
-                drawPoly(graphics, poly, color, 2, 255, 64);
-            }
+        LocalPoint lp2;
+        Polygon poly;
+        if (config.showBloodSacrificeRange() && plugin.getBloodSacrificeTimer() > 0 && plugin.getBloodSacrificeLocation() != null && (poly = Perspective.getCanvasTileAreaPoly(client, lp2 = LocalPoint.fromWorld(client, plugin.getBloodSacrificeLocation()), 13)) != null) {
+            Color color = healthColorCode((int)(100.0D * plugin.getBloodSacrificeTimer() / 10.0D) - 20);
+            drawPoly(graphics, poly, color, 2, 255, 32);
         }
-        NPC nex = plugin.findNpc(NexConstant.NEX_IDS);
-        if (nex != null) {
-            LocalPoint lp = nex.getLocalLocation();
-            if (lp != null) {
-                if (config.showInvulnerability() && plugin.getNexInvulnerability() > 0) {
-                    String txt = Integer.toString(plugin.getNexInvulnerability());
-                    Point loc = Perspective.getCanvasTextLocation(client, graphics, lp, txt, nex.getLogicalHeight() / 2);
-                    if (loc != null)
-                        OverlayUtil.renderTextLocation(graphics, loc, txt, Color.WHITE);
+        NPC nex;
+        if ((nex = plugin.findNpc(NexConstant.NEX_IDS)) != null) {
+            LocalPoint lp3 = nex.getLocalLocation();
+            if (lp3 != null) {
+                String txt2;
+                Point loc2;
+                if (config.showInvulnerability() && plugin.getNexInvulnerability() > 0 && (loc2 = Perspective.getCanvasTextLocation(
+                        client, graphics, lp3, txt2 = Integer.toString(plugin.getNexInvulnerability()), nex.getLogicalHeight() / 2)) != null)
+                    OverlayUtil.renderTextLocation(graphics, loc2, txt2, Color.WHITE);
+                Polygon poly2;
+                if (config.showIceShardRange() && plugin.getIceShardTimer() > 0 && (poly2 = Perspective.getCanvasTileAreaPoly(client, lp3, 5)) != null) {
+                    Color color = healthColorCode((int)(100.0D * plugin.getIceShardTimer() / 6.0D));
+                    drawPoly(graphics, poly2, color, 2, 255, 64);
                 }
-                if (config.showIceShardRange() && plugin.getIceShardTimer() > 0) {
-                    Polygon poly = Perspective.getCanvasTileAreaPoly(client, lp, 5);
-                    if (poly != null) {
-                        Color color = healthColorCode((int)(100.0D * plugin.getIceShardTimer() / 6.0D));
-                        drawPoly(graphics, poly, color, 2, 255, 64);
-                    }
-                }
-                if (config.showWrathRange() && plugin.getCurrentPhase() == NexPhase.ZAROS && nex.getId() == 11282) {
-                    Polygon poly = Perspective.getCanvasTileAreaPoly(client, lp, 7);
-                    if (poly != null) {
-                        Color color = healthColorCode((int)(100.0D * nex.getHealthRatio() / 30.0D));
-                        drawPoly(graphics, poly, color, 2, 255, 64);
-                    }
+                if (config.showWrathRange() && plugin.getCurrentPhase() == NexPhase.ZAROS && nex.getId() == 11282
+                        && (poly2 = Perspective.getCanvasTileAreaPoly(client, lp3, 7)) != null) {
+                    Color color = healthColorCode((int)(100.0D * nex.getHealthRatio() / 30.0D));
+                    drawPoly(graphics, poly2, color, 2, 255, 64);
                 }
             }
-            if (config.showNexTarget() != NexConfig.NexTargetIndicator.DISABLED) {
-                Actor target = nex.getInteracting();
-                if (target != null)
-                    if (!config.showTargetLocalPlayerOnly() || target == client.getLocalPlayer())
-                        drawInteracting(graphics, (Actor)nex, target, config.showNexTarget());
-            }
+            Actor target;
+            if (config.showNexTarget() != NexConfig.NexTargetIndicator.DISABLED && (target = nex.getInteracting()) != null
+                    && (!config.showTargetLocalPlayerOnly() || target == client.getLocalPlayer()))
+                drawInteracting(graphics, nex, target, config.showNexTarget());
         }
         if (config.showPlayersWithVirus()) {
             NexConfig.VirusIndicator vi = config.getVirusIndicator();
             client.getPlayers().stream().filter(p -> plugin.getSickPlayers().containsKey(p.getName())).forEach(p -> {
-                if (vi.isHullVisible()) {
-                    Shape poly = p.getConvexHull();
-                    if (poly != null) {
-                        Color color = new Color(255, 153, 153);
-                        drawPoly(graphics, poly, color, 2, 255, 64);
-                    }
+                Shape poly2;
+                if (vi.isHullVisible() && (poly2 = p.getConvexHull()) != null) {
+                    Color color = new Color(255, 153, 153);
+                    drawPoly(graphics, poly2, color, 2, 255, 64);
                 }
-                if (vi.isTileVisible()) {
-                    LocalPoint lp = p.getLocalLocation();
-                    if (lp != null) {
-                        Shape poly = Perspective.getCanvasTileAreaPoly(client, lp, 3);
-                        if (poly != null) {
-                            Color color = new Color(255, 153, 153);
-                            drawPoly(graphics, poly, color, 2, 255, 64);
-                        }
-                    }
+                Polygon poly4;
+                LocalPoint lp4;
+                if (vi.isTileVisible() && (lp4 = p.getLocalLocation()) != null && (poly4 = Perspective.getCanvasTileAreaPoly(client, lp4, 3)) != null) {
+                    Color color = new Color(255, 153, 153);
+                    drawPoly(graphics, poly4, color, 2, 255, 32);
                 }
             });
         }
-        if (config.showBloodSacrificeTimer() && plugin.getBloodSacrificeTimer() > 0) {
-            Player p = client.getLocalPlayer();
-            LocalPoint lp = p.getLocalLocation();
-            if (lp != null) {
-                String txt = Integer.toString(plugin.getBloodSacrificeTimer());
-                Point loc = Perspective.getCanvasTextLocation(client, graphics, lp, txt, p.getLogicalHeight() / 2);
-                if (loc != null)
-                    OverlayUtil.renderTextLocation(graphics, loc, txt, Color.RED.brighter());
-            }
-        }
+        String txt;
+        Point loc;
+        Player p2;
+        LocalPoint lp;
+        if (config.showBloodSacrificeTimer() && plugin.getBloodSacrificeTimer() > 0 && (lp = (p2 = client.getLocalPlayer()).getLocalLocation()) != null
+                && (loc = Perspective.getCanvasTextLocation(client, graphics, lp, txt = Integer.toString(
+                        plugin.getBloodSacrificeTimer()), p2.getLogicalHeight() / 2)) != null)
+            OverlayUtil.renderTextLocation(graphics, loc, txt, Color.RED.brighter());
         graphics.setFont(fontCache);
         return null;
     }

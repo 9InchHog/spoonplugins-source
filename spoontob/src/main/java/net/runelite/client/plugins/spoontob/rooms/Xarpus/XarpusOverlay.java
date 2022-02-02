@@ -62,7 +62,7 @@ public class XarpusOverlay extends RoomOverlay {
                 if (config.fontStyle()) {
                     renderTextLocation(graphics, ticksLeftStr, Color.WHITE, canvasPoint);
                 } else {
-                    renderSteroidsTextLocation(graphics, ticksLeftStr, 14, 1, Color.WHITE, canvasPoint);
+                    renderSteroidsTextLocation(graphics, ticksLeftStr, 14, Font.BOLD, Color.WHITE, canvasPoint);
                 }
             }
 
@@ -112,7 +112,7 @@ public class XarpusOverlay extends RoomOverlay {
                                 if (config.fontStyle()) {
                                     renderTextLocation(graphics, text, color, textLocation);
                                 } else {
-                                    renderSteroidsTextLocation(graphics, text, 12, 1, color, textLocation);
+                                    renderSteroidsTextLocation(graphics, text, 12, Font.BOLD, color, textLocation);
                                 }
                             }
                         }
@@ -134,7 +134,7 @@ public class XarpusOverlay extends RoomOverlay {
                         if (config.fontStyle()) {
                             renderTextLocation(graphics, xarpusText, Color.ORANGE, canvasPoint);
                         } else {
-                            renderSteroidsTextLocation(graphics, xarpusText, 14, 1, Color.ORANGE, canvasPoint);
+                            renderSteroidsTextLocation(graphics, xarpusText, 14, Font.BOLD, Color.ORANGE, canvasPoint);
                         }
                     }
                 }

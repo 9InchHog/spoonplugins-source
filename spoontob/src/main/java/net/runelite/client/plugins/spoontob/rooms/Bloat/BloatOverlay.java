@@ -58,7 +58,7 @@ public class BloatOverlay extends RoomOverlay {
                             if (config.fontStyle()) {
                                 renderTextLocation(graphics, text, Color.WHITE, p);
                             } else {
-                                renderSteroidsTextLocation(graphics, text, 12, 1, Color.WHITE, p);
+                                renderSteroidsTextLocation(graphics, text, 12, Font.BOLD, Color.WHITE, p);
                             }
                         }
                     }
@@ -75,13 +75,13 @@ public class BloatOverlay extends RoomOverlay {
                             if (config.fontStyle()) {
                                 renderTextLocation(graphics, str, Color.RED, canvasPoint);
                             } else {
-                                renderSteroidsTextLocation(graphics, str, 15, 1, Color.RED, canvasPoint);
+                                renderSteroidsTextLocation(graphics, str, 15, Font.BOLD, Color.RED, canvasPoint);
                             }
                         } else {
                             if (config.fontStyle()) {
                                 renderTextLocation(graphics, str, Color.WHITE, canvasPoint);
                             } else {
-                                renderSteroidsTextLocation(graphics, str, 15, 1, Color.WHITE, canvasPoint);
+                                renderSteroidsTextLocation(graphics, str, 15, Font.BOLD, Color.WHITE, canvasPoint);
                             }
                         }
                     } else {
@@ -91,7 +91,7 @@ public class BloatOverlay extends RoomOverlay {
                         } else {
                             //int secondConversion = (int)((double)bloat.getBloatUpTimer() * 0.6D);
                             //renderTextLocation(graphics, bloat.getBloatUpTimer() + "( " + secondConversion + " )", 15, 1, col, canvasPoint);
-                            renderSteroidsTextLocation(graphics, String.valueOf(bloat.getBloatUpTimer()), 15, 1, col, canvasPoint);
+                            renderSteroidsTextLocation(graphics, String.valueOf(bloat.getBloatUpTimer()), 15, Font.BOLD, col, canvasPoint);
                         }
                     }
                 }
@@ -102,7 +102,7 @@ public class BloatOverlay extends RoomOverlay {
                     if (config.fontStyle()) {
                         renderTextLocation(graphics, String.valueOf(bloat.getBloatUpTimer()), col, canvasPoint);
                     } else {
-                        renderSteroidsTextLocation(graphics, String.valueOf(bloat.getBloatUpTimer()), 15, 1, col, canvasPoint);
+                        renderSteroidsTextLocation(graphics, String.valueOf(bloat.getBloatUpTimer()), 15, Font.BOLD, col, canvasPoint);
                     }
                 }
             }

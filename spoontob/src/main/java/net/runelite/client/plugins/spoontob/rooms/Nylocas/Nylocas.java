@@ -34,6 +34,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.*;
 
+import static net.runelite.api.NpcID.*;
+
 public class Nylocas extends Room {
     private static final Logger log = LoggerFactory.getLogger(SpoonTobPlugin.class);
     @Inject
@@ -63,6 +65,34 @@ public class Nylocas extends Room {
     private static final String MELEE_NYLO = "Nylocas Ischyros";
     private static final String BOSS_NYLO = "Nylocas Vasilias";
     private static final String DEMIBOSS_NYLO = "Nylocas Prinkipas";
+
+    protected static final Set<Integer> NYLO_BOSS_IDS = ImmutableSet.of(
+            NYLOCAS_VASILIAS_8355, NYLOCAS_VASILIAS_8356, NYLOCAS_VASILIAS_8357, //Reg
+            NYLOCAS_VASILIAS_10787, NYLOCAS_VASILIAS_10788, NYLOCAS_VASILIAS_10789, // SM
+            NYLOCAS_VASILIAS_10808, NYLOCAS_VASILIAS_10809, NYLOCAS_VASILIAS_10810 // HM
+    );
+
+    protected static final Set<Integer> NYLO_DEMI_BOSS_IDS = ImmutableSet.of(
+            NYLOCAS_PRINKIPAS_10804, NYLOCAS_PRINKIPAS_10805, NYLOCAS_PRINKIPAS_10806
+    );
+
+    protected static final Set<Integer> MELEE_IDS = ImmutableSet.of(
+            NYLOCAS_ISCHYROS_8342, NYLOCAS_ISCHYROS_8345, NYLOCAS_ISCHYROS_8348, NYLOCAS_ISCHYROS_8351, //Reg
+            NYLOCAS_ISCHYROS_10774, NYLOCAS_ISCHYROS_10777, NYLOCAS_ISCHYROS_10780, NYLOCAS_ISCHYROS_10783, // SM
+            NYLOCAS_ISCHYROS_10791, NYLOCAS_ISCHYROS_10794, NYLOCAS_ISCHYROS_10797, NYLOCAS_ISCHYROS_10800 // HM
+    );
+
+    protected static final Set<Integer> RANGE_IDS = ImmutableSet.of(
+            NYLOCAS_TOXOBOLOS_8343, NYLOCAS_TOXOBOLOS_8346, NYLOCAS_TOXOBOLOS_8349, NYLOCAS_TOXOBOLOS_8352, //Reg
+            NYLOCAS_TOXOBOLOS_10775, NYLOCAS_TOXOBOLOS_10778, NYLOCAS_TOXOBOLOS_10781, NYLOCAS_TOXOBOLOS_10784, // SM
+            NYLOCAS_TOXOBOLOS_10792, NYLOCAS_TOXOBOLOS_10795, NYLOCAS_TOXOBOLOS_10798, NYLOCAS_TOXOBOLOS_10801 // HM
+    );
+
+    protected static final Set<Integer> MAGIC_IDS = ImmutableSet.of(
+            NYLOCAS_HAGIOS, NYLOCAS_HAGIOS_8347, NYLOCAS_HAGIOS_8350, NYLOCAS_HAGIOS_8353, //Reg
+            NYLOCAS_HAGIOS_10776, NYLOCAS_HAGIOS_10779, NYLOCAS_HAGIOS_10782, NYLOCAS_HAGIOS_10785, // SM
+            NYLOCAS_HAGIOS_10793, NYLOCAS_HAGIOS_10796, NYLOCAS_HAGIOS_10799, NYLOCAS_HAGIOS_10802 // HM
+    );
 
     @Getter
     @Setter
@@ -117,18 +147,6 @@ public class Nylocas extends Room {
     private boolean nyloBossAlive;
 
     public int weaponId = 0;
-    public ArrayList<Integer> magicWeaponId = new ArrayList<Integer>(Arrays.asList(
-            12899, 20736, 2417, 2416, 2415, 22323, 6562, 11998, 4675, 22292, 21006, 6914, 12422, 6912, 6910, 6908, 1393, 3053, 11787, 20730, 1401, 3054,
-            24422, 24423, 24424, 24425, 11905, 11907, 22288, 25731, 4710, 4862, 4863, 4864, 4865));
-    public ArrayList<Integer> rangeWeaponId = new ArrayList<Integer>(Arrays.asList(
-            12926, 20997, 12788, 11235, 19478, 19481, 21012, 21902, 11785, 10156, 9185, 8880, 4934, 4935, 4936, 4937, 11959, 9977, 861,
-            4212, 4214, 4215, 4216, 4217, 4218, 4219, 4220, 4221, 4222, 4223, 11748, 11749, 11750, 11751, 11752, 11753, 11754, 11755, 11756, 11757, 11758,
-            806, 807, 808, 809, 810, 811, 11230, 11959, 10034, 25862, 25865, 25867, 25869, 25884, 25886, 25888, 25890, 25892, 25894, 25896, 4734, 4934, 3935, 4936, 4937));
-    public ArrayList<Integer> meleeWeaponId = new ArrayList<Integer>(Arrays.asList(
-            23360, 12006, 22324, 22325, 13576, 22978, 21003, 23987, 20370, 4587, 21009, 12809, 19675, 21219, 21015, 4910, 4982, 20727, 4153, 10887, 5698, 3204, 11824,
-            11802, 18804, 11806, 11808, 20366, 20368, 20372, 20374, 21646, 21742, 1333, 20000, 11889, 22731, 22734, 22486, 11838, 13263, 4151, 12773, 12774, 22840, 11037, 23995,
-            23997, 24219, 24551, 24553, 13652, 1215, 1231, 24417, 22542, 22545, 11804, -1, 25739, 25741, 25736, 25738, 25734, 25870, 25872, 25874, 25876, 25878, 25880, 25882,
-            4718, 4886, 4887, 4888, 4889, 4755, 4982, 4983, 4984, 4985, 4726, 4910, 4911, 4912, 4913, 4747, 4958, 4959, 4960, 4961, 12727, 22613, 22615, 24617, 24619));
 
     private static final Set<Point> spawnTiles = ImmutableSet.of(
             new Point(17, 24), new Point(17, 25), new Point(31, 9), new Point(32, 9), new Point(46, 24), new Point(46, 25));
@@ -277,12 +295,16 @@ public class Nylocas extends Room {
         }
 
         if (wave != 0) {
-            if (tobMode.equals("hard")) {
-                ticksSinceLastWave = ((NylocasWave)NylocasWave.hmWaves.get(wave)).getWaveDelay();
-            }else if (tobMode.equals("story")) {
-                ticksSinceLastWave = ((NylocasWave)NylocasWave.smWaves.get(wave)).getWaveDelay();
-            }else if (tobMode.equals("normal")) {
-                ticksSinceLastWave = ((NylocasWave)NylocasWave.smWaves.get(wave)).getWaveDelay();
+            switch (tobMode) {
+                case "hard":
+                    ticksSinceLastWave = ((NylocasWave) NylocasWave.hmWaves.get(wave)).getWaveDelay();
+                    break;
+                case "story":
+                    ticksSinceLastWave = ((NylocasWave) NylocasWave.smWaves.get(wave)).getWaveDelay();
+                    break;
+                case "normal":
+                    ticksSinceLastWave = ((NylocasWave) NylocasWave.waves.get(wave)).getWaveDelay();
+                    break;
             }
         }
 
@@ -337,58 +359,58 @@ public class Nylocas extends Room {
         NPC npc = npcSpawned.getNpc();
         int id = npc.getId();
         switch(npc.getId()) {
-            case NpcID.NYLOCAS_ISCHYROS_8342:
-            case NpcID.NYLOCAS_TOXOBOLOS_8343:
-            case NpcID.NYLOCAS_HAGIOS:
-            case NpcID.NYLOCAS_ISCHYROS_8345:
-            case NpcID.NYLOCAS_TOXOBOLOS_8346:
-            case NpcID.NYLOCAS_HAGIOS_8347:
-            case NpcID.NYLOCAS_ISCHYROS_8348:
-            case NpcID.NYLOCAS_TOXOBOLOS_8349:
-            case NpcID.NYLOCAS_HAGIOS_8350:
-            case NpcID.NYLOCAS_ISCHYROS_8351:
-            case NpcID.NYLOCAS_TOXOBOLOS_8352:
-            case NpcID.NYLOCAS_HAGIOS_8353:
-            case NpcID.NYLOCAS_ISCHYROS_10774: //Story Mode
-            case NpcID.NYLOCAS_TOXOBOLOS_10775:
-            case NpcID.NYLOCAS_HAGIOS_10776:
-            case NpcID.NYLOCAS_ISCHYROS_10777:
-            case NpcID.NYLOCAS_TOXOBOLOS_10778:
-            case NpcID.NYLOCAS_HAGIOS_10779:
-            case NpcID.NYLOCAS_ISCHYROS_10780:
-            case NpcID.NYLOCAS_TOXOBOLOS_10781:
-            case NpcID.NYLOCAS_HAGIOS_10782:
-            case NpcID.NYLOCAS_ISCHYROS_10783:
-            case NpcID.NYLOCAS_TOXOBOLOS_10784:
-            case NpcID.NYLOCAS_HAGIOS_10785:
-            case NpcID.NYLOCAS_ISCHYROS_10791: //Hard Mode
-            case NpcID.NYLOCAS_TOXOBOLOS_10792:
-            case NpcID.NYLOCAS_HAGIOS_10793:
-            case NpcID.NYLOCAS_ISCHYROS_10794:
-            case NpcID.NYLOCAS_TOXOBOLOS_10795:
-            case NpcID.NYLOCAS_HAGIOS_10796:
-            case NpcID.NYLOCAS_ISCHYROS_10797:
-            case NpcID.NYLOCAS_TOXOBOLOS_10798:
-            case NpcID.NYLOCAS_HAGIOS_10799:
-            case NpcID.NYLOCAS_ISCHYROS_10800:
-            case NpcID.NYLOCAS_TOXOBOLOS_10801:
-            case NpcID.NYLOCAS_HAGIOS_10802:
-            case NpcID.NYLOCAS_PRINKIPAS:
-            case NpcID.NYLOCAS_PRINKIPAS_10804:
-            case NpcID.NYLOCAS_PRINKIPAS_10805:
-            case NpcID.NYLOCAS_PRINKIPAS_10806:
+            case NYLOCAS_ISCHYROS_8342:
+            case NYLOCAS_TOXOBOLOS_8343:
+            case NYLOCAS_HAGIOS:
+            case NYLOCAS_ISCHYROS_8345:
+            case NYLOCAS_TOXOBOLOS_8346:
+            case NYLOCAS_HAGIOS_8347:
+            case NYLOCAS_ISCHYROS_8348:
+            case NYLOCAS_TOXOBOLOS_8349:
+            case NYLOCAS_HAGIOS_8350:
+            case NYLOCAS_ISCHYROS_8351:
+            case NYLOCAS_TOXOBOLOS_8352:
+            case NYLOCAS_HAGIOS_8353:
+            case NYLOCAS_ISCHYROS_10774: //Story Mode
+            case NYLOCAS_TOXOBOLOS_10775:
+            case NYLOCAS_HAGIOS_10776:
+            case NYLOCAS_ISCHYROS_10777:
+            case NYLOCAS_TOXOBOLOS_10778:
+            case NYLOCAS_HAGIOS_10779:
+            case NYLOCAS_ISCHYROS_10780:
+            case NYLOCAS_TOXOBOLOS_10781:
+            case NYLOCAS_HAGIOS_10782:
+            case NYLOCAS_ISCHYROS_10783:
+            case NYLOCAS_TOXOBOLOS_10784:
+            case NYLOCAS_HAGIOS_10785:
+            case NYLOCAS_ISCHYROS_10791: //Hard Mode
+            case NYLOCAS_TOXOBOLOS_10792:
+            case NYLOCAS_HAGIOS_10793:
+            case NYLOCAS_ISCHYROS_10794:
+            case NYLOCAS_TOXOBOLOS_10795:
+            case NYLOCAS_HAGIOS_10796:
+            case NYLOCAS_ISCHYROS_10797:
+            case NYLOCAS_TOXOBOLOS_10798:
+            case NYLOCAS_HAGIOS_10799:
+            case NYLOCAS_ISCHYROS_10800:
+            case NYLOCAS_TOXOBOLOS_10801:
+            case NYLOCAS_HAGIOS_10802:
+            case NYLOCAS_PRINKIPAS:
+            case NYLOCAS_PRINKIPAS_10804:
+            case NYLOCAS_PRINKIPAS_10805:
+            case NYLOCAS_PRINKIPAS_10806:
                 if (nyloActive) {
-					if(npc.getId() == 10804){
+					if (npc.getId() == NYLOCAS_PRINKIPAS_10804){
 						minibossAlive = true;
 						nyloMiniboss = npc;
 						bossChangeTicks = 10;
-					}else {
+					} else {
 						nylocasNpcs.put(npc, 52);
 					}
 					
-					if(minibossAlive){
+					if (minibossAlive) {
 						nylocasAliveCounterOverlay.setNyloAlive(nylocasNpcs.size() + 3);
-					}else {
+					} else {
 						nylocasAliveCounterOverlay.setNyloAlive(nylocasNpcs.size());
 					}
                     NyloNPC nyloNPC = matchNpc(npc);
@@ -401,18 +423,18 @@ public class Nylocas extends Room {
                 }
                 setAlive = true;
                 break;
-            case NpcID.NYLOCAS_VASILIAS:
-            case NpcID.NYLOCAS_VASILIAS_8355:
-            case NpcID.NYLOCAS_VASILIAS_8356:
-            case NpcID.NYLOCAS_VASILIAS_8357:
-            case NpcID.NYLOCAS_VASILIAS_10786: //Story mode
-            case NpcID.NYLOCAS_VASILIAS_10787:
-            case NpcID.NYLOCAS_VASILIAS_10788:
-            case NpcID.NYLOCAS_VASILIAS_10789:
-            case NpcID.NYLOCAS_VASILIAS_10807: //Hard mode
-            case NpcID.NYLOCAS_VASILIAS_10808:
-            case NpcID.NYLOCAS_VASILIAS_10809:
-            case NpcID.NYLOCAS_VASILIAS_10810:
+            case NYLOCAS_VASILIAS:
+            case NYLOCAS_VASILIAS_8355:
+            case NYLOCAS_VASILIAS_8356:
+            case NYLOCAS_VASILIAS_8357:
+            case NYLOCAS_VASILIAS_10786: //Story mode
+            case NYLOCAS_VASILIAS_10787:
+            case NYLOCAS_VASILIAS_10788:
+            case NYLOCAS_VASILIAS_10789:
+            case NYLOCAS_VASILIAS_10807: //Hard mode
+            case NYLOCAS_VASILIAS_10808:
+            case NYLOCAS_VASILIAS_10809:
+            case NYLOCAS_VASILIAS_10810:
                 showHint = false;
                 isInstanceTimerRunning = false;
                 nyloBossStyle = "melee";
@@ -423,8 +445,8 @@ public class Nylocas extends Room {
                 meleeBoss = 0;
                 mageBoss = 0;
                 rangeBoss = 0;
-                if (npc.getId() == 8355 || npc.getId() == 10787 || npc.getId() == 10808) {
-                    if (npc.getId() == 10787) {
+                if (npc.getId() == NYLOCAS_VASILIAS_8355 || npc.getId() == NYLOCAS_VASILIAS_10787 || npc.getId() == NYLOCAS_VASILIAS_10808) {
+                    if (npc.getId() == NYLOCAS_VASILIAS_10787) {
                         bossChangeTicks = 15;
                     } else {
                         bossChangeTicks = 10;
@@ -444,11 +466,11 @@ public class Nylocas extends Room {
                     nylocasPillars.put(npc, 100);
                 }
 
-                if(npc.getId() == 10811){
+                if (npc.getId() == NPCID_NYLOCAS_HM_PILLAR){
                     tobMode = "hard";
-                }else if(npc.getId() == 10790){
+                } else if (npc.getId() == NPCID_NYLOCAS_SM_PILLAR){
                     tobMode = "story";
-                }else {
+                } else {
 					tobMode = "normal";
 				}
 
@@ -463,17 +485,17 @@ public class Nylocas extends Room {
                 postMeleeSplits = 0;
         }
 
-        if(nyloActive) {
+        if (nyloActive) {
             switch (id) {
-                case NpcID.NYLOCAS_ISCHYROS_8345: //Normal mode
-                case NpcID.NYLOCAS_TOXOBOLOS_8346:
-                case NpcID.NYLOCAS_HAGIOS_8347:
-                case NpcID.NYLOCAS_ISCHYROS_10777: //Story mode
-                case NpcID.NYLOCAS_TOXOBOLOS_10778:
-                case NpcID.NYLOCAS_HAGIOS_10779:
-                case NpcID.NYLOCAS_ISCHYROS_10794: //Hard mode
-                case NpcID.NYLOCAS_TOXOBOLOS_10795:
-                case NpcID.NYLOCAS_HAGIOS_10796:
+                case NYLOCAS_ISCHYROS_8345: //Normal mode
+                case NYLOCAS_TOXOBOLOS_8346:
+                case NYLOCAS_HAGIOS_8347:
+                case NYLOCAS_ISCHYROS_10777: //Story mode
+                case NYLOCAS_TOXOBOLOS_10778:
+                case NYLOCAS_HAGIOS_10779:
+                case NYLOCAS_ISCHYROS_10794: //Hard mode
+                case NYLOCAS_TOXOBOLOS_10795:
+                case NYLOCAS_HAGIOS_10796:
                     bigNylos.add(npc);
                     break;
             }
@@ -482,21 +504,21 @@ public class Nylocas extends Room {
             Point spawnLoc = new Point(worldPoint.getRegionX(), worldPoint.getRegionY());
             if (!spawnTiles.contains(spawnLoc)) {
                 if (npc.getName() != null) {
-                    if (npc.getName().contains("Hagios") && (npc.getId() == 8344 || npc.getId() == 10776 || npc.getId() == 10793)) {
+                    if (npc.getName().contains("Hagios") && (id == NYLOCAS_HAGIOS || id == NYLOCAS_HAGIOS_10776 || id == NYLOCAS_HAGIOS_10793)) {
                         mageSplits++;
                         if (nyloWave < 20) {
                             preMageSplits++;
                         } else {
                             postMageSplits++;
                         }
-                    } else if (npc.getName().contains("Toxobolos") && (npc.getId() == 8343 || npc.getId() == 10775 || npc.getId() == 10792)) {
+                    } else if (npc.getName().contains("Toxobolos") && (id == NYLOCAS_TOXOBOLOS_8343 || id == NYLOCAS_TOXOBOLOS_10775 || id == NYLOCAS_TOXOBOLOS_10792)) {
                         rangeSplits++;
                         if (nyloWave < 20) {
                             preRangeSplits++;
                         } else {
                             postRangeSplits++;
                         }
-                    } else if (npc.getName().contains("Ischyros") && (npc.getId() == 8342 || npc.getId() == 10774 || npc.getId() == 10791)) {
+                    } else if (npc.getName().contains("Ischyros") && (id == NYLOCAS_ISCHYROS_8342 || id == NYLOCAS_ISCHYROS_10774 || id == NYLOCAS_ISCHYROS_10791)) {
                         meleeSplits++;
                         if (nyloWave < 20) {
                             preMeleeSplits++;
@@ -513,26 +535,26 @@ public class Nylocas extends Room {
     public void onNpcChanged(NpcChanged event){
         NPC npc = event.getNpc();
         int id = npc.getId();
-        if (id == 8355 || id == 8356 || id == 8357 || id == 10787 || id == 10788 || id == 10789 || id == 10808 || id == 10809 || id == 10810 || id == 10804 || id == 10805 || id == 10806) {
-            if(id == 10787 || id == 10788 || id == 10789){
+        if (NYLO_BOSS_IDS.contains(id) || NYLO_DEMI_BOSS_IDS.contains(id)) {
+            if (id == NYLOCAS_VASILIAS_10787 || id == NYLOCAS_VASILIAS_10788 || id == NYLOCAS_VASILIAS_10789) {
                 bossChangeTicks = 16;
-            }else {
+            } else {
                 bossChangeTicks = 11;
             }
             lastBossId = id;
 
-            if(id == 10804 || id == 10805 || id == 10806){
+            if (NYLO_DEMI_BOSS_IDS.contains(id)) {
                 nyloMiniboss = npc;
             }
         } 
 		
-		if (id == 8355 || id == 10787 || id == 10808) {
+		if (id == NYLOCAS_VASILIAS_8355 || id == NYLOCAS_VASILIAS_10787 || id == NYLOCAS_VASILIAS_10808) {
             meleeBoss++;
             nyloBossStyle = "melee";
-        } else if (id == 8356 || id == 10788 || id == 10809) {
+        } else if (id == NYLOCAS_VASILIAS_8356 || id == NYLOCAS_VASILIAS_10788 || id == NYLOCAS_VASILIAS_10809) {
             mageBoss++;
             nyloBossStyle = "mage";
-        } else if (id == 8357 || id == 10789 || id == 10810) {
+        } else if (id == NYLOCAS_VASILIAS_8357 || id == NYLOCAS_VASILIAS_10789 || id == NYLOCAS_VASILIAS_10810) {
             rangeBoss++;
             nyloBossStyle = "range";
         }
@@ -544,12 +566,16 @@ public class Nylocas extends Room {
 
         for (int wave = nyloWave + 1; wave <= NylocasWave.MAX_WAVE; wave++) {
             boolean matched = true;
-            if (tobMode.equals("hard")) {
-                potentialWave = ((NylocasWave) NylocasWave.hmWaves.get(wave)).getWaveData();
-            } else if (tobMode.equals("story")) {
-                potentialWave = ((NylocasWave) NylocasWave.smWaves.get(wave)).getWaveData();
-            } else if (tobMode.equals("normal")) {
-                potentialWave = ((NylocasWave) NylocasWave.waves.get(wave)).getWaveData();
+            switch (tobMode) {
+                case "hard":
+                    potentialWave = ((NylocasWave) NylocasWave.hmWaves.get(wave)).getWaveData();
+                    break;
+                case "story":
+                    potentialWave = ((NylocasWave) NylocasWave.smWaves.get(wave)).getWaveData();
+                    break;
+                case "normal":
+                    potentialWave = ((NylocasWave) NylocasWave.waves.get(wave)).getWaveData();
+                    break;
             }
 
             for (NyloNPC nyloNpc : potentialWave) {
@@ -603,56 +629,56 @@ public class Nylocas extends Room {
     public void onNpcDespawned(NpcDespawned npcDespawned) {
         NPC npc = npcDespawned.getNpc();
         int id = npc.getId();
-        switch(npc.getId()) {
-            case NpcID.NYLOCAS_ISCHYROS_8342:
-            case NpcID.NYLOCAS_TOXOBOLOS_8343:
-            case NpcID.NYLOCAS_HAGIOS:
-            case NpcID.NYLOCAS_ISCHYROS_8345:
-            case NpcID.NYLOCAS_TOXOBOLOS_8346:
-            case NpcID.NYLOCAS_HAGIOS_8347:
-            case NpcID.NYLOCAS_ISCHYROS_8348:
-            case NpcID.NYLOCAS_TOXOBOLOS_8349:
-            case NpcID.NYLOCAS_HAGIOS_8350:
-            case NpcID.NYLOCAS_ISCHYROS_8351:
-            case NpcID.NYLOCAS_TOXOBOLOS_8352:
-            case NpcID.NYLOCAS_HAGIOS_8353:
-            case NpcID.NYLOCAS_ISCHYROS_10774: //Story Mode
-            case NpcID.NYLOCAS_TOXOBOLOS_10775:
-            case NpcID.NYLOCAS_HAGIOS_10776:
-            case NpcID.NYLOCAS_ISCHYROS_10777:
-            case NpcID.NYLOCAS_TOXOBOLOS_10778:
-            case NpcID.NYLOCAS_HAGIOS_10779:
-            case NpcID.NYLOCAS_ISCHYROS_10780:
-            case NpcID.NYLOCAS_TOXOBOLOS_10781:
-            case NpcID.NYLOCAS_HAGIOS_10782:
-            case NpcID.NYLOCAS_ISCHYROS_10783:
-            case NpcID.NYLOCAS_TOXOBOLOS_10784:
-            case NpcID.NYLOCAS_HAGIOS_10785:
-            case NpcID.NYLOCAS_ISCHYROS_10791: //Hard Mode
-            case NpcID.NYLOCAS_TOXOBOLOS_10792:
-            case NpcID.NYLOCAS_HAGIOS_10793:
-            case NpcID.NYLOCAS_ISCHYROS_10794:
-            case NpcID.NYLOCAS_TOXOBOLOS_10795:
-            case NpcID.NYLOCAS_HAGIOS_10796:
-            case NpcID.NYLOCAS_ISCHYROS_10797:
-            case NpcID.NYLOCAS_TOXOBOLOS_10798:
-            case NpcID.NYLOCAS_HAGIOS_10799:
-            case NpcID.NYLOCAS_ISCHYROS_10800:
-            case NpcID.NYLOCAS_TOXOBOLOS_10801:
-            case NpcID.NYLOCAS_HAGIOS_10802:
-            case NpcID.NYLOCAS_PRINKIPAS_10804:
-            case NpcID.NYLOCAS_PRINKIPAS_10805:
-            case NpcID.NYLOCAS_PRINKIPAS_10806:
-                if (nylocasNpcs.remove(npc) != null || (npc.getId() == 10804 || npc.getId() == 10805 || npc.getId() == 10806)) {
-					if(npc.getId() == 10804 || npc.getId() == 10805 || npc.getId() == 10806){
+        switch(id) {
+            case NYLOCAS_ISCHYROS_8342:
+            case NYLOCAS_TOXOBOLOS_8343:
+            case NYLOCAS_HAGIOS:
+            case NYLOCAS_ISCHYROS_8345:
+            case NYLOCAS_TOXOBOLOS_8346:
+            case NYLOCAS_HAGIOS_8347:
+            case NYLOCAS_ISCHYROS_8348:
+            case NYLOCAS_TOXOBOLOS_8349:
+            case NYLOCAS_HAGIOS_8350:
+            case NYLOCAS_ISCHYROS_8351:
+            case NYLOCAS_TOXOBOLOS_8352:
+            case NYLOCAS_HAGIOS_8353:
+            case NYLOCAS_ISCHYROS_10774: //Story Mode
+            case NYLOCAS_TOXOBOLOS_10775:
+            case NYLOCAS_HAGIOS_10776:
+            case NYLOCAS_ISCHYROS_10777:
+            case NYLOCAS_TOXOBOLOS_10778:
+            case NYLOCAS_HAGIOS_10779:
+            case NYLOCAS_ISCHYROS_10780:
+            case NYLOCAS_TOXOBOLOS_10781:
+            case NYLOCAS_HAGIOS_10782:
+            case NYLOCAS_ISCHYROS_10783:
+            case NYLOCAS_TOXOBOLOS_10784:
+            case NYLOCAS_HAGIOS_10785:
+            case NYLOCAS_ISCHYROS_10791: //Hard Mode
+            case NYLOCAS_TOXOBOLOS_10792:
+            case NYLOCAS_HAGIOS_10793:
+            case NYLOCAS_ISCHYROS_10794:
+            case NYLOCAS_TOXOBOLOS_10795:
+            case NYLOCAS_HAGIOS_10796:
+            case NYLOCAS_ISCHYROS_10797:
+            case NYLOCAS_TOXOBOLOS_10798:
+            case NYLOCAS_HAGIOS_10799:
+            case NYLOCAS_ISCHYROS_10800:
+            case NYLOCAS_TOXOBOLOS_10801:
+            case NYLOCAS_HAGIOS_10802:
+            case NYLOCAS_PRINKIPAS_10804:
+            case NYLOCAS_PRINKIPAS_10805:
+            case NYLOCAS_PRINKIPAS_10806:
+                if (nylocasNpcs.remove(npc) != null || NYLO_DEMI_BOSS_IDS.contains(id)) {
+					if (NYLO_DEMI_BOSS_IDS.contains(id)) {
 						nyloMiniboss = null;
 						minibossAlive = false;
 						bossChangeTicks = -1;
 					}
 					
-					if(minibossAlive){
+					if (minibossAlive) {
 						nylocasAliveCounterOverlay.setNyloAlive(nylocasNpcs.size() + 3);
-					}else {
+					} else {
 						nylocasAliveCounterOverlay.setNyloAlive(nylocasNpcs.size());
 					}
                 }
@@ -677,18 +703,18 @@ public class Nylocas extends Room {
                 }
                 setAlive = false;
                 break;
-            case NpcID.NYLOCAS_VASILIAS:
-            case NpcID.NYLOCAS_VASILIAS_8355:
-            case NpcID.NYLOCAS_VASILIAS_8356:
-            case NpcID.NYLOCAS_VASILIAS_8357:
-            case NpcID.NYLOCAS_VASILIAS_10786: //Story mode
-            case NpcID.NYLOCAS_VASILIAS_10787:
-            case NpcID.NYLOCAS_VASILIAS_10788:
-            case NpcID.NYLOCAS_VASILIAS_10789:
-            case NpcID.NYLOCAS_VASILIAS_10807: //Hard mode
-            case NpcID.NYLOCAS_VASILIAS_10808:
-            case NpcID.NYLOCAS_VASILIAS_10809:
-            case NpcID.NYLOCAS_VASILIAS_10810:
+            case NYLOCAS_VASILIAS:
+            case NYLOCAS_VASILIAS_8355:
+            case NYLOCAS_VASILIAS_8356:
+            case NYLOCAS_VASILIAS_8357:
+            case NYLOCAS_VASILIAS_10786: //Story mode
+            case NYLOCAS_VASILIAS_10787:
+            case NYLOCAS_VASILIAS_10788:
+            case NYLOCAS_VASILIAS_10789:
+            case NYLOCAS_VASILIAS_10807: //Hard mode
+            case NYLOCAS_VASILIAS_10808:
+            case NYLOCAS_VASILIAS_10809:
+            case NYLOCAS_VASILIAS_10810:
                 nyloBossAlive = false;
                 nylocasBoss = null;
                 break;
@@ -730,13 +756,13 @@ public class Nylocas extends Room {
             if (isInNyloRegion()) {
                 startupNyloOverlay();
 
-                if(config.hidePillars() == SpoonTobConfig.hidePillarsMode.PILLARS){
+                if (config.hidePillars() == SpoonTobConfig.hidePillarsMode.PILLARS) {
                     removeGameObjectsFromScene(ImmutableSet.of(32862), 0);
-                }else if(config.hidePillars() == SpoonTobConfig.hidePillarsMode.CLEAN){
+                } else if (config.hidePillars() == SpoonTobConfig.hidePillarsMode.CLEAN) {
                     removeGameObjectsFromScene(ImmutableSet.of(32862, 32876, 32899), 0);
                 }
 
-                if(config.hideEggs()){
+                if (config.hideEggs()) {
                     removeGameObjectsFromScene(ImmutableSet.of(32939, 32937, 2739, 32865), 0);
                 }
             } else {
@@ -766,9 +792,9 @@ public class Nylocas extends Room {
                 weaponStyle = WeaponMap.StyleMap.get(equippedWeapon);
             }
 
-            if(waveSpawnTicks >= 0){
+            if (waveSpawnTicks >= 0) {
                 waveSpawnTicks--;
-                if(waveSpawnTicks < 0 && nylocasAliveCounterOverlay.getNyloAlive() >= nylocasAliveCounterOverlay.getMaxNyloAlive()){
+                if (waveSpawnTicks < 0 && nylocasAliveCounterOverlay.getNyloAlive() >= nylocasAliveCounterOverlay.getMaxNyloAlive()) {
                     waveSpawnTicks = 3;
                     stalledWave = true;
                 }
@@ -789,17 +815,11 @@ public class Nylocas extends Room {
                 }
                 nylocasNpcs.replace(npc, ticksLeft - 1);
 
-                if(npc.getId() == 8342 || npc.getId() == 8345 || npc.getId() == 8348 || npc.getId() == 8351
-                        || npc.getId() == 10774 || npc.getId() == 10777 || npc.getId() == 10780 || npc.getId() == 10783
-                        || npc.getId() == 10791 || npc.getId() == 10794 || npc.getId() == 10797 || npc.getId() == 10800){
+                if (MELEE_IDS.contains(npc.getId())) {
                     meleeNyloRaveColors.add(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
-                }else if(npc.getId() == 8343 || npc.getId() == 8346 || npc.getId() == 8349 || npc.getId() == 8352
-                        || npc.getId() == 10775 || npc.getId() == 10778 || npc.getId() == 10781 || npc.getId() == 10784
-                        || npc.getId() == 10792 || npc.getId() == 10795 || npc.getId() == 10798 || npc.getId() == 10801){
+                } else if (RANGE_IDS.contains(npc.getId())) {
                     rangeNyloRaveColors.add(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
-                }else if(npc.getId() == 8344 || npc.getId() == 8347 || npc.getId() == 8350 || npc.getId() == 8353
-                        || npc.getId() == 10776 || npc.getId() == 10779 || npc.getId() == 10782 || npc.getId() == 10785
-                        || npc.getId() == 10793 || npc.getId() == 10796 || npc.getId() == 10799 || npc.getId() == 10802){
+                } else if (MAGIC_IDS.contains(npc.getId())) {
                     mageNyloRaveColors.add(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
                 }
             }
@@ -851,13 +871,13 @@ public class Nylocas extends Room {
 				bossChangeTicks--;
 				if (nylocasBoss.getId() != lastBossId) {
 					lastBossId = nylocasBoss.getId();
-					if(nylocasBoss.getId() == 10787 || nylocasBoss.getId() == 10788 || nylocasBoss.getId() == 10789){
+					if (nylocasBoss.getId() == 10787 || nylocasBoss.getId() == 10788 || nylocasBoss.getId() == 10789) {
 						bossChangeTicks = 15;
-					}else {
+					} else {
 						bossChangeTicks = 10;
 					}
 				}
-			}else if(minibossAlive && nyloMiniboss != null){
+			} else if (minibossAlive && nyloMiniboss != null){
                 bossChangeTicks--;
             }
 
@@ -960,17 +980,20 @@ public class Nylocas extends Room {
                 && nylocasBoss != null && event.getMenuTarget().contains(BOSS_NYLO) && event.getMenuAction() == MenuAction.NPC_SECOND_OPTION && weaponStyle != null) {
             switch (weaponStyle) {
                 case MAGIC:
-                    if (nylocasBoss.getId() != NpcID.NYLOCAS_VASILIAS_8356 && nylocasBoss.getId() != 10788 && nylocasBoss.getId() != 10809) {
+                    if (nylocasBoss.getId() != NYLOCAS_VASILIAS_8356 && nylocasBoss.getId() != NYLOCAS_VASILIAS_10788
+                            && nylocasBoss.getId() != NYLOCAS_VASILIAS_10809) {
                        event.consume();
                     }
                     break;
                 case MELEE:
-                    if (nylocasBoss.getId() != NpcID.NYLOCAS_VASILIAS_8355 && nylocasBoss.getId() != 10787 && nylocasBoss.getId() != 10808) {
+                    if (nylocasBoss.getId() != NYLOCAS_VASILIAS_8355 && nylocasBoss.getId() != NYLOCAS_VASILIAS_10787
+                            && nylocasBoss.getId() != NYLOCAS_VASILIAS_10808) {
                         event.consume();
                     }
                     break;
                 case RANGE:
-                    if (nylocasBoss.getId() != NpcID.NYLOCAS_VASILIAS_8357 && nylocasBoss.getId() != 10789 && nylocasBoss.getId() != 10810) {
+                    if (nylocasBoss.getId() != NYLOCAS_VASILIAS_8357 && nylocasBoss.getId() != NYLOCAS_VASILIAS_10789
+                            && nylocasBoss.getId() != NYLOCAS_VASILIAS_10810) {
                         event.consume();
                     }
                     break;
@@ -1058,17 +1081,17 @@ public class Nylocas extends Room {
                     && nyloMiniboss != null && target.contains(DEMIBOSS_NYLO) && entry.getType() == MenuAction.NPC_SECOND_OPTION.getId() && weaponStyle != null) {
                 switch (weaponStyle) {
                     case MAGIC:
-                        if (nyloMiniboss.getId() != NpcID.NYLOCAS_PRINKIPAS_10805) {
+                        if (nyloMiniboss.getId() != NYLOCAS_PRINKIPAS_10805) {
                             client.setMenuOptionCount(client.getMenuOptionCount() - 1);
                         }
                         break;
                     case MELEE:
-                        if (nyloMiniboss.getId() != NpcID.NYLOCAS_PRINKIPAS_10804) {
+                        if (nyloMiniboss.getId() != NYLOCAS_PRINKIPAS_10804) {
                             client.setMenuOptionCount(client.getMenuOptionCount() - 1);
                         }
                         break;
                     case RANGE:
-                        if (nyloMiniboss.getId() != NpcID.NYLOCAS_PRINKIPAS_10806) {
+                        if (nyloMiniboss.getId() != NYLOCAS_PRINKIPAS_10806) {
                             client.setMenuOptionCount(client.getMenuOptionCount() - 1);
                         }
                         break;

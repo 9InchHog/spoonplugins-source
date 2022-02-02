@@ -7,6 +7,7 @@ import net.runelite.api.Point;
 import net.runelite.api.events.*;
 import net.runelite.api.queries.GameObjectQuery;
 import net.runelite.api.queries.NPCQuery;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -62,6 +63,9 @@ public class SpoonNexPlugin extends Plugin {
 	@Inject
     private ItemManager itemManager;
 
+	@Inject
+	private ClientThread clientThread;
+
 	private static final int[] nexRegions = { 11345, 11601, 11857 };
 	public ArrayList<Integer> nexIds = new ArrayList<Integer> (Arrays.asList(11278, 11279, 11280, 11281, 11282));
 
@@ -91,6 +95,8 @@ public class SpoonNexPlugin extends Plugin {
 	public int ratJamTicks = 0;
 	public Point ratJamPoint = null;
 	public ArrayList<Color> raveRunway = new ArrayList<Color>();
+
+	boolean pendingSet = false;
 
 	@Provides
 	SpoonNexConfig provideConfig(ConfigManager configManager) {
@@ -208,7 +214,22 @@ public class SpoonNexPlugin extends Plugin {
 	}
 
 	@Subscribe
+	public void onVarClientIntChanged(VarClientIntChanged varClientIntChanged) {
+		if (varClientIntChanged.getIndex() == VarClientInt.INPUT_TYPE.getIndex())
+			if (client.getVarcIntValue(VarClientInt.INPUT_TYPE.getIndex()) == 8)
+				pendingSet = true;
+	}
+
+	@Subscribe
 	private void onGameTick(GameTick tick) {
+		if (pendingSet && config.getShouldSetInput() && isInNexLobby()) {
+			pendingSet = false;
+			clientThread.invoke(() -> {
+				client.setVar(VarClientStr.INPUT_TEXT, config.setInputName());
+				client.runScript(222, "");
+			});
+		}
+
 		if (nex != null) {
 			if (nex.specialTicksLeft > 0) {
 				nex.specialTicksLeft--;
@@ -517,6 +538,15 @@ public class SpoonNexPlugin extends Plugin {
 				.nearestTo(client.getLocalPlayer());
 
 		return Altar != null && Banker == null;
+	}
+
+	public boolean isInNexLobby() {
+		NPC Banker = new NPCQuery()
+				.idEquals(11289)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
+
+		return Banker != null;
 	}
 
 	public String ticksToTime(int ticks) {

@@ -13,6 +13,7 @@ public interface SpoonTobConfig extends Config {
             closedByDefault = true
     )
     String maiden = "maiden";
+
     @ConfigSection(
             name = "Bloat",
             description = "Bloat settings",
@@ -20,6 +21,7 @@ public interface SpoonTobConfig extends Config {
             closedByDefault = true
     )
     String bloat = "bloat";
+
     @ConfigSection(
             name = "Nylocas",
             description = "Nylocas settings",
@@ -27,6 +29,7 @@ public interface SpoonTobConfig extends Config {
             closedByDefault = true
     )
     String nylocas = "nylocas";
+
     @ConfigSection(
             name = "Sotetseg",
             description = "Sotetseg settings",
@@ -34,6 +37,7 @@ public interface SpoonTobConfig extends Config {
             closedByDefault = true
     )
     String sotetseg = "sotetseg";
+
     @ConfigSection(
             name = "Xarpus",
             description = "Xarpus settings",
@@ -41,6 +45,7 @@ public interface SpoonTobConfig extends Config {
             closedByDefault = true
     )
     String xarpus = "xarpus";
+
     @ConfigSection(
             name = "Verzik",
             description = "Verzik settings",
@@ -48,6 +53,7 @@ public interface SpoonTobConfig extends Config {
             closedByDefault = true
     )
     String verzik = "verzik";
+
     @ConfigSection(
             name = "Misc",
             description = "Misc settings",
@@ -55,6 +61,14 @@ public interface SpoonTobConfig extends Config {
             closedByDefault = true
     )
     String misc = "misc";
+
+    @ConfigSection(
+            name = "Player Ticks",
+            description = "Settings for the ticks displayed on the players",
+            position = 8,
+            closedByDefault = true
+    )
+    String playerTicks = "playerTicks";
 
     //------------------------------------------------------------//
     // Maiden
@@ -834,6 +848,17 @@ public interface SpoonTobConfig extends Config {
 
     @ConfigItem(
             position = 6,
+            keyName = "deathTicksOnPlayer",
+            name = "Death Ball Ticks on Player",
+            description = "Displays the death ball ticks on the targeted player instead of on the death ball",
+            section = sotetseg
+    )
+    default boolean deathTicksOnPlayer() {
+        return false;
+    }
+
+    @ConfigItem(
+            position = 7,
             keyName = "SotetsegAttacksSounds",
             name = "Sotetseg Nuke Sound",
             description = "Ear rape.",
@@ -845,7 +870,7 @@ public interface SpoonTobConfig extends Config {
 
     @Range(max = 100)
     @ConfigItem(
-            position = 7,
+            position = 8,
             keyName = "SotetsegAttacksSoundsVolume",
             name = "Nuke Volume",
             description = "Set this to 100 or you're a pussy.",
@@ -858,7 +883,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 8,
+            position = 9,
             keyName = "displayDeathBall",
             name = "Show Death Ball Target",
             description = "Shows who has the death ball",
@@ -869,7 +894,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 9,
+            position = 10,
             keyName = "displayDeathBallColor",
             name = "Death Ball Target Color",
             description = "Sets color of the death ball target tile",
@@ -883,7 +908,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 10,
+            position = 11,
             keyName = "deathballInfobox",
             name = "Attacks Until Death Ball",
             description = "Shows an infobox with the attacks left until death ball",
@@ -894,7 +919,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 11,
+            position = 12,
             keyName = "deathballSingleLine",
             name = "Single Line Text",
             description = "Makes the attacks until deathball and ticks until attack a single line",
@@ -1724,6 +1749,105 @@ public interface SpoonTobConfig extends Config {
             hidden = true
     )
     void setHighlightRangeNylo(boolean var1);
+
+    //------------------------------------------------------------//
+    // Projectiles
+    //------------------------------------------------------------//
+    @ConfigItem(
+            position = 0,
+            keyName = "deathballSize",
+            name = "Death Ball Font Size",
+            description = "Font size for the death ball ticks - must have on player selected",
+            section = playerTicks
+    )
+    default int deathballSize() {return 14;}
+
+    @Range(min = -60)
+    @ConfigItem(
+            position = 1,
+            keyName = "deathballOffset",
+            name = "Death Ball Font Offset",
+            description = "Offset for the death ball ticks - must have on player selected",
+            section = playerTicks
+    )
+    default int deathballOffset() {return 0;}
+
+    @ConfigItem(
+            position = 2,
+            keyName = "yellowsSize",
+            name = "Yellows Font Size",
+            description = "Font size for the yellows ticks - must have on player selected",
+            section = playerTicks
+    )
+    default int yellowsSize() {return 14;}
+
+    @Range(min = -60)
+    @ConfigItem(
+            position = 3,
+            keyName = "yellowsOffset",
+            name = "Yellows Font Offset",
+            description = "Offset for the yellows ticks - must have on player selected",
+            section = playerTicks
+    )
+    default int yellowsOffset() {return 0;}
+
+    @ConfigItem(
+            position = 4,
+            keyName = "zapSize",
+            name = "Zap Font Size",
+            description = "Font size for the zap ticks - must have on player selected",
+            section = playerTicks
+    )
+    default int zapSize() {return 14;}
+
+    @Range(min = -60)
+    @ConfigItem(
+            position = 5,
+            keyName = "zapOffset",
+            name = "Zap Font Offset",
+            description = "Offset for the zap ticks - must have on player selected",
+            section = playerTicks
+    )
+    default int zapOffset() {return 0;}
+
+    @ConfigItem(
+            position = 6,
+            keyName = "greenBallSize",
+            name = "Green Ball Font Size",
+            description = "Font size for the green ball ticks - must have on player selected",
+            section = playerTicks
+    )
+    default int greenBallSize() {return 15;}
+
+    @Range(min = -60)
+    @ConfigItem(
+            position = 7,
+            keyName = "greenBallOffset",
+            name = "Green Ball Font Offset",
+            description = "Offset for the green ball ticks - must have on player selected",
+            section = playerTicks
+    )
+    default int greenBallOffset() {return 0;}
+
+    @ConfigItem(
+            position = 8,
+            keyName = "situationalTicksSize",
+            name = "Sit. Ticks Font Size",
+            description = "Font size for the situational ticks - must have on player selected",
+            section = playerTicks
+    )
+    default int situationalTicksSize() {return 14;}
+
+    @Range(min = -60)
+    @ConfigItem(
+            position = 9,
+            keyName = "situationalTicksOffset",
+            name = "Sit. Ticks Font Offset",
+            description = "Offset for the situational ticks - must have on player selected",
+            section = playerTicks
+    )
+    default int situationalTicksOffset() {return 60;}
+
 
     //------------------------------------------------------------//
     // Maiden enums

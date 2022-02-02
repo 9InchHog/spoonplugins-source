@@ -1,6 +1,7 @@
 package net.runelite.client.plugins.spoontob.rooms.Sotetseg;
 
 import net.runelite.api.Perspective;
+import net.runelite.api.Player;
 import net.runelite.api.Point;
 import net.runelite.api.Projectile;
 import net.runelite.api.coords.LocalPoint;
@@ -62,25 +63,26 @@ public class SotetsegOverlay extends RoomOverlay {
                 for (Projectile p : client.getProjectiles()) {
                     int id = p.getId();
                     Point point = Perspective.localToCanvas(client, new LocalPoint((int)p.getX(), (int)p.getY()), 0, Perspective.getTileHeight(client, new LocalPoint((int)p.getX(), (int)p.getY()), p.getFloor()) - (int)p.getZ());
+                    String ticks = String.valueOf(p.getRemainingCycles() / 30);
 
                     if (point != null) {
                         if (config.sotetsegShowOrbs() == SpoonTobConfig.soteOrbMode.HATS || config.sotetsegShowOrbs() == SpoonTobConfig.soteOrbMode.BOTH) {
                             BufferedImage icon;
 
                             if (id == Sotetseg.SOTETSEG_MAGE_ORB && p.getInteracting() == client.getLocalPlayer()) {
-                                if(config.raveHats() == SpoonTobConfig.raveHatsMode.RAVE || config.raveHats() == SpoonTobConfig.raveHatsMode.TURBO){
+                                if (config.raveHats() == SpoonTobConfig.raveHatsMode.RAVE || config.raveHats() == SpoonTobConfig.raveHatsMode.TURBO) {
                                     icon = ImageUtil.loadImageResource(SpoonTobPlugin.class, "magic" + sotetseg.mageHatNum + ".png");
-                                }else if(config.raveHats() == SpoonTobConfig.raveHatsMode.EPILEPSY){
+                                } else if (config.raveHats() == SpoonTobConfig.raveHatsMode.EPILEPSY) {
                                     icon = ImageUtil.loadImageResource(SpoonTobPlugin.class, "magic" + (new Random().nextInt(8) + 1) + ".png");
-                                }else{
+                                } else {
                                     icon = sotetseg.mageIcon;
                                 }
 
                                 Point iconlocation = new Point(point.getX() - icon.getWidth() / 2, point.getY() - 30);
 
-                                if(config.raveHats() == SpoonTobConfig.raveHatsMode.TURBO){
+                                if (config.raveHats() == SpoonTobConfig.raveHatsMode.TURBO) {
                                     graphics.drawImage(icon, iconlocation.getX(), iconlocation.getY(), sotetseg.turboHatWidth, sotetseg.turboHatHeight, null);
-                                }else {
+                                } else {
                                     OverlayUtil.renderImageLocation(graphics, iconlocation, icon);
                                 }
 
@@ -90,19 +92,19 @@ public class SotetsegOverlay extends RoomOverlay {
                             }
 
                             if (id == Sotetseg.SOTETSEG_RANGE_ORB && p.getInteracting() == client.getLocalPlayer()) {
-                                if(config.raveHats() == SpoonTobConfig.raveHatsMode.RAVE || config.raveHats() == SpoonTobConfig.raveHatsMode.TURBO){
+                                if (config.raveHats() == SpoonTobConfig.raveHatsMode.RAVE || config.raveHats() == SpoonTobConfig.raveHatsMode.TURBO) {
                                     icon = ImageUtil.loadImageResource(SpoonTobPlugin.class, "ranged" + sotetseg.rangeHatNum + ".png");
-                                }else if(config.raveHats() == SpoonTobConfig.raveHatsMode.EPILEPSY){
+                                } else if (config.raveHats() == SpoonTobConfig.raveHatsMode.EPILEPSY) {
                                     icon = ImageUtil.loadImageResource(SpoonTobPlugin.class, "ranged" + (new Random().nextInt(8) + 1) + ".png");
-                                }else{
+                                } else {
                                     icon = sotetseg.rangeIcon;
                                 }
 
                                 Point iconlocation = new Point(point.getX() - icon.getWidth() / 2, point.getY() - 30);
 
-                                if(config.raveHats() == SpoonTobConfig.raveHatsMode.TURBO){
+                                if (config.raveHats() == SpoonTobConfig.raveHatsMode.TURBO) {
                                     graphics.drawImage(icon, iconlocation.getX(), iconlocation.getY(), sotetseg.turboHatWidth, sotetseg.turboHatHeight, null);
-                                }else {
+                                } else {
                                     OverlayUtil.renderImageLocation(graphics, iconlocation, icon);
                                 }
 
@@ -116,20 +118,29 @@ public class SotetsegOverlay extends RoomOverlay {
                         if ((p.getInteracting() == client.getLocalPlayer()) && (id == Sotetseg.SOTETSEG_MAGE_ORB || id == Sotetseg.SOTETSEG_RANGE_ORB)
                                 && (config.sotetsegShowOrbs() == SpoonTobConfig.soteOrbMode.TICKS || config.sotetsegShowOrbs() == SpoonTobConfig.soteOrbMode.BOTH)) {
                             if (config.fontStyle()) {
-                                renderTextLocation(graphics, String.valueOf(p.getRemainingCycles() / 30), (id == Sotetseg.SOTETSEG_MAGE_ORB ? Color.CYAN : Color.GREEN), point);
+                                renderTextLocation(graphics, ticks, (id == Sotetseg.SOTETSEG_MAGE_ORB ? Color.CYAN : Color.GREEN), point);
                             } else {
-                                renderSteroidsTextLocation(graphics, String.valueOf(p.getRemainingCycles() / 30), 17, 1,
-                                        (id == Sotetseg.SOTETSEG_MAGE_ORB ? Color.CYAN : Color.GREEN), point);
+                                renderSteroidsTextLocation(graphics, ticks, 17, Font.BOLD, (id == Sotetseg.SOTETSEG_MAGE_ORB ? Color.CYAN : Color.GREEN), point);
                             }
                         }
 
                         if (id == Sotetseg.SOTETSEG_BIG_AOE_ORB && (config.sotetsegShowNuke() == SpoonTobConfig.soteDeathballOverlayMode.TICKS
                                 || config.sotetsegShowNuke() == SpoonTobConfig.soteDeathballOverlayMode.BOTH)) {
                             Color color = Color.ORANGE;
-                            if (config.fontStyle()) {
-                                renderTextLocation(graphics, String.valueOf(p.getRemainingCycles() / 30), color, point);
+                            if (config.deathTicksOnPlayer()) {
+                                point = Perspective.getCanvasTextLocation(client, graphics, p.getInteracting().getLocalLocation(), ticks, config.deathballOffset());
+
+                                if (config.fontStyle()) {
+                                    renderTextLocation(graphics, ticks, Color.WHITE, point);
+                                } else {
+                                    renderSteroidsTextLocation(graphics, ticks, config.deathballSize(), Font.BOLD, color, point);
+                                }
                             } else {
-                                renderSteroidsTextLocation(graphics, String.valueOf(p.getRemainingCycles() / 30), 20, 1, color, point);
+                                if (config.fontStyle()) {
+                                    renderTextLocation(graphics, ticks, color, point);
+                                } else {
+                                    renderSteroidsTextLocation(graphics, ticks, 20, Font.BOLD, color, point);
+                                }
                             }
                             if (config.displayDeathBall()) {
                                 renderPoly(graphics, config.displayDeathBallColor(), p.getInteracting().getCanvasTilePoly());
@@ -182,10 +193,10 @@ public class SotetsegOverlay extends RoomOverlay {
                     this.renderTextLocation(graphics, yuriText, Color.ORANGE, yuriTextLocation);
                 }
             } else {
-                this.renderSteroidsTextLocation(graphics, text, 14, 1, Color.WHITE, textLocation);
+                this.renderSteroidsTextLocation(graphics, text, 14, Font.BOLD, Color.WHITE, textLocation);
                 if(!config.deathballSingleLine() && !yuriText.equals("")) {
                     Point yuriTextLocation = sotetseg.sotetsegNPC.getCanvasTextLocation(graphics, yuriText, 200);
-                    this.renderSteroidsTextLocation(graphics, yuriText, 14, 1, Color.ORANGE, yuriTextLocation);
+                    this.renderSteroidsTextLocation(graphics, yuriText, 14, Font.BOLD, Color.ORANGE, yuriTextLocation);
                 }
             }
         }

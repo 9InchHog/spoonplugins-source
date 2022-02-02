@@ -11,19 +11,11 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import lombok.Getter;
-import net.runelite.api.Actor;
-import net.runelite.api.ChatMessageType;
-import net.runelite.api.Client;
-import net.runelite.api.GameObject;
-import net.runelite.api.NPC;
+import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.GameObjectDespawned;
-import net.runelite.api.events.GameObjectSpawned;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.NpcChanged;
-import net.runelite.api.events.NpcDespawned;
-import net.runelite.api.events.OverheadTextChanged;
+import net.runelite.api.events.*;
+import net.runelite.api.util.Text;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
@@ -53,6 +45,9 @@ public class NexPlugin extends Plugin {
 
     @Inject
     private NexOverlay overlay;
+
+    @Inject
+    private ClientThread clientThread;
 
     @Getter
     private NexPhase currentPhase;
@@ -84,6 +79,8 @@ public class NexPlugin extends Plugin {
     @Getter
     private Set<GameObject> iceObjects;
 
+    NPC nexBoss = null;
+
     @Provides
     protected NexConfig getConfig(ConfigManager configManager) {
         return (NexConfig)configManager.getConfig(NexConfig.class);
@@ -105,8 +102,25 @@ public class NexPlugin extends Plugin {
         overlayManager.remove(overlay);
     }
 
+    boolean pendingSet = false;
+
+    @Subscribe
+    public void onVarClientIntChanged(VarClientIntChanged varClientIntChanged) {
+        if (varClientIntChanged.getIndex() == VarClientInt.INPUT_TYPE.getIndex())
+            if (client.getVarcIntValue(VarClientInt.INPUT_TYPE.getIndex()) == 8)
+                pendingSet = true;
+    }
+
     @Subscribe
     public void onGameTick(GameTick event) {
+        if (pendingSet && config.getShouldSetInput()) {
+            pendingSet = false;
+            clientThread.invoke(() -> {
+                client.setVar(VarClientStr.INPUT_TEXT, config.setInputName());
+                client.runScript(222, "");
+            });
+        }
+
         if (bloodSacrificeTimer > 0)
             bloodSacrificeTimer--;
         if (nexInvulnerability > 0)
@@ -143,7 +157,7 @@ public class NexPlugin extends Plugin {
                 .getName().equals("") && event
                 .getSender() == null) {
             if ("<col=e00a19>Nex has marked you for a blood sacrifice! RUN!</col>".equals(msg)) {
-                bloodSacrificeLocation = client.getLocalPlayer().getWorldLocation();
+                bloodSacrificeLocation = findNpc(targets).getWorldLocation().dx(1).dy(1);
                 bloodSacrificeTimer = 9;
             }
             parseNexVoiceLine(msg, true);
@@ -177,43 +191,51 @@ public class NexPlugin extends Plugin {
     @Subscribe
     public void onGameObjectSpawned(GameObjectSpawned event) {
         GameObject obj = event.getGameObject();
-        if (NexConstant.SHADOW_GAME_OBJECT_IDS.contains(obj.getId()))
-            if (!shadowObjects.contains(obj))
-                shadowObjects.add(obj);
-        if (NexConstant.ICE_CAGE_PLACEHOLDER.contains(obj.getId()))
-            if (!iceObjects.contains(obj)) {
-                iceObjects.add(obj);
-                if (iceObjects.size() == 1 && iceCageTimer == 0) {
-                    iceCageTimer = 9;
-                } else if (iceCageTimer > 7) {
-                    iceCageTimer = 0;
-                }
+        if (NexConstant.SHADOW_GAME_OBJECT_IDS.contains(obj.getId()) && !shadowObjects.contains(obj))
+            shadowObjects.add(obj);
+        if (NexConstant.ICE_CAGE_PLACEHOLDER.contains(obj.getId()) && !iceObjects.contains(obj)) {
+            iceObjects.add(obj);
+            if (iceObjects.size() == 1 && iceCageTimer == 0) {
+                iceCageTimer = 9;
+            } else if (iceCageTimer > 7) {
+                iceCageTimer = 0;
             }
+        }
     }
 
     @Subscribe
     public void onGameObjectDespawned(GameObjectDespawned event) {
         GameObject obj = event.getGameObject();
-        if (NexConstant.SHADOW_GAME_OBJECT_IDS.contains(obj.getId()))
-            if (shadowObjects.contains(obj))
-                shadowObjects.remove(obj);
-        if (NexConstant.ICE_CAGE_PLACEHOLDER.contains(obj.getId()))
-            if (iceObjects.contains(obj))
-                iceObjects.remove(obj);
+        if (NexConstant.SHADOW_GAME_OBJECT_IDS.contains(obj.getId()) && shadowObjects.contains(obj))
+            shadowObjects.remove(obj);
+        if (NexConstant.ICE_CAGE_PLACEHOLDER.contains(obj.getId()) && iceObjects.contains(obj))
+            iceObjects.remove(obj);
     }
 
     @Subscribe
     public void onNpcChanged(NpcChanged event) {
         NPC npc = event.getNpc();
-        if (NexConstant.NEX_IDS.contains(npc.getId()))
+        if (NexConstant.NEX_IDS.contains(npc.getId())) {
             targets = NexConstant.NEX_IDS;
+        }
     }
 
     @Subscribe
     public void onNpcDespawned(NpcDespawned event) {
         NPC npc = event.getNpc();
-        if (NexConstant.NEX_IDS.contains(npc.getId()))
+        if (npc.getName() != null && npc.getName().equals("Nex")) {
+            nexBoss = null;
+        }
+        if (NexConstant.NEX_IDS.contains(npc.getId())) {
             targets = new HashSet<>();
+        }
+    }
+
+    @Subscribe
+    public void onNpcSpawned(NpcSpawned event) {
+        NPC npc = event.getNpc();
+        if (npc.getName() != null && npc.getName().equals("Nex"))
+            nexBoss = npc;
     }
 
     public NPC findNpc(Set<Integer> ids) {
@@ -226,6 +248,15 @@ public class NexPlugin extends Plugin {
                 if (nd.matches(text))
                     targets = ntc.getIds();
             }
+        }
+    }
+
+    @Subscribe
+    public void onMenuOptionClicked(MenuOptionClicked event) {
+        String option = Text.removeTags(event.getMenuOption()).toLowerCase();
+        String target = Text.removeTags(event.getMenuTarget()).toLowerCase();
+        if (option.equals("attack") && target.contains("nex") && getNexInvulnerability() > 2) {
+            event.consume();
         }
     }
 }

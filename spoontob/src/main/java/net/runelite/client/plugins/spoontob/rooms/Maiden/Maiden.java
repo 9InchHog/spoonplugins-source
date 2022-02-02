@@ -25,6 +25,8 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static net.runelite.api.NpcID.*;
+
 public class Maiden extends Room {
     @Inject
     private Client client;
@@ -152,25 +154,25 @@ public class Maiden extends Room {
     public void onNpcSpawned(NpcSpawned npcSpawned) {
         NPC npc = npcSpawned.getNpc();
         String name = npc.getName();
-        switch(npc.getId()) {
-            case NpcID.THE_MAIDEN_OF_SUGADINTI: //normal mode
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_8361:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_8362:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_8363:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_8364:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_8365:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10814: //story mode
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10815:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10816:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10817:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10818:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10819:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10822: //hard mode
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10823:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10824:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10825:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10826:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10827:
+        switch (npc.getId()) {
+            case THE_MAIDEN_OF_SUGADINTI: //normal mode
+            case THE_MAIDEN_OF_SUGADINTI_8361:
+            case THE_MAIDEN_OF_SUGADINTI_8362:
+            case THE_MAIDEN_OF_SUGADINTI_8363:
+            case THE_MAIDEN_OF_SUGADINTI_8364:
+            case THE_MAIDEN_OF_SUGADINTI_8365:
+            case THE_MAIDEN_OF_SUGADINTI_10814: //story mode
+            case THE_MAIDEN_OF_SUGADINTI_10815:
+            case THE_MAIDEN_OF_SUGADINTI_10816:
+            case THE_MAIDEN_OF_SUGADINTI_10817:
+            case THE_MAIDEN_OF_SUGADINTI_10818:
+            case THE_MAIDEN_OF_SUGADINTI_10819:
+            case THE_MAIDEN_OF_SUGADINTI_10822: //hard mode
+            case THE_MAIDEN_OF_SUGADINTI_10823:
+            case THE_MAIDEN_OF_SUGADINTI_10824:
+            case THE_MAIDEN_OF_SUGADINTI_10825:
+            case THE_MAIDEN_OF_SUGADINTI_10826:
+            case THE_MAIDEN_OF_SUGADINTI_10827:
                 maidenActive = true;
                 maidenNPC = npc;
                 if((maidenNPC.getHealthRatio() == -1 && maidenNPC.getHealthScale() == -1 && (maidenNPC.getId() != 10822 && maidenNPC.getId() != 8360 && maidenNPC.getId() != 10814))
@@ -187,9 +189,9 @@ public class Maiden extends Room {
 
                 setThreshold.accept(0.7D);
                 break;
-            case NpcID.BLOOD_SPAWN: //normal mode
-            case NpcID.BLOOD_SPAWN_10821: //story mode
-            case NpcID.BLOOD_SPAWN_10829: //hard mode
+            case BLOOD_SPAWN: //normal mode
+            case BLOOD_SPAWN_10821: //story mode
+            case BLOOD_SPAWN_10829: //hard mode
                 maidenSpawns.add(npc);
         }
 
@@ -273,24 +275,24 @@ public class Maiden extends Room {
     public void onNpcDespawned(NpcDespawned npcDespawned) {
         NPC npc = npcDespawned.getNpc();
         switch(npc.getId()) {
-            case NpcID.THE_MAIDEN_OF_SUGADINTI: //normal mode
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_8361:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_8362:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_8363:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_8364:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_8365:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10814: //story mode
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10815:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10816:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10817:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10818:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10819:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10822: //hard mode
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10823:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10824:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10825:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10826:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10827:
+            case THE_MAIDEN_OF_SUGADINTI: //normal mode
+            case THE_MAIDEN_OF_SUGADINTI_8361:
+            case THE_MAIDEN_OF_SUGADINTI_8362:
+            case THE_MAIDEN_OF_SUGADINTI_8363:
+            case THE_MAIDEN_OF_SUGADINTI_8364:
+            case THE_MAIDEN_OF_SUGADINTI_8365:
+            case THE_MAIDEN_OF_SUGADINTI_10814: //story mode
+            case THE_MAIDEN_OF_SUGADINTI_10815:
+            case THE_MAIDEN_OF_SUGADINTI_10816:
+            case THE_MAIDEN_OF_SUGADINTI_10817:
+            case THE_MAIDEN_OF_SUGADINTI_10818:
+            case THE_MAIDEN_OF_SUGADINTI_10819:
+            case THE_MAIDEN_OF_SUGADINTI_10822: //hard mode
+            case THE_MAIDEN_OF_SUGADINTI_10823:
+            case THE_MAIDEN_OF_SUGADINTI_10824:
+            case THE_MAIDEN_OF_SUGADINTI_10825:
+            case THE_MAIDEN_OF_SUGADINTI_10826:
+            case THE_MAIDEN_OF_SUGADINTI_10827:
                 ticksUntilAttack = 0;
                 maidenAttSpd = 10;
                 maidenActive = false;
@@ -305,9 +307,9 @@ public class Maiden extends Room {
                 thresholdHp = -1;
                 maxHit = 36.5D;
                 break;
-            case NpcID.BLOOD_SPAWN:  //normal mode
-            case NpcID.BLOOD_SPAWN_10821: //story mode
-            case NpcID.BLOOD_SPAWN_10829: //hard mode
+            case BLOOD_SPAWN:  //normal mode
+            case BLOOD_SPAWN_10821: //story mode
+            case BLOOD_SPAWN_10829: //hard mode
                 maidenSpawns.remove(npc);
         }
     }
@@ -318,37 +320,37 @@ public class Maiden extends Room {
             NPC npc = event.getNpc();
             int id = npc.getId();
             switch (id) {
-                case NpcID.THE_MAIDEN_OF_SUGADINTI: //normal mode
-                case NpcID.THE_MAIDEN_OF_SUGADINTI_8361:
-                case NpcID.THE_MAIDEN_OF_SUGADINTI_8362:
-                case NpcID.THE_MAIDEN_OF_SUGADINTI_8363:
-                case NpcID.THE_MAIDEN_OF_SUGADINTI_8364:
-                case NpcID.THE_MAIDEN_OF_SUGADINTI_8365:
-                case NpcID.THE_MAIDEN_OF_SUGADINTI_10814: //story mode
-                case NpcID.THE_MAIDEN_OF_SUGADINTI_10815:
-                case NpcID.THE_MAIDEN_OF_SUGADINTI_10816:
-                case NpcID.THE_MAIDEN_OF_SUGADINTI_10817:
-                case NpcID.THE_MAIDEN_OF_SUGADINTI_10818:
-                case NpcID.THE_MAIDEN_OF_SUGADINTI_10819:
-                case NpcID.THE_MAIDEN_OF_SUGADINTI_10822: //hard mode
-                case NpcID.THE_MAIDEN_OF_SUGADINTI_10823:
-                case NpcID.THE_MAIDEN_OF_SUGADINTI_10824:
-                case NpcID.THE_MAIDEN_OF_SUGADINTI_10825:
-                case NpcID.THE_MAIDEN_OF_SUGADINTI_10826:
-                case NpcID.THE_MAIDEN_OF_SUGADINTI_10827:
-                    if (id == 8361 || id == 10814 || id == 10823) {
+                case THE_MAIDEN_OF_SUGADINTI: //normal mode
+                case THE_MAIDEN_OF_SUGADINTI_8361:
+                case THE_MAIDEN_OF_SUGADINTI_8362:
+                case THE_MAIDEN_OF_SUGADINTI_8363:
+                case THE_MAIDEN_OF_SUGADINTI_8364:
+                case THE_MAIDEN_OF_SUGADINTI_8365:
+                case THE_MAIDEN_OF_SUGADINTI_10814: //story mode
+                case THE_MAIDEN_OF_SUGADINTI_10815:
+                case THE_MAIDEN_OF_SUGADINTI_10816:
+                case THE_MAIDEN_OF_SUGADINTI_10817:
+                case THE_MAIDEN_OF_SUGADINTI_10818:
+                case THE_MAIDEN_OF_SUGADINTI_10819:
+                case THE_MAIDEN_OF_SUGADINTI_10822: //hard mode
+                case THE_MAIDEN_OF_SUGADINTI_10823:
+                case THE_MAIDEN_OF_SUGADINTI_10824:
+                case THE_MAIDEN_OF_SUGADINTI_10825:
+                case THE_MAIDEN_OF_SUGADINTI_10826:
+                case THE_MAIDEN_OF_SUGADINTI_10827:
+                    if (id == THE_MAIDEN_OF_SUGADINTI_8361 || id == THE_MAIDEN_OF_SUGADINTI_10815 || id == THE_MAIDEN_OF_SUGADINTI_10823) {
                         maidenPhase = 70;
-                    } else if (id == 8362 || id == 10815 || id == 10824) {
+                    } else if (id == THE_MAIDEN_OF_SUGADINTI_8362 || id == THE_MAIDEN_OF_SUGADINTI_10816 || id == THE_MAIDEN_OF_SUGADINTI_10824) {
                         maidenPhase = 50;
-                    } else if (id == 8363 || id == 10816 || id == 10825) {
+                    } else if (id == THE_MAIDEN_OF_SUGADINTI_8363 || id == THE_MAIDEN_OF_SUGADINTI_10817 || id == THE_MAIDEN_OF_SUGADINTI_10825) {
                         maidenPhase = 30;
                     }
             }
 
-            if (npc.getId() == NpcID.THE_MAIDEN_OF_SUGADINTI_8361) {
+            if (npc.getId() == THE_MAIDEN_OF_SUGADINTI_8361) {
                 setThreshold.accept(0.5D);
             }
-            if (npc.getId() == NpcID.THE_MAIDEN_OF_SUGADINTI_8362) {
+            if (npc.getId() == THE_MAIDEN_OF_SUGADINTI_8362) {
                 setThreshold.accept(0.3D);
             }
         }
