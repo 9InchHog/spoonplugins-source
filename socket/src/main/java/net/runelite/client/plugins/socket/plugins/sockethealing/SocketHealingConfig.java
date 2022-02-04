@@ -28,15 +28,15 @@ public interface SocketHealingConfig extends Config {
         return 5;
     }
 
-    @Range(max = 10, min = -20)
+    @Range(min = -50, max = 50)
     @ConfigItem(
             position = 3,
-            keyName = "overlayOffset",
-            name = "Player Overlay Height",
+            keyName = "getIndicatorZOffset",
+            name = "Hp Overlay Z Offset",
             description = "This adjusts the height of the health overlay."
     )
-    default int overlayOffset() {
-        return -15;
+    default int getIndicatorZOffset() {
+        return 0;
     }
 
     @Range(max = 20, min = 1)

@@ -81,14 +81,13 @@ public class SocketText {
         int newIdx = 0;
         for (int oldIdx = 0, strLen = str.length(); oldIdx < strLen; oldIdx++) {
             char c = chars[oldIdx];
-            if (c == ' '|| c == '-' || c == '_' || c == ' ') {
+            if (c == '-' || c == '_' || c == ' ') {
                 if (oldIdx == strLen - 1 || newIdx == 0 || chars[newIdx - 1] == ' ')
                     continue;
                 c = ' ';
             }
             if (c <= '')
                 chars[newIdx++] = c;
-            continue;
         }
     return new String(chars, 0, newIdx);
 }

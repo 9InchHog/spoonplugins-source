@@ -31,11 +31,11 @@ class SocketDpsOverlay extends OverlayPanel {
     }
 
     public Dimension render(Graphics2D graphics) {
-        if (this.config.displayOverlay() && !this.plugin.getMembers().isEmpty() && this.client.getLocalPlayer() != null) {
-            Map<String, Integer> dpsMembers = this.plugin.getMembers();
-            this.panelComponent.getChildren().clear();
+        if (config.displayOverlay() && !plugin.getMembers().isEmpty() && client.getLocalPlayer() != null) {
+            Map<String, Integer> dpsMembers = plugin.getMembers();
+            panelComponent.getChildren().clear();
             int tot = 0;
-            String localName = this.client.getLocalPlayer().getName();
+            String localName = client.getLocalPlayer().getName();
             if (dpsMembers.containsKey("Total")) {
                 tot = dpsMembers.get("Total");
                 dpsMembers.remove("Total");
@@ -44,33 +44,33 @@ class SocketDpsOverlay extends OverlayPanel {
             int maxWidth = 129;
             dpsMembers.forEach((k, v) -> {
                 String right = QuantityFormatter.formatNumber(v);
-                if (k.equalsIgnoreCase(this.client.getLocalPlayer().getName())) {
-                    Color color = this.config.highlightSelf() ? Color.GREEN : Color.WHITE;
-                    this.panelComponent.getChildren().add(LineComponent.builder()
+                if (k.equalsIgnoreCase(client.getLocalPlayer().getName())) {
+                    Color color = config.highlightSelf() ? Color.GREEN : Color.WHITE;
+                    panelComponent.getChildren().add(LineComponent.builder()
                             .leftColor(color)
                             .left(k)
                             .rightColor(color)
                             .right(right)
                             .build());
-                } else if (this.config.highlightOtherPlayer() && this.plugin.getHighlights().contains(k.toLowerCase())) {
-                    this.panelComponent.getChildren().add(LineComponent.builder()
-                            .leftColor(this.config.getHighlightColor())
+                } else if (config.highlightOtherPlayer() && plugin.getHighlights().contains(k.toLowerCase())) {
+                    panelComponent.getChildren().add(LineComponent.builder()
+                            .leftColor(config.getHighlightColor())
                             .left(k)
-                            .rightColor(this.config.getHighlightColor())
+                            .rightColor(config.getHighlightColor())
                             .right(right)
                             .build());
                 } else {
-                    this.panelComponent.getChildren().add(LineComponent.builder()
+                    panelComponent.getChildren().add(LineComponent.builder()
                             .left(k)
                             .right(right)
                             .build());
                 }
             });
 
-            this.panelComponent.setPreferredSize(new Dimension(maxWidth + 10, 0));
+            panelComponent.setPreferredSize(new Dimension(maxWidth + 10, 0));
             dpsMembers.put("Total", tot);
-            if (localName != null && dpsMembers.containsKey(localName) && tot > dpsMembers.get(localName) && this.config.showTotal()) {
-                this.panelComponent.getChildren().add(LineComponent.builder()
+            if (localName != null && dpsMembers.containsKey(localName) && tot > dpsMembers.get(localName) && config.showTotal()) {
+                panelComponent.getChildren().add(LineComponent.builder()
                         .leftColor(Color.RED)
                         .left("Total")
                         .rightColor(Color.RED)
@@ -78,14 +78,14 @@ class SocketDpsOverlay extends OverlayPanel {
                         .build());
             }
 
-            if (this.config.backgroundStyle() == SocketDpsConfig.backgroundMode.HIDE) {
+            if (config.backgroundStyle() == SocketDpsConfig.backgroundMode.HIDE) {
                 panelComponent.setBackgroundColor(null);
-            } else if (this.config.backgroundStyle() == SocketDpsConfig.backgroundMode.STANDARD) {
+            } else if (config.backgroundStyle() == SocketDpsConfig.backgroundMode.STANDARD) {
                 panelComponent.setBackgroundColor(ComponentConstants.STANDARD_BACKGROUND_COLOR);
-            } else if (this.config.backgroundStyle() == SocketDpsConfig.backgroundMode.CUSTOM) {
+            } else if (config.backgroundStyle() == SocketDpsConfig.backgroundMode.CUSTOM) {
                 panelComponent.setBackgroundColor(new Color(config.backgroundColor().getRed(), config.backgroundColor().getGreen(), config.backgroundColor().getBlue(), config.backgroundColor().getAlpha()));
             }
-            return this.panelComponent.render(graphics);
+            return panelComponent.render(graphics);
         }
         return null;
     }

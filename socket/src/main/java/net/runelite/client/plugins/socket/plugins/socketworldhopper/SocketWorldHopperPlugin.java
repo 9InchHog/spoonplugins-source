@@ -65,9 +65,9 @@ import java.util.concurrent.TimeUnit;
 public class SocketWorldHopperPlugin extends Plugin {
     private static final Logger log = LoggerFactory.getLogger(SocketWorldHopperPlugin.class);
     private static final int WORLD_FETCH_TIMER = 10;
-    private static final int REFRESH_THROTTLE = 60_000; // ms
+    private static final int REFRESH_THROTTLE = 60000; // ms
     private static final int MAX_PLAYER_COUNT = 1950;
-    private static final int TICK_THROTTLE = (int)Duration.ofMinutes(10L).toMillis();
+    private static final int TICK_THROTTLE = (int)Duration.ofMinutes(10).toMillis();
     private static final int DISPLAY_SWITCHER_MAX_ATTEMPTS = 3;
     private static final String HOP_TO = "Hop-to";
     private static final String KICK_OPTION = "Kick";
@@ -135,8 +135,8 @@ public class SocketWorldHopperPlugin extends Plugin {
     private boolean firstRun;
     private String customWorlds;
     private int logOutNotifTick = -1;
-    private long hopDelay = 0L;
-    private long hopDelayMS = 0L;
+    private long hopDelay = 0;
+    private long hopDelayMS = 0;
     private boolean allowedToHop = true;
 
     @Getter(AccessLevel.PACKAGE)
@@ -193,7 +193,7 @@ public class SocketWorldHopperPlugin extends Plugin {
 
         hopperExecutorService = new ExecutorServiceExceptionLogger(Executors.newSingleThreadScheduledExecutor());
         hopBlocked = new ExecutorServiceExceptionLogger(Executors.newSingleThreadScheduledExecutor());
-        worldResultFuture = executorService.scheduleAtFixedRate(this::tick, 0L, 10L, TimeUnit.MINUTES);
+        worldResultFuture = executorService.scheduleAtFixedRate(this::tick, 0, WORLD_FETCH_TIMER, TimeUnit.MINUTES);
 
         // Give some initial delay - this won't run until after pingInitialWorlds finishes from tick() anyway
         pingFuture = hopperExecutorService.scheduleWithFixedDelay(this::pingNextWorld, 15, 3, TimeUnit.SECONDS);
@@ -232,11 +232,7 @@ public class SocketWorldHopperPlugin extends Plugin {
     @Subscribe
     public void onClientTick(ClientTick event) {
         long x = System.currentTimeMillis() - hopDelay;
-        if (x > 11000L) {
-            allowedToHop = true;
-        } else {
-            allowedToHop = false;
-        }
+        allowedToHop = x > 11000L;
         hopDelayMS = 11000L - x;
     }
 
@@ -292,6 +288,18 @@ public class SocketWorldHopperPlugin extends Plugin {
                     JSONObject payload = new JSONObject();
                     payload.put("worldhopper-extended", data);
                     eventBus.post(new SocketBroadcastPacket(payload));
+                    break;
+                case "hopperName":
+                case "hopperName2":
+                    for (Player p : client.getPlayers()) {
+                        String name = p.getName();
+                        if (name != null && client.getLocalPlayer() != null && !name.equalsIgnoreCase(client.getLocalPlayer().getName())
+                                && (name.equalsIgnoreCase(config.getHopperName()) || name.equalsIgnoreCase(config.getHopperName2()))) {
+                            SetHopAbility(false);
+                            return;
+                        }
+                    }
+                    SetHopAbility(true);
                     break;
             }
         }
@@ -450,24 +458,26 @@ public class SocketWorldHopperPlugin extends Plugin {
 
     @Subscribe
     public void onPlayerDespawned(PlayerDespawned event) {
-        if (!event.getPlayer().equals(client.getLocalPlayer()) && event.getPlayer().getName() != null) {
-            SetHopAbility(event.getPlayer().getName().toLowerCase(), true);
+        String name = event.getPlayer().getName();
+        if (name != null && client.getLocalPlayer() != null && !name.equalsIgnoreCase(client.getLocalPlayer().getName())
+                && (name.equalsIgnoreCase(config.getHopperName()) || name.equalsIgnoreCase(config.getHopperName2()))) {
+            SetHopAbility(true);
         }
     }
 
     @Subscribe
     public void onPlayerSpawned(PlayerSpawned event) {
-        if (!event.getPlayer().equals(client.getLocalPlayer()) && event.getPlayer().getName() != null) {
-            SetHopAbility(event.getPlayer().getName().toLowerCase(), false);
+        String name = event.getPlayer().getName();
+        if (name != null && client.getLocalPlayer() != null && !name.equalsIgnoreCase(client.getLocalPlayer().getName())
+                && (name.equalsIgnoreCase(config.getHopperName()) || name.equalsIgnoreCase(config.getHopperName2()))) {
+            SetHopAbility(false);
         }
     }
 
-    void SetHopAbility(String name, boolean enabled) {
-        if (!name.isEmpty() && (name.equalsIgnoreCase(config.getHopperName().trim()) || name.equalsIgnoreCase(config.getHopperName2().trim()))) {
-            logOutNotifTick = enabled ? client.getTickCount() : -1;
-            allowHopping = enabled;
-        }
-
+    void SetHopAbility(boolean enabled) {
+        logOutNotifTick = enabled ? client.getTickCount() : -1;
+        System.out.println("Allow hopping: " + allowHopping);
+        allowHopping = enabled;
     }
 
     @Subscribe
@@ -558,7 +568,7 @@ public class SocketWorldHopperPlugin extends Plugin {
     private void hop(boolean previous)
     {
         WorldResult worldResult = worldService.getWorlds();
-        if (worldResult == null || client.getGameState() != GameState.LOGGED_IN)
+        if (worldResult == null || client.getGameState() != GameState.LOGGED_IN || !allowHopping)
         {
             return;
         }
@@ -793,10 +803,12 @@ public class SocketWorldHopperPlugin extends Plugin {
     @Subscribe
     public void onGameTick(GameTick event) {
         currentWorld = client.getWorld();
+
         if (client.getTickCount() == logOutNotifTick) {
             logOutNotifTick = -1;
-            if (config.playSound())
+            if (config.playSound()) {
                 client.playSoundEffect(80);
+            }
         }
 
         if (quickHopTargetWorld == null)

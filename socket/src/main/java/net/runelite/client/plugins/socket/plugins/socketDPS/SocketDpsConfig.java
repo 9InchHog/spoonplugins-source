@@ -30,21 +30,20 @@ public interface SocketDpsConfig extends Config {
 
     @ConfigItem(
             position = 1,
-            keyName = "autoclear",
-            name = "Auto clear on boss kill",
-            description = "clears the damage tracker when a boss dies"
+            keyName = "clearDamage",
+            name = "Clear on boss kill",
+            description = "Clears the damage tracker when a boss dies"
     )
-    default boolean autoclear() {
-        return false;
-    }
+    default clearMode clearDamage() {return clearMode.YOUR_WORLD;}
 
     @ConfigItem(
-            position = 2,
-            keyName = "clearanybosskill",
-            name = "Clear if anyone see boss die",
-            description = "Clears if any socket member sees a boss die (if same world option only reset on same world)"
+            position = 1,
+            keyName = "dmgMessage",
+            name = "Damage Message",
+            description = "Displays a message that displays your damage, total damage, amount healed, and your damage % <br>" +
+                    "Only sends message if you're on the same world as the boss dies"
     )
-    default boolean clearAnyBossKill() {
+    default boolean dmgMessage() {
         return false;
     }
 
@@ -55,16 +54,6 @@ public interface SocketDpsConfig extends Config {
             description = "Only tracks boss damage"
     )
     default boolean onlyBossDps() {
-        return false;
-    }
-
-    @ConfigItem(
-            position = 2,
-            keyName = "onlysameworld",
-            name = "Only track/reset on same world",
-            description = "Only tracks damage and resets if any sees death on same world"
-    )
-    default boolean onlySameWorld() {
         return false;
     }
 
@@ -182,5 +171,9 @@ public interface SocketDpsConfig extends Config {
     @RequiredArgsConstructor
     enum backgroundMode {
         STANDARD, CUSTOM, HIDE
+    }
+
+    enum clearMode {
+        ALWAYS, YOUR_WORLD, ANY_WORLD
     }
 }

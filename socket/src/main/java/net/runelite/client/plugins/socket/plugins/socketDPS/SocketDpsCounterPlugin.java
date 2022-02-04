@@ -7,6 +7,10 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.chat.ChatColorType;
+import net.runelite.client.chat.ChatMessageBuilder;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
@@ -20,13 +24,13 @@ import net.runelite.client.plugins.socket.SocketPlugin;
 import net.runelite.client.plugins.socket.org.json.JSONObject;
 import net.runelite.client.plugins.socket.packet.SocketBroadcastPacket;
 import net.runelite.client.plugins.socket.packet.SocketReceivePacket;
-import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -58,7 +62,7 @@ public class SocketDpsCounterPlugin extends Plugin {
     private SocketDpsDifferenceOverlay differenceOverlay;
 
     @Inject
-    private SocketDpsConfig socketDpsConfig;
+    private SocketDpsConfig config;
 
     @Inject
     private EventBus eventBus;
@@ -72,13 +76,19 @@ public class SocketDpsCounterPlugin extends Plugin {
     @Inject
     private ClientThread clientThread;
 
+    @Inject
+    private ChatMessageManager chatMessageManager;
+
     @Getter
-    private Map<String, Integer> members = new ConcurrentHashMap<>();
+    public Map<String, Integer> members = new ConcurrentHashMap<>();
 
     private List<String> highlights = new ArrayList<>();
 
     @Getter
     private List<String> danger = new ArrayList<>();
+
+    private static final DecimalFormat DMG_FORMAT = new DecimalFormat("#,##0");
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##0.0");
 
     private boolean mirrorMode;
 
@@ -154,7 +164,7 @@ public class SocketDpsCounterPlugin extends Plugin {
         if (client.getLocalPlayer() != null && hitsplat.isMine() && target != client.getLocalPlayer() && target instanceof NPC && hitsplat.getAmount() > 0) {
             NPC npc = (NPC)target;
             int interactingId = npc.getId();
-            if (!socketDpsConfig.onlyBossDps() || BOSSES.contains(interactingId)) {
+            if (!config.onlyBossDps() || BOSSES.contains(interactingId)) {
                 int hit = hitsplat.getAmount();
                 String pName = client.getLocalPlayer().getName();
                 members.put(pName, members.getOrDefault(pName, 0) + hit);
@@ -183,9 +193,12 @@ public class SocketDpsCounterPlugin extends Plugin {
         NPC npc = npcDespawned.getNpc();
         if (npc.isDead() && BOSSES.contains(npc.getId())) {
             log.debug("Boss has died!");
-            if (socketDpsConfig.autoclear())
-                members.clear();
-            if (socketDpsConfig.clearAnyBossKill()) {
+            //if (config.autoclear()) {
+            if (config.clearDamage() == SocketDpsConfig.clearMode.ALWAYS) {
+                clearMembers();
+            }
+            //if (config.clearAnyBossKill()) {
+            if (config.clearDamage() == SocketDpsConfig.clearMode.ANY_WORLD || config.clearDamage() == SocketDpsConfig.clearMode.YOUR_WORLD) {
                 JSONObject data = new JSONObject();
                 data.put("boss", npc.getId());
                 data.put("world", client.getWorld());
@@ -199,16 +212,23 @@ public class SocketDpsCounterPlugin extends Plugin {
     @Subscribe
     public void onSocketReceivePacket(SocketReceivePacket event) {
         try {
-            if (client.getGameState() == GameState.LOGGED_IN && client.getLocalPlayer() != null){
+            if (client.getGameState() == GameState.LOGGED_IN && client.getLocalPlayer() != null) {
                 JSONObject payload = event.getPayload();
-                if (payload.has("dps-clear")){
-                    if (!socketDpsConfig.onlySameWorld() || payload.getJSONObject("dps-clear").getInt("world") == client.getWorld()) {
-                        members.clear();
+                if (payload.has("dps-clear")) {
+                    JSONObject data = payload.getJSONObject("dps-clear");
+                    int world = data.getInt("world");
+
+                    if (config.clearDamage() == SocketDpsConfig.clearMode.ANY_WORLD
+                            || (config.clearDamage() == SocketDpsConfig.clearMode.YOUR_WORLD && world == client.getWorld())) {
+                        clearMembers();
                     }
-                }else if (payload.has("dps-counter")){
+                } else if (payload.has("dps-counter")) {
                     JSONObject data = payload.getJSONObject("dps-counter");
-                    if (!socketDpsConfig.onlySameWorld() || client.getWorld() == data.getInt("world")){
-                        if (!data.getString("player").equals(client.getLocalPlayer().getName())){
+                    int world = data.getInt("world");
+                    //if (!config.onlySameWorld() || client.getWorld() == data.getInt("world")) {
+                    if (config.clearDamage() == SocketDpsConfig.clearMode.ANY_WORLD
+                            || (config.clearDamage() == SocketDpsConfig.clearMode.YOUR_WORLD && world == client.getWorld())) {
+                        if (!data.getString("player").equals(client.getLocalPlayer().getName())) {
                             clientThread.invoke(() -> {
                                 String attacker = data.getString("player");
                                 int targetId = data.getInt("target");
@@ -224,7 +244,7 @@ public class SocketDpsCounterPlugin extends Plugin {
     }
 
     private void updateDpsMember(String attacker, int targetId, int hit) {
-        if (BOSSES.contains(targetId) || !socketDpsConfig.onlyBossDps()) {
+        if (BOSSES.contains(targetId) || !config.onlyBossDps()) {
             members.put(attacker, members.getOrDefault(attacker, 0) + hit);
             members.put("Total", (members.getOrDefault("Total", 0)) + hit);
             members = sortByValue(members);
@@ -233,11 +253,11 @@ public class SocketDpsCounterPlugin extends Plugin {
     }
 
     private <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
-        return (Map<K, V>)map.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, java.util.LinkedHashMap::new));
+        return map.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
     }
 
     public List<String> getHighlights() {
-        String configplayers = socketDpsConfig.getPlayerToHighlight().toLowerCase();
+        String configplayers = config.getPlayerToHighlight().toLowerCase();
         return configplayers.isEmpty() ? Collections.<String>emptyList() : SocketText.fromCSV(configplayers);
     }
 
@@ -254,6 +274,24 @@ public class SocketDpsCounterPlugin extends Plugin {
                         if (members.get(mem2) - members.get(mem1) <= 50)
                             danger.add(mem2);
                 }
+        }
+    }
+
+    private void clearMembers() {
+        if (members.size() > 0) {
+            if (config.dmgMessage() && client.getLocalPlayer() != null) {
+                double totalDamage = members.get("Total") != null ? members.get("Total") : 0;
+                double personalDamage = members.get(client.getLocalPlayer().getName()) != null ? members.get(client.getLocalPlayer().getName()) : 0;
+
+                double percent = 0;
+                if (totalDamage > 0 && personalDamage > 0) {
+                    percent = (personalDamage / totalDamage) * 100;
+                }
+
+                client.addChatMessage(ChatMessageType.FRIENDSCHATNOTIFICATION, "", "Personal Damage: <col=ff0000>" + DMG_FORMAT.format(personalDamage) + "</col>"
+                        + " (<col=ff0000>" + DECIMAL_FORMAT.format(percent) + "%</col>) | Total Damage: <col=ff0000>" + DMG_FORMAT.format(totalDamage) + "</col>", null);
+            }
+            members.clear();
         }
     }
 

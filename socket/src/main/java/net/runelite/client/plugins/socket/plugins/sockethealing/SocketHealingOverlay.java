@@ -34,7 +34,7 @@ public class SocketHealingOverlay extends OverlayPanel {
 
     public Dimension render(Graphics2D graphics) {
         if (config.healingFontType() == SocketHealingConfig.SocketFontType.CUSTOM) {
-            graphics.setFont(new Font(FontManager.getRunescapeFont().toString(), 1, this.config.fontSize()));
+            graphics.setFont(new Font(FontManager.getRunescapeFont().toString(), Font.BOLD, config.fontSize()));
         } else if (config.healingFontType() == SocketHealingConfig.SocketFontType.REGULAR) {
             graphics.setFont(FontManager.getRunescapeFont());
         } else if (config.healingFontType() == SocketHealingConfig.SocketFontType.BOLD) {
@@ -44,38 +44,38 @@ public class SocketHealingOverlay extends OverlayPanel {
         }
 
         ArrayList<LocalPoint> playerPoints = new ArrayList<>();
-        for (Player p : this.client.getPlayers()) {
-            if(p.getName() != null && this.plugin.getPartyMembers().containsKey(p.getName())) {
+        for (Player p : client.getPlayers()) {
+            if(p.getName() != null && plugin.getPartyMembers().containsKey(p.getName())) {
                 String playerName = p.getName();
-                SocketHealingPlayer player = this.plugin.getPartyMembers().get(playerName);
+                SocketHealingPlayer player = plugin.getPartyMembers().get(playerName);
                 int health = player.getHealth();
                 Color highlightColor = Color.WHITE;
                 Color textColor;
 
-                if (health > this.config.greenZone())
+                if (health > config.greenZone())
                     if (config.separateOpactiy()) {
                         highlightColor = config.greenZoneColor();
                     } else {
-                        highlightColor = new Color(this.config.greenZoneColor().getRed(), this.config.greenZoneColor().getGreen(), this.config.greenZoneColor().getBlue(), config.opacity());
+                        highlightColor = new Color(config.greenZoneColor().getRed(), config.greenZoneColor().getGreen(), config.greenZoneColor().getBlue(), config.opacity());
                     }
                     textColor = config.greenZoneColor();
-                if (health <= this.config.greenZone() && health > this.config.orangeZone()) {
+                if (health <= config.greenZone() && health > config.orangeZone()) {
                     if (config.separateOpactiy()) {
                         highlightColor = config.orangeZoneColor();
                     } else {
-                        highlightColor = new Color(this.config.orangeZoneColor().getRed(), this.config.orangeZoneColor().getGreen(), this.config.orangeZoneColor().getBlue(), config.opacity());
+                        highlightColor = new Color(config.orangeZoneColor().getRed(), config.orangeZoneColor().getGreen(), config.orangeZoneColor().getBlue(), config.opacity());
                     }
                     textColor = config.orangeZoneColor();
-                } else if (health <= this.config.orangeZone()) {
+                } else if (health <= config.orangeZone()) {
                     if (config.separateOpactiy()) {
                         highlightColor = config.redZoneColor();
                     } else {
-                        highlightColor = new Color(this.config.redZoneColor().getRed(), this.config.redZoneColor().getGreen(), this.config.redZoneColor().getBlue(), config.opacity());
+                        highlightColor = new Color(config.redZoneColor().getRed(), config.redZoneColor().getGreen(), config.redZoneColor().getBlue(), config.opacity());
                     }
                     textColor = config.redZoneColor();
                 }
 
-                if ((this.config.displayHealth() || (!this.config.hpPlayerNames().equals("") && this.plugin.playerNames.contains(playerName.toLowerCase())))
+                if ((config.displayHealth() || (!config.hpPlayerNames().equals("") && plugin.playerNames.contains(playerName.toLowerCase())))
                         && (!config.dontShowHp() || health < config.dontShowHpThreshold() || config.dontShowHpMode() == SocketHealingConfig.DontShowHpMode.OUTLINE)) {
                     String text = "";
                     if (config.showName()) {
@@ -89,9 +89,9 @@ public class SocketHealingOverlay extends OverlayPanel {
                             offsetHp++;
                         }
                     }
-                    int xOffset = this.config.getIndicatorXOffset();
-                    int yOffset = this.config.getIndicatorYOffset();
-                    Point point = p.getCanvasTextLocation(graphics, text, 0);
+                    int xOffset = config.getIndicatorXOffset();
+                    int yOffset = config.getIndicatorYOffset();
+                    Point point = p.getCanvasTextLocation(graphics, text, config.getIndicatorZOffset());
 
                     if (point != null) {
                         point = new Point(point.getX() + xOffset, point.getY() - yOffset);
@@ -108,12 +108,12 @@ public class SocketHealingOverlay extends OverlayPanel {
                 if (config.highlightedPlayerNames().toLowerCase().contains(playerName.toLowerCase())
                         && (!config.dontShowHp() || health < config.dontShowHpThreshold() || config.dontShowHpMode() == SocketHealingConfig.DontShowHpMode.TEXT)) {
                     if (config.highlightOutline()) {
-                        this.modelOutlineRenderer.drawOutline(p, config.hpThiCC(), highlightColor, config.glow());
+                        modelOutlineRenderer.drawOutline(p, config.hpThiCC(), highlightColor, config.glow());
                     } else if (config.highlightHull()) {
                         Shape poly = p.getConvexHull();
                         if (poly != null) {
                             graphics.setColor(highlightColor);
-                            graphics.setStroke(new BasicStroke(this.config.hpThiCC()));
+                            graphics.setStroke(new BasicStroke(config.hpThiCC()));
                             graphics.draw(poly);
                             graphics.setColor(new Color(highlightColor.getRed(), highlightColor.getGreen(), highlightColor.getBlue(), 0));
                             graphics.fill(poly);
