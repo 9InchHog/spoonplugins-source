@@ -27,7 +27,7 @@ import ProjectVersions.rlVersion
 
 version = "1.0.0"
 
-project.extra["PluginName"] = "Grotesque Guardians"
+project.extra["PluginName"] = "Grotesque Guardians Ext."
 project.extra["PluginDescription"] = "Useful shit for GGs. Made by Tyler"
 
 dependencies {

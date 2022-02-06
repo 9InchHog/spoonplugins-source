@@ -33,8 +33,10 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.multiindicators.MapLocations;
+import net.runelite.client.plugins.multiindicators.MultiIndicatorsPlugin;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.HotkeyListener;
@@ -51,6 +53,7 @@ import java.util.EnumSet;
 	tags = {"freeze", "timers", "barrage", "teleblock", "pklite"},
 	enabledByDefault = false
 )
+//@PluginDependency(MultiIndicatorsPlugin.class)
 public class EffectTimersPlugin extends Plugin
 {
 	private static final int VORKATH_REGION = 9023;

@@ -27,14 +27,12 @@ import java.util.*;
 import java.util.List;
 import java.util.function.Predicate;
 
-@Extension
 @PluginDescriptor(
         name = "Socket - Barbarian Assault",
         description = "Socket BA",
         tags = {"ba", "barb assault", "spoon", "spoonlite"},
 		enabledByDefault = false
 )
-@PluginDependency(SocketPlugin.class)
 public class SocketBAPlugin extends Plugin {
     @Inject
     private Client client;

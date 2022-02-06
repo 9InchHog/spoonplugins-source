@@ -25,7 +25,8 @@ import org.pf4j.Extension;
 @PluginDescriptor(
         name = "<html><font color=#25c550>[S] Cursed",
         description = " I will see too it that this only gets worse",
-        tags = {"spoon", "wtf", "help"}
+        tags = {"spoon", "wtf", "help"},
+        enabledByDefault = false
 )
 
 public class CursedPlugin extends Plugin {

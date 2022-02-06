@@ -54,7 +54,7 @@ tasks {
                     "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
                     "Plugin-Provider" to project.extra["PluginProvider"],
                     "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-Dependencies" to nameToId("multiindicators"),
+                    "Plugin-Dependencies" to "multilines-plugin",
                     "Plugin-License" to project.extra["PluginLicense"]
             ))
         }

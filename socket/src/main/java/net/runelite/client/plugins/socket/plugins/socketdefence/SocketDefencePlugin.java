@@ -23,17 +23,13 @@ import net.runelite.client.plugins.socket.packet.SocketBroadcastPacket;
 import net.runelite.client.plugins.socket.packet.SocketMembersUpdate;
 import net.runelite.client.plugins.socket.packet.SocketReceivePacket;
 import net.runelite.client.plugins.socket.packet.SocketShutdown;
-import net.runelite.client.plugins.tobsounds.TobSoundsPlugin;
-import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.util.ColorUtil;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
-import javax.sound.sampled.*;
 import java.awt.*;
-import java.io.BufferedInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
