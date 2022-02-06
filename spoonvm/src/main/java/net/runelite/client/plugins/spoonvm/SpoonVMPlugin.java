@@ -313,8 +313,11 @@ public class SpoonVMPlugin extends Plugin {
     }
 
     public boolean isInVM() {
-        return WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID() == VM_REGION_NORTH ||
-                WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID() == VM_REGION_SOUTH;
+        if (client.getLocalPlayer() != null && client.getLocalPlayer().getLocalLocation() != null) {
+            return WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID() == VM_REGION_NORTH ||
+                    WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID() == VM_REGION_SOUTH;
+        }
+        return false;
     }
 
     //start of Vm Tracker Plugin

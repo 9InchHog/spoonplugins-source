@@ -193,6 +193,9 @@ public class SpoonNexPlugin extends Plugin {
 		if (event.getActor() instanceof NPC && event.getActor().getName() != null && event.getActor().getName().equals("Nex")) {
 			 if (event.getActor().getAnimation() == 9189 || event.getActor().getAnimation() == 9188 || event.getActor().getAnimation() == 9180) {
 				nex.attacksTilSpecial--;
+				if (nex.phase == 5 && nex.attacksTilSpecial == 0) {
+					nex.attacksTilSpecial = 4;
+				}
 			}
 		}
 	}
@@ -481,6 +484,7 @@ public class SpoonNexPlugin extends Plugin {
 			} else if (text.contains("NOW, THE POWER OF ZAROS!")) {
 				nex.phase = 5;
 				activeMage = null;
+				nex.attacksTilSpecial = 4;
 				nex.invulnerableTicks = 6;
 				playAudio = "zaros.wav";
 				p4Tick = client.getTickCount();

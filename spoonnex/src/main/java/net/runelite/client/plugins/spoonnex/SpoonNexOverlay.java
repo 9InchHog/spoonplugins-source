@@ -31,13 +31,17 @@ class SpoonNexOverlay extends Overlay {
 
 	@Override
 	public Dimension render(Graphics2D graphics) {
-		if(plugin.nex != null) {
+		if (plugin.nex != null) {
+			if (config.showTenTile()) {
+				RenderTile(client, plugin.nex.npc.getWorldLocation().dx(2).dy(2), 23, Color.black, graphics);
+			}
+
 			Font oldFont = graphics.getFont();
 			graphics.setFont(new Font("Arial", Font.BOLD, config.textSize()));
 
 			LocalPoint nexLp = plugin.nex.npc.getLocalLocation();
-			if(!plugin.nex.npc.isDead()) {
-				if(config.invulnerableTicks() && plugin.nex.invulnerableTicks > 0) {
+			if (!plugin.nex.npc.isDead()) {
+				if (config.invulnerableTicks() && plugin.nex.invulnerableTicks > 0) {
 					String text = String.valueOf(plugin.nex.invulnerableTicks);
 					Point textLoc = plugin.nex.npc.getCanvasTextLocation(graphics, text, 25);
 					if (textLoc != null) {
@@ -45,7 +49,7 @@ class SpoonNexOverlay extends Overlay {
 						OverlayUtil.renderTextLocation(graphics, pointShadow, text, Color.BLACK);
 						OverlayUtil.renderTextLocation(graphics, textLoc, text, config.forWhy() ? plugin.forWhyColors.get(0) : Color.WHITE);
 					}
-				} else if((config.attacksTilSpecial() != SpoonNexConfig.AttacksTilSpecialMode.OFF || (plugin.nex.specialTicksLeft > 0 && config.specialTicks())) && plugin.nex.phase != 5) {
+				} else if ((config.attacksTilSpecial() != SpoonNexConfig.AttacksTilSpecialMode.OFF || (plugin.nex.specialTicksLeft > 0 && config.specialTicks()))) {
 					Color color;
 					if(config.forWhy()) {
 						color = plugin.forWhyColors.get(0);
@@ -53,10 +57,10 @@ class SpoonNexOverlay extends Overlay {
 						color = (plugin.nex.attacksTilSpecial > 0 || config.attacksTilSpecial() == SpoonNexConfig.AttacksTilSpecialMode.ON) ? Color.WHITE : Color.RED;
 					}
 					String text = "";
-					if(config.attacksTilSpecial() != SpoonNexConfig.AttacksTilSpecialMode.OFF) {
+					if (config.attacksTilSpecial() != SpoonNexConfig.AttacksTilSpecialMode.OFF) {
 						text += Integer.toString(plugin.nex.attacksTilSpecial);
 					}
-					if(config.specialTicks() && plugin.nex.specialTicksLeft > 0) {
+					if (config.specialTicks() && plugin.nex.specialTicksLeft > 0) {
 						if(text.equals("")) {
 							text += plugin.nex.specialTicksLeft;
 						} else {
@@ -73,7 +77,7 @@ class SpoonNexOverlay extends Overlay {
 				}
 
 				int index = 0;
-				for(GameObject obj : plugin.gameObjects) {
+				for (GameObject obj : plugin.gameObjects) {
 					if (obj.getId() == 42942 && config.shadowSpots() != SpoonNexConfig.ShadowsMode.OFF && plugin.nex.currentSpecial.equals("shadows") && plugin.nex.phase == 2
 							&& plugin.nex.specialTicksLeft > 0) {
 						Color color;
@@ -84,14 +88,14 @@ class SpoonNexOverlay extends Overlay {
 						}
 
 						LocalPoint lp = obj.getLocalLocation();
-						if(lp != null) {
+						if (lp != null) {
 							Polygon poly = Perspective.getCanvasTilePoly(client, lp);
-							renderPoly(graphics, color, poly);
+							renderPoly(graphics, color, poly, 2, 255, 50);
 						}
-					} else if(obj.getId() == 42944){
+					} else if (obj.getId() == 42944){
 						Color color = config.forWhy() ? plugin.raveObjects.get(index) : Color.RED;
 						LocalPoint lp = obj.getLocalLocation();
-						if(lp != null) {
+						if (lp != null) {
 							Polygon poly = Perspective.getCanvasTilePoly(client, lp);
 							renderArea(graphics, color, poly);
 						}
@@ -105,7 +109,7 @@ class SpoonNexOverlay extends Overlay {
 						Polygon tilePoly = Perspective.getCanvasTileAreaPoly(this.client, nexLp, 17);
 						if (tilePoly != null) {
 							Color color = config.forWhy() ? plugin.forWhyColors.get(1) : Color.ORANGE;
-							this.renderPoly(graphics, color, tilePoly);
+							this.renderPoly(graphics, color, tilePoly, 2, 255, 50);
 						}
 					}
 				}
@@ -115,39 +119,39 @@ class SpoonNexOverlay extends Overlay {
 						Polygon tilePoly = Perspective.getCanvasTileAreaPoly(this.client, nexLp, 5);
 						if (tilePoly != null) {
 							Color color = config.forWhy() ? plugin.forWhyColors.get(2) : Color.RED;
-							this.renderPoly(graphics, color, tilePoly);
+							this.renderPoly(graphics, color, tilePoly, 2, 255, 50);
 						}
 					}
 				}
 
-				if(plugin.activeMage != null && (config.mageHighlight() != SpoonNexConfig.MageHighlightMode.ARROW || config.mageHighlight() != SpoonNexConfig.MageHighlightMode.OFF)) {
+				if (plugin.activeMage != null && (config.mageHighlight() != SpoonNexConfig.MageHighlightMode.ARROW || config.mageHighlight() != SpoonNexConfig.MageHighlightMode.OFF)) {
 						Color color = config.forWhy() ? plugin.forWhyColors.get(3) : config.mageHighlightColor();
 						LocalPoint lp = plugin.activeMage.getLocalLocation();
 						if (lp != null) {
 							Polygon poly = Perspective.getCanvasTilePoly(client, lp);
-							renderPoly(graphics, color, poly);
+							renderPoly(graphics, color, poly, 2, 255, 50);
 						}
 				}
 
-				if(plugin.covidList.size() > 0 && config.virus() != SpoonNexConfig.VirusMode.OFF) {
+				if (plugin.covidList.size() > 0 && config.virus() != SpoonNexConfig.VirusMode.OFF) {
 					for(Player p : client.getPlayers()) {
-						if(plugin.covidList.containsKey(p.getName())) {
+						if (plugin.covidList.containsKey(p.getName())) {
 							Color color = config.forWhy() ? plugin.forWhyColors.get(4) : new Color(100, 255, 0);
 							LocalPoint lp = p.getLocalLocation();
 							if (lp != null) {
 								Polygon poly = config.virus() == SpoonNexConfig.VirusMode.TILE ? Perspective.getCanvasTilePoly(client, lp) : Perspective.getCanvasTileAreaPoly(client, lp ,3);
-								renderPoly(graphics, color, poly);
+								renderPoly(graphics, color, poly, 2, 255, 50);
 							}
 						}
 					}
 				}
 
-				if(config.tankHighlight() && plugin.nex.npc.getInteracting() != null) {
+				if (config.tankHighlight() && plugin.nex.npc.getInteracting() != null) {
 					Color color = config.forWhy() ? plugin.forWhyColors.get(5) : config.tankHighlightColor();
 					LocalPoint lp = plugin.nex.npc.getInteracting().getLocalLocation();
 					if (lp != null) {
 						Polygon poly = Perspective.getCanvasTilePoly(client, lp);
-						renderPoly(graphics, color, poly);
+						renderPoly(graphics, color, poly,2, 255, 50);
 					}
 				}
 
@@ -206,17 +210,17 @@ class SpoonNexOverlay extends Overlay {
 				}
 			}
 
-			if(plugin.nex != null && plugin.nex.currentSpecial.equals("wrath") && config.wrathWarning()) {
+			if (plugin.nex != null && plugin.nex.currentSpecial.equals("wrath") && config.wrathWarning()) {
 				if (nexLp != null) {
 					Polygon tilePoly = Perspective.getCanvasTileAreaPoly(this.client, nexLp, 7);
 					if (tilePoly != null) {
 						Color color = config.forWhy() ? plugin.forWhyColors.get(6) : Color.RED;
-						this.renderPoly(graphics, color, tilePoly);
+						this.renderPoly(graphics, color, tilePoly, 2, 255, 50);
 					}
 				}
 			}
 
-			if(config.forWhy() && plugin.ratJamTicks > 0) {
+			if (config.forWhy() && plugin.ratJamTicks > 0) {
 				BufferedImage icon = ImageUtil.loadImageResource(SpoonNexPlugin.class, plugin.ratJamFrame + ".png");
 				if (icon != null) {
 					graphics.drawImage(icon, plugin.ratJamPoint.getX(), plugin.ratJamPoint.getY(), 25, 25, null);
@@ -227,12 +231,12 @@ class SpoonNexOverlay extends Overlay {
 		return null;
 	}
 
-	protected void renderPoly(Graphics2D graphics, Color color, Polygon polygon) {
+	protected void renderPoly(Graphics2D graphics, Color color, Polygon polygon, int strokeWidth, int outlineAlpha, int fillAlpha) {
 		if (polygon != null) {
-			graphics.setColor(color);
-			graphics.setStroke(new BasicStroke(2));
+			graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), outlineAlpha));
+			graphics.setStroke(new BasicStroke(strokeWidth));
 			graphics.draw(polygon);
-			graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 50));
+			graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), fillAlpha));
 			graphics.fill(polygon);
 		}
 	}
@@ -244,8 +248,17 @@ class SpoonNexOverlay extends Overlay {
 		}
 	}
 
+	void RenderTile(Client client, WorldPoint point, int size, Color color, Graphics2D graphics) {
+		LocalPoint nexLoc;
+		Polygon nexPoly;
+		if ((nexLoc = LocalPoint.fromWorld(client, point)) != null && (nexPoly = Perspective.getCanvasTileAreaPoly(
+				client, new LocalPoint(nexLoc.getX() - 128, nexLoc.getY() - 128), size)) != null) {
+			renderPoly(graphics, color, nexPoly, 2, 255, 0);
+		}
+	}
+
 	private void drawRunwayTiles(Graphics2D graphics, WorldPoint leftTop, WorldPoint middle, WorldPoint rightBottom, int index, Color color) {
-        if(config.noEscapeRunway() == SpoonNexConfig.NoEscapeRunwayMode.RAVEST){
+        if (config.noEscapeRunway() == SpoonNexConfig.NoEscapeRunwayMode.RAVEST) {
             color = plugin.raveRunway.get(index);
             drawTile(graphics, leftTop, color);
             index++;
@@ -254,7 +267,7 @@ class SpoonNexOverlay extends Overlay {
             index++;
             color = plugin.raveRunway.get(index);
             drawTile(graphics, rightBottom, color);
-        }else {
+        } else {
             drawTile(graphics, leftTop, color);
             drawTile(graphics, middle, color);
             drawTile(graphics, rightBottom, color);
@@ -262,7 +275,7 @@ class SpoonNexOverlay extends Overlay {
     }
 
 	protected void drawTile(Graphics2D graphics, WorldPoint point, Color color) {
-		if(client.getLocalPlayer() != null) {
+		if (client.getLocalPlayer() != null) {
 			WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
 			if (point.distanceTo(playerLocation) < 32) {
 				LocalPoint lp = LocalPoint.fromWorld(client, point);

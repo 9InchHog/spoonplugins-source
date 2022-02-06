@@ -273,6 +273,16 @@ public interface SpoonNexConfig extends Config {
 	default boolean getShouldSetInput() {return false;}
 
 	@ConfigItem(
+			keyName = "showTenTile",
+			name = "Ten Tile Range",
+			description = "range of nex's sight",
+			position = 13
+	)
+	default boolean showTenTile() {
+		return false;
+	}
+
+	@ConfigItem(
 			keyName = "olmPTSD",
 			name = "Olm PTSD",
 			description = "Makes Smoke phase a little more familiar",

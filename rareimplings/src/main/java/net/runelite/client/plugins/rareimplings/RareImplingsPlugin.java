@@ -40,34 +40,34 @@ public class RareImplingsPlugin extends Plugin {
     }
 
     protected void startUp() throws Exception {
-        this.overlayManager.add(this.overlay);
+        overlayManager.add(overlay);
     }
 
     protected void shutDown() throws Exception {
-        this.overlayManager.remove(this.overlay);
+        overlayManager.remove(overlay);
     }
 
     @Subscribe
     public void onNpcChanged(NpcChanged e) {
-        long hash = (e.getNpc().getIndex() << 32 | (e.getOld().getId() & 0xFFFF) << 16 | e.getNpc().getId() & 0xFFFF);
-        Integer count = this.changes.get(Long.valueOf(hash));
-        int num = (count == null) ? 0 : count.intValue();
-        this.changes.put(Long.valueOf(hash), Integer.valueOf(num + 1));
+        long hash = ((long) e.getNpc().getIndex() << 32 | (long) (e.getOld().getId() & 0xFFFF) << 16 | e.getNpc().getId() & 0xFFFF);
+        Integer count = changes.get(hash);
+        int num = (count == null) ? 0 : count;
+        changes.put(hash, num + 1);
     }
 
     @Subscribe
     public void onCommandExecuted(CommandExecuted e) {
         if ("impstats".equals(e.getCommand())) {
-            this.client.addChatMessage(ChatMessageType.FRIENDSCHATNOTIFICATION, "", "Num. changes: " + this.changes.size(), (String)null);
+            client.addChatMessage(ChatMessageType.FRIENDSCHATNOTIFICATION, "", "Num. changes: " + this.changes.size(), (String)null);
             for (Map.Entry<Long, Integer> en : this.changes.entrySet()) {
-                long hash = ((Long)en.getKey()).longValue();
+                long hash = en.getKey();
                 int index = (int)(hash >> 32L);
-                NPCComposition comp1 = this.client.getNpcDefinition((int)(hash >> 16L) & 0xFFFF);
-                NPCComposition comp2 = this.client.getNpcDefinition((int)(hash & 0xFFFFL));
+                NPCComposition comp1 = client.getNpcDefinition((int)(hash >> 16L) & 0xFFFF);
+                NPCComposition comp2 = client.getNpcDefinition((int)(hash & 0xFFFFL));
                 String type1 = comp1.getName().replace(" impling", "");
                 String type2 = comp2.getName().replace(" impling", "");
                 String mes = "<col=00ff00>[" + index + "] " + type1 + "->" + type2 + ": " + en.getValue() + "</col>";
-                this.client.addChatMessage(ChatMessageType.FRIENDSCHATNOTIFICATION, "", mes, (String)null);
+                client.addChatMessage(ChatMessageType.FRIENDSCHATNOTIFICATION, "", mes, null);
             }
         }
         System.out.println("Command: " + e.getCommand());

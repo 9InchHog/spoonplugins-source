@@ -1,5 +1,6 @@
 package net.runelite.client.plugins.socket;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,18 +23,18 @@ import net.runelite.client.plugins.socket.hash.AES256;
 import net.runelite.client.plugins.socket.org.json.JSONArray;
 import net.runelite.client.plugins.socket.org.json.JSONObject;
 import net.runelite.client.plugins.socket.packet.*;
-import net.runelite.client.plugins.spoontobstats.SpoonTobStatsInfobox;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
-import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.ImageUtil;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+
+import static net.runelite.api.NpcID.*;
 
 @Slf4j
 @Extension
@@ -271,12 +272,15 @@ public class SocketPlugin extends Plugin {
         onCheckAnimationChanged(event);
     }
 
-    private boolean nyloSlaveInteracting(NPC target) {
-        if (target != null && target.getName() != null && target.getName().toLowerCase().contains("nylocas")) {
-            return !target.getName().toLowerCase().contains("vasil");
-        } else {
-            return false;
+    protected static final Set<Integer> VERZIK_P2_IDS = ImmutableSet.of(
+            VERZIK_VITUR_8372, VERZIK_VITUR_10833, VERZIK_VITUR_10850
+    );
+
+    private boolean ignoredNPCs(NPC target) {
+        if (target != null && target.getName() != null) {
+            return !VERZIK_P2_IDS.contains(target.getId());
         }
+        return false;
     }
 
     private boolean otherShitBow(int i) {
@@ -310,7 +314,7 @@ public class SocketPlugin extends Plugin {
             if (anim == i) {
                 int lvl = client.getBoostedSkillLevel(Skill.STRENGTH);
                 boolean piety = deferredCheck.isPiety();
-                boolean is118 = lvl == 118 || lvl == 120;
+                boolean is118 = lvl >= 118;
                 if (!piety || !is118) {
                     String s = "attacked";
                     if (i == clawSpec) {
@@ -330,7 +334,7 @@ public class SocketPlugin extends Plugin {
                         } else {
                             s2 = " without piety.";
                         }
-                    } else if (!is118) {
+                    } else {
                         s2 = " with " + lvl + " strength.";
                     }
 
@@ -387,7 +391,7 @@ public class SocketPlugin extends Plugin {
                 }
 
                 if (p.equals(client.getLocalPlayer()) && anim != 0 && anim != -1) {
-                    if (!nyloSlaveInteracting(target)) {
+                    if (!ignoredNPCs(target)) {
                         int style = client.getVar(VarPlayer.ATTACK_STYLE);
                         if (anim == scy) {
                             String b = "";

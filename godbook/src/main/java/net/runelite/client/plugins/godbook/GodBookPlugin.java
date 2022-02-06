@@ -1,28 +1,31 @@
 package net.runelite.client.plugins.godbook;
 
 import com.google.inject.Provides;
+import lombok.Getter;
 import net.runelite.api.Client;
 import net.runelite.api.events.AnimationChanged;
-import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.widgets.Widget;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @Extension
-@PluginDescriptor(name = "Godbook", description = "Displays how long since someone preached.", tags = {"preach", "godbook"})
+@PluginDescriptor(
+        name = "Godbook",
+        description = "Displays how long since someone preached.",
+        tags = {"preach", "godbook"}
+)
 public class GodBookPlugin extends Plugin {
     private static final Logger log = LoggerFactory.getLogger(GodBookPlugin.class);
 
@@ -38,27 +41,21 @@ public class GodBookPlugin extends Plugin {
     @Inject
     private Client client;
 
+    @Inject
+    private DelayUtils delayUtils;
+
+    @Getter
     private ArrayList<String> names;
 
+    @Getter
     private ArrayList<Integer> ticks;
 
+    @Getter
     private boolean active;
 
     private boolean isShowing;
 
     private ArrayList<Integer> animationList;
-
-    public ArrayList<String> getNames() {
-        return this.names;
-    }
-
-    public ArrayList<Integer> getTicks() {
-        return this.ticks;
-    }
-
-    public boolean isActive() {
-        return this.active;
-    }
 
     private boolean mirrorMode;
 
@@ -68,17 +65,17 @@ public class GodBookPlugin extends Plugin {
     }
 
     protected void startUp() throws Exception {
-        this.active = false;
-        this.isShowing = false;
-        this.names = new ArrayList<>();
-        this.ticks = new ArrayList<>();
-        this.animationList = new ArrayList<>();
+        active = false;
+        isShowing = false;
+        names = new ArrayList<>();
+        ticks = new ArrayList<>();
+        animationList = new ArrayList<>();
         updateAnimationList();
     }
 
     protected void shutDown() throws Exception {
-        this.overlayManager.remove(this.overlay);
-        this.isShowing = false;
+        overlayManager.remove(overlay);
+        isShowing = false;
     }
 
     @Subscribe
@@ -87,12 +84,12 @@ public class GodBookPlugin extends Plugin {
     }
 
     private void updateAnimationList() {
-        List<String> parsedAnimations = Arrays.asList(this.config.animations().split(","));
-        this.animationList.clear();
+        String[] parsedAnimations = config.animations().split(",");
+        animationList.clear();
         for (String s : parsedAnimations) {
             try {
-                if (s != "")
-                    this.animationList.add(Integer.valueOf(Integer.parseInt(s)));
+                if (!s.equals(""))
+                    animationList.add(Integer.parseInt(s));
             } catch (NumberFormatException e) {
                 log.warn("Failed to parse: " + s);
             }
@@ -100,50 +97,50 @@ public class GodBookPlugin extends Plugin {
     }
 
     private void addPlayer(String name) {
-        this.active = true;
-        this.ticks.add(Integer.valueOf(0));
-        this.names.add(name);
+        active = true;
+        ticks.add(0);
+        names.add(name);
     }
 
     public void stop() {
-        this.active = false;
-        this.ticks.clear();
-        this.names.clear();
+        active = false;
+        ticks.clear();
+        names.clear();
     }
 
     private boolean containsAnimation(int id) {
-        return this.animationList.contains(Integer.valueOf(id));
+        return animationList.contains(id);
     }
 
     public void increment() {
         ArrayList<Integer> toRemove = new ArrayList<>();
         int i;
-        for (i = 0; i < this.ticks.size(); i++) {
-            if (((Integer)this.ticks.get(i)).intValue() > this.config.maxTicks() - 2)
-                toRemove.add(Integer.valueOf(i));
+        for (i = 0; i < ticks.size(); i++) {
+            if (ticks.get(i) > config.maxTicks() - 2)
+                toRemove.add(i);
         }
-        for (i = 0; i < this.ticks.size(); i++) {
-            if (toRemove.contains(Integer.valueOf(i))) {
-                this.ticks.remove(i);
-                this.names.remove(i);
+        for (i = 0; i < ticks.size(); i++) {
+            if (toRemove.contains(i)) {
+                ticks.remove(i);
+                names.remove(i);
             }
         }
-        if (this.ticks.size() == 0)
+        if (ticks.size() == 0)
             stop();
-        for (i = 0; i < this.ticks.size(); i++) {
-            int temp = ((Integer)this.ticks.get(i)).intValue() + 1;
-            this.ticks.set(i, Integer.valueOf(temp));
+        for (i = 0; i < ticks.size(); i++) {
+            int temp = ticks.get(i) + 1;
+            ticks.set(i, temp);
         }
     }
 
     @Subscribe
     public void onAnimationChanged(AnimationChanged event) {
-        if ((this.config.verzikOnly() && inRegion(new int[] { 12611, 12612 })) || !this.config.verzikOnly())
+        if ((config.verzikOnly() && inRegion(12611, 12612)) || !config.verzikOnly())
             if (event.getActor().getAnimation() == 7155 || event.getActor().getAnimation() == 7154 || event.getActor().getAnimation() == 1336 || containsAnimation(event.getActor().getAnimation())) {
-                if (!this.active) {
-                    this.overlayManager.add(this.overlay);
-                    this.isShowing = true;
-                    this.active = true;
+                if (!active) {
+                    overlayManager.add(overlay);
+                    isShowing = true;
+                    active = true;
                 }
                 addPlayer(event.getActor().getName());
             }
@@ -151,17 +148,44 @@ public class GodBookPlugin extends Plugin {
 
     @Subscribe
     public void onGameTick(GameTick event) {
-        if (this.isShowing && this.ticks.size() == 0) {
-            this.overlayManager.remove(this.overlay);
-            this.isShowing = false;
+        if (isShowing && ticks.size() == 0) {
+            overlayManager.remove(overlay);
+            isShowing = false;
         }
-        if (this.active)
+        if (active) {
             increment();
+        }
+
+        if (config.leftClick()) {
+            Widget preach = client.getWidget(219, 1);
+            if (preach != null && !preach.isHidden() && !preach.isSelfHidden()) {
+                for (Widget child : preach.getDynamicChildren()) {
+                    if (child.getText().contains("Select a relevant passage")) {
+                        //(max - min) + min
+                        int delay = delayUtils.nextInt(0, 241);
+                        switch (config.keyToPress()) {
+                            case ONE:
+                                delayUtils.delayKey(KeyEvent.VK_1, delay);
+                                break;
+                            case TWO:
+                                delayUtils.delayKey(KeyEvent.VK_2, delay);
+                                break;
+                            case THREE:
+                                delayUtils.delayKey(KeyEvent.VK_3, delay);
+                                break;
+                            case FOUR:
+                                delayUtils.delayKey(KeyEvent.VK_4, delay);
+                                break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public boolean inRegion(int... regions) {
-        if (this.client.getMapRegions() != null)
-            for (int i : this.client.getMapRegions()) {
+        if (client.getMapRegions() != null)
+            for (int i : client.getMapRegions()) {
                 for (int j : regions) {
                     if (i == j)
                         return true;
@@ -177,5 +201,4 @@ public class GodBookPlugin extends Plugin {
             mirrorMode = true;
         }
     }*/
-
 }

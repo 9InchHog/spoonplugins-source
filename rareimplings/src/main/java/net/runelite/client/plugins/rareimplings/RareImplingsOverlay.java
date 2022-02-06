@@ -44,16 +44,16 @@ public class RareImplingsOverlay extends Overlay {
                     desc = npc.getName().replace(" impling", "");
                 }
                 if (index == 13051) {
-                    renderNpcOverlay(g, npc, String.valueOf(index) + " NW (" + desc + ")", desc, Color.RED);
+                    renderNpcOverlay(g, npc, index + " NW (" + desc + ")", desc, Color.RED);
                     continue;
                 }
                 if (index == 13100) {
-                    renderNpcOverlay(g, npc, String.valueOf(index) + " SE (" + desc + ")", desc, Color.RED);
+                    renderNpcOverlay(g, npc, index + " SE (" + desc + ")", desc, Color.RED);
                     continue;
                 }
                 if (index <= 20000)
                     continue;
-                renderNpcOverlay(g, npc, String.valueOf(index) + " DYN (" + desc + ")", desc, Color.RED);
+                renderNpcOverlay(g, npc, index + " DYN (" + desc + ")", desc, Color.RED);
             }
         return null;
     }

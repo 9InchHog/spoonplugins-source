@@ -107,15 +107,11 @@ public class PhoenixNecklacePlugin extends Plugin {
             maxHp = this.client.getRealSkillLevel(Skill.HITPOINTS);
             cakeDamage = ((int) Math.floor((double) currentHp * .1)) + 1;
             int amuletSlot = Objects.requireNonNull(this.client.getLocalPlayer()).getPlayerComposition().getEquipmentId(KitType.AMULET);
-            if(amuletSlot == 11090){
-                pneckEquipped = true;
-            }else{
-                pneckEquipped = false;
-            }
+            pneckEquipped = amuletSlot == 11090;
 
-            if(this.client.isInInstancedRegion()){
+            if (this.client.isInInstancedRegion()){
                 inRegion = checkRegionId(true);
-            }else{
+            } else{
                 inRegion = checkRegionId(false);
             }
         }

@@ -29,10 +29,7 @@ import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Extension
 @PluginDescriptor(
@@ -196,6 +193,23 @@ public class DetailedTimersPlugin extends Plugin {
 
     private boolean authenticated = false;
 
+    public ArrayList<Integer> HELMS = new ArrayList<>(Arrays.asList(
+            ItemID.SERPENTINE_HELM, ItemID.TANZANITE_HELM, ItemID.MAGMA_HELM, ItemID.NEITIZNOT_FACEGUARD, ItemID.INQUISITORS_GREAT_HELM, ItemID.TORVA_FULL_HELM));
+    public ArrayList<Integer> TORSOS = new ArrayList<>(Arrays.asList(
+            ItemID.BANDOS_CHESTPLATE, ItemID.FIGHTER_TORSO, ItemID.FIGHTER_TORSO_L, ItemID.INQUISITORS_HAUBERK, ItemID.TORVA_PLATEBODY));
+    public ArrayList<Integer> SPEC_WEAPONS = new ArrayList<>(Arrays.asList(
+            ItemID.DRAGON_WARHAMMER, ItemID.DRAGON_WARHAMMER_20785));
+    public ArrayList<Integer> DEFENDERS = new ArrayList<>(Arrays.asList(
+            ItemID.AVERNIC_DEFENDER, ItemID.AVERNIC_DEFENDER_L));
+    public ArrayList<Integer> BOOTS = new ArrayList<>(List.of(
+            ItemID.PRIMORDIAL_BOOTS));
+    public ArrayList<Integer> GLOVES = new ArrayList<>(List.of(
+            ItemID.FEROCIOUS_GLOVES));
+    public ArrayList<Integer> CAPES = new ArrayList<>(Arrays.asList(
+            ItemID.INFERNAL_CAPE, ItemID.INFERNAL_CAPE_23622, ItemID.INFERNAL_CAPE_21297, ItemID.INFERNAL_CAPE_L,
+            ItemID.INFERNAL_MAX_CAPE, ItemID.INFERNAL_MAX_CAPE_21285, ItemID.INFERNAL_MAX_CAPE_L));
+    public ArrayList<Integer> AMULETS = new ArrayList<>(Arrays.asList(
+            ItemID.AMULET_OF_TORTURE, ItemID.AMULET_OF_TORTURE_OR));
 
     @Provides
     DetailedTimersConfig provideConfig(ConfigManager configManager) {
@@ -1064,40 +1078,40 @@ public class DetailedTimersPlugin extends Plugin {
         String equipmentStatus = "";
         boolean flag = true;
         int helmet = comp.getEquipmentId(KitType.HEAD);
-        if (helmet != 13197 && helmet != 13199 && helmet != 12931 && helmet != 24271 && helmet != 24419) {
+        if (!HELMS.contains(helmet)) {
             equipmentStatus = equipmentStatus + "Helm, ";
             flag = false;
         }
         int torso = comp.getEquipmentId(KitType.TORSO);
-        if (torso != 24420 && torso != 11832 && torso != 10551) {
+        if (!TORSOS.contains(torso)) {
             equipmentStatus = equipmentStatus + "Torso, ";
             flag = false;
         }
         int weapon = comp.getEquipmentId(KitType.WEAPON);
-        if (weapon == 13576 || weapon == 20785) {
+        if (SPEC_WEAPONS.contains(weapon)) {
             int shield = comp.getEquipmentId(KitType.SHIELD);
-            if (shield != 22322 && shield != 24186) {
+            if (!DEFENDERS.contains(shield)) {
                 equipmentStatus = equipmentStatus + "Defender, ";
                 flag = false;
             }
         }
         int boots = comp.getEquipmentId(KitType.BOOTS);
-        if (boots != 13239) {
+        if (!BOOTS.contains(boots)) {
             equipmentStatus = equipmentStatus + "Boots, ";
             flag = false;
         }
         int gloves = comp.getEquipmentId(KitType.HANDS);
-        if (gloves != 22981) {
+        if (!GLOVES.contains(gloves)) {
             equipmentStatus = equipmentStatus + "Gloves, ";
             flag = false;
         }
         int cape = comp.getEquipmentId(KitType.CAPE);
-        if (cape != 21285 && cape != 24133 && cape != 21295 && cape != 23622 && cape != 24224 && cape != 21297 && cape != 21284) {
+        if (!CAPES.contains(cape)) {
             equipmentStatus = equipmentStatus + "Cape, ";
             flag = false;
         }
         int amulet = comp.getEquipmentId(KitType.AMULET);
-        if (amulet != 19553 && amulet != 20366) {
+        if (!AMULETS.contains(amulet)) {
             equipmentStatus = equipmentStatus + "Amulet, ";
             flag = false;
         }

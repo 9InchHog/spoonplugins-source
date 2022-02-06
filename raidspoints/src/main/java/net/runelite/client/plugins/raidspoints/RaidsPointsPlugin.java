@@ -73,95 +73,100 @@ public class RaidsPointsPlugin extends Plugin {
     }
 
     protected void startUp() throws Exception {
-        this.ticks = 0;
+        ticks = 0;
         this.pointsPanel = new PointsPanel(this, this.config, this.client, this.iconManager);
-        this.pointsPanel.init();
-        if (this.config.soloPanel()) {
-            this.pointsPanel.setSolo(true);
-            this.pointsPanel.updateSolo();
+        pointsPanel.init();
+        if (config.soloPanel()) {
+            pointsPanel.setSolo(true);
+            pointsPanel.updateSolo();
         } else {
-            this.pointsPanel.setSolo(false);
-            this.pointsPanel.update();
+            pointsPanel.setSolo(false);
+            pointsPanel.update();
         }
         BufferedImage iconPoint = ImageUtil.loadImageResource(getClass(), "cox.png");
-        this.navButton2 = NavigationButton.builder().tooltip("CoX Points").icon(iconPoint).priority(9).panel(this.pointsPanel).build();
-        if (this.config.ptsPanel()) {
-            this.clientToolbar.addNavigation(this.navButton2);
+        navButton2 = NavigationButton.builder()
+                .tooltip("CoX Points")
+                .icon(iconPoint)
+                .priority(9)
+                .panel(pointsPanel)
+                .build();
+        if (config.ptsPanel()) {
+            clientToolbar.addNavigation(navButton2);
         }
     }
 
     protected void shutDown() throws Exception {
-        this.clientToolbar.removeNavigation(this.navButton2);
+        clientToolbar.removeNavigation(navButton2);
     }
 
     @Subscribe
     public void onConfigChanged(ConfigChanged event) {
-        if (event.getGroup().equals("raidspoints") && this.config.ptsPanel()) {
-            this.clientToolbar.addNavigation(this.navButton2);
-            if (this.config.soloPanel()) {
-                this.pointsPanel.updateSolo();
-                this.pointsPanel.setSolo(true);
+        if (event.getGroup().equals("raidspoints") && config.ptsPanel()) {
+            clientToolbar.addNavigation(navButton2);
+            if (config.soloPanel()) {
+                pointsPanel.updateSolo();
+                pointsPanel.setSolo(true);
             } else {
-                this.pointsPanel.update();
-                this.pointsPanel.setSolo(false);
+                pointsPanel.update();
+                pointsPanel.setSolo(false);
             }
-            this.pointsPanel.revalidate();
-        } else if (event.getGroup().equals("raidspoints") && !this.config.ptsPanel()){
-            this.clientToolbar.removeNavigation(this.navButton2);
+            pointsPanel.revalidate();
+        } else if (event.getGroup().equals("raidspoints") && !config.ptsPanel()){
+            clientToolbar.removeNavigation(navButton2);
         }
     }
 
     @Subscribe
     public void onGameTick(GameTick tick) {
-        this.ticks++;
-        if (this.ticks > 20) {
-            if (this.config.soloPanel()) {
-                this.pointsPanel.updateSolo();
+        ticks++;
+        if (ticks > 20) {
+            if (config.soloPanel()) {
+                pointsPanel.updateSolo();
             } else {
-                this.pointsPanel.update();
+                pointsPanel.update();
             }
-            this.ticks = 0;
+            ticks = 0;
         }
-        this.pointsPanel.updateTime();
+        pointsPanel.updateTime();
     }
 
     @Subscribe
     public void onChatMessage(ChatMessage event) {
         String text = Text.removeTags(event.getMessage());
-        if (this.raidToAdd != null)
-            this.raidToAdd.cm = false;
+        if (raidToAdd != null)
+            raidToAdd.cm = false;
         if (text.startsWith("Your completed Chambers of Xeric count is:")) {
-            PointsPanel var10000 = this.pointsPanel;
-            PointsPanel var10001 = this.pointsPanel;
+            PointsPanel var10000 = pointsPanel;
+            PointsPanel var10001 = pointsPanel;
             ((data)PointsPanel.raids.get(PointsPanel.raids.size() - 1)).kc = Integer.parseInt(text.replaceAll("\\D+", ""));
-            var10000 = this.pointsPanel;
-            var10001 = this.pointsPanel;
+            var10000 = pointsPanel;
+            var10001 = pointsPanel;
             ((data)PointsPanel.raids.get(PointsPanel.raids.size() - 1)).cm = false;
-            if (this.config.soloPanel()) {
-                this.pointsPanel.updateSolo();
+            if (config.soloPanel()) {
+                pointsPanel.updateSolo();
             } else {
-                this.pointsPanel.update();
+                pointsPanel.update();
             }
         }
         if (text.startsWith("Your completed Chambers of Xeric Challenge Mode count is:")) {
-            PointsPanel var10000 = this.pointsPanel;
-            PointsPanel var10001 = this.pointsPanel;
+            PointsPanel var10000 = pointsPanel;
+            PointsPanel var10001 = pointsPanel;
             ((data)PointsPanel.raids.get(PointsPanel.raids.size() - 1)).kc = Integer.parseInt(text.replaceAll("\\D+", ""));
-            var10000 = this.pointsPanel;
-            var10001 = this.pointsPanel;
+            var10000 = pointsPanel;
+            var10001 = pointsPanel;
             PointsPanel.raids.get(PointsPanel.raids.size() - 1).cm = true;
-            if (this.config.soloPanel()) {
-                this.pointsPanel.updateSolo();
+            if (config.soloPanel()) {
+                pointsPanel.updateSolo();
             } else {
-                this.pointsPanel.update();
+                pointsPanel.update();
             }
         }
-        if (this.client.getVar(Varbits.IN_RAID) == 1 && event.getType() == ChatMessageType.FRIENDSCHATNOTIFICATION) {
+        if (client.getVar(Varbits.IN_RAID) == 1 && event.getType() == ChatMessageType.FRIENDSCHATNOTIFICATION) {
             String message = Text.removeTags(event.getMessage());
             if (message.startsWith("The raid has begun!"))
-                this.raidToAdd.start = new Date();
+                raidToAdd.start = new Date();
             if (message.startsWith("Congratulations - your raid is complete!"))
-                this.raidToAdd.finish = new Date();
+                raidToAdd.finish = new Date();
             if (message.startsWith("Congratulations - your raid is complete!")) {
                 Matcher matcher2 = RAIDS_DURATION_PATTERN.matcher(message);
                 if (matcher2.find())
@@ -179,22 +184,22 @@ public class RaidsPointsPlugin extends Plugin {
 
     private void parseTime(Matcher matcher) {
         int seconds = timeStringToSeconds(matcher.group("duration"));
-        this.raidToAdd.timeTaken = seconds;
-        this.raidToAdd.personal = this.client.getVar(Varbits.PERSONAL_POINTS);
-        this.raidToAdd.total = this.client.getVar(Varbits.TOTAL_POINTS);
-        this.raidToAdd.hr = (int)(this.raidToAdd.personal / this.raidToAdd.timeTaken * 3600.0F);
-        if (this.config.ptsPanel()) {
+        raidToAdd.timeTaken = seconds;
+        raidToAdd.personal = client.getVar(Varbits.PERSONAL_POINTS);
+        raidToAdd.total = client.getVar(Varbits.TOTAL_POINTS);
+        raidToAdd.hr = (int)(raidToAdd.personal / raidToAdd.timeTaken * 3600.0F);
+        if (config.ptsPanel()) {
             log.info("RAID TIME: {}", seconds);
-            PointsPanel var10000 = this.pointsPanel;
-            PointsPanel.raids.add(this.raidToAdd);
-            if (!this.pointsPanel.timer.started)
-                this.pointsPanel.timer.start(this.raidToAdd.timeTaken);
-            if (this.config.soloPanel()) {
-                this.pointsPanel.updateSolo();
+            PointsPanel var10000 = pointsPanel;
+            PointsPanel.raids.add(raidToAdd);
+            if (!pointsPanel.timer.started)
+                pointsPanel.timer.start(raidToAdd.timeTaken);
+            if (config.soloPanel()) {
+                pointsPanel.updateSolo();
             } else {
-                this.pointsPanel.update();
+                pointsPanel.update();
             }
-            this.raidToAdd = new data();
+            raidToAdd = new data();
         }
     }
 }

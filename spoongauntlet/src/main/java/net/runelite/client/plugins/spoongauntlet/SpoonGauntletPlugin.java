@@ -149,11 +149,9 @@ public class SpoonGauntletPlugin extends Plugin {
         hunllefStomped = false;
         if (client.getGameState() != GameState.STARTING && client.getGameState() != GameState.UNKNOWN) {
             completeStartup = false;
-            clientThread.invoke(new Runnable() {
-                public void run() {
-                    timer.initStates();
-                    completeStartup = true;
-                }
+            clientThread.invoke(() -> {
+                timer.initStates();
+                completeStartup = true;
             });
         } else {
             completeStartup = true;

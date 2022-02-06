@@ -1,4 +1,6 @@
 /*
+ * Copyright (c) 2021, Big Mf Tyler <github.com/losingticks>
+ * Copyright (c) 2021, Sundar <https://github.com/Sundar-Gandu>
  * Copyright (c) 2021, BickusDiggus <https://github.com/BickusDiggus>
  * All rights reserved.
  *
@@ -70,7 +72,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
         name = "Reflection",
-        description = "Fixed by Bickus",
+        description = "Changes the client name, image, and color scheme",
         tags = {"config", "rewriter", "reflection"},
         enabledByDefault = false
 )
