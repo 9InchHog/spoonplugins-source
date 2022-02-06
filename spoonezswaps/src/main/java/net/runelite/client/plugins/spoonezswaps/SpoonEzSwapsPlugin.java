@@ -27,6 +27,7 @@ import net.runelite.client.plugins.menuentryswapper.Swap;
 import net.runelite.client.plugins.spoonezswaps.config.*;
 import net.runelite.client.plugins.spoonezswaps.util.AbstractComparableEntry;
 import net.runelite.client.plugins.spoonezswaps.util.CustomSwaps;
+import net.runelite.client.plugins.spoonezswaps.util.DelayUtils;
 import net.runelite.client.plugins.spoonezswaps.util.MinionData;
 import net.runelite.client.plugins.spoontob.SpoonTobConfig;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -37,11 +38,16 @@ import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import javax.sound.sampled.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.time.Instant;
 import java.util.*;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -94,6 +100,9 @@ public class SpoonEzSwapsPlugin extends Plugin {
 
 	@Inject
 	private OverlayManager overlayManager;
+
+	@Inject
+	private DelayUtils delayUtils;
 
 	private static <T extends Comparable<? super T>> void sortedInsert(List<T> list, T value) // NOPMD: UnusedPrivateMethod: false positive
 	{
@@ -1131,11 +1140,38 @@ public class SpoonEzSwapsPlugin extends Plugin {
 		}
 
 		updateitemCounts();
+
+		if (config.afkConstruction()) {
+			Widget createMenu = client.getWidget(458, 1);
+			Widget demonSendBank = client.getWidget(219, 1);
+			Widget demonPayment = client.getWidget(231, 5);
+			int delay = delayUtils.nextInt(0, 578);
+
+			if (demonSendBank != null && !demonSendBank.isHidden() && !demonSendBank.isSelfHidden()) {
+				for (Widget child : demonSendBank.getDynamicChildren()) {
+					if (child.getText().contains("Really remove it?") || child.getText().contains("Repeat last task?")) {
+						delayUtils.delayKey(KeyEvent.VK_1, delay);
+					} else if (child.getText().contains("Okay, here's 10,000 coins.")) {
+						delayUtils.delayKey(KeyEvent.VK_1, delay);
+					}
+				}
+			}
+
+			if (demonPayment != null && !demonPayment.isHidden() && !demonPayment.isSelfHidden()) {
+				if (demonPayment.getText().contains("Master, if thou desire")) {
+					delayUtils.delayKey(KeyEvent.VK_SPACE, delay);
+				}
+			}
+
+			if (createMenu != null && !createMenu.isHidden() && !createMenu.isSelfHidden()) {
+				delayUtils.delayKey(KeyEvent.VK_6, delay);
+			}
+		}
 	}
 
 	@Subscribe
 	private void onWidgetLoaded (WidgetLoaded event) {
-		if(event.getGroupId() == WidgetInfo.DEPOSIT_BOX_INVENTORY_ITEMS_CONTAINER.getGroupId()) {
+		if (event.getGroupId() == WidgetInfo.DEPOSIT_BOX_INVENTORY_ITEMS_CONTAINER.getGroupId()) {
 			depositTab = true;
 		}
 	}
