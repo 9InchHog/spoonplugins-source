@@ -27,7 +27,7 @@ import ProjectVersions.rlVersion
 
 version = "1.0.0"
 
-project.extra["PluginName"] = "Never Logout"
+project.extra["PluginName"] = "[S] Never Logout"
 project.extra["PluginDescription"] = "Allows you to stay logged in for 6 hours"
 
 dependencies {

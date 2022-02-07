@@ -27,7 +27,7 @@ import ProjectVersions.rlVersion
 
 version = "1.0.0"
 
-project.extra["PluginName"] = "Specbar"
+project.extra["PluginName"] = "Permanent Specbar"
 project.extra["PluginDescription"] = "Sets a permanent specbar for all weapons"
 
 dependencies {

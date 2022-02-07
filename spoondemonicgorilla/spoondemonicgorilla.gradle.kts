@@ -27,7 +27,7 @@ import ProjectVersions.rlVersion
 
 version = "1.0.0"
 
-project.extra["PluginName"] = "Demonic Gorillas"
+project.extra["PluginName"] = "Spoon Demonic Gorillas"
 project.extra["PluginDescription"] = "Count demonic gorilla attacks and display their next possible attack styles"
 
 dependencies {

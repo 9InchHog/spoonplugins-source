@@ -25,15 +25,11 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.menuentryswapper.Swap;
 import net.runelite.client.plugins.spoonezswaps.config.*;
-import net.runelite.client.plugins.spoonezswaps.util.AbstractComparableEntry;
 import net.runelite.client.plugins.spoonezswaps.util.CustomSwaps;
 import net.runelite.client.plugins.spoonezswaps.util.DelayUtils;
 import net.runelite.client.plugins.spoonezswaps.util.MinionData;
-import net.runelite.client.plugins.spoontob.SpoonTobConfig;
 import net.runelite.client.ui.overlay.OverlayManager;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;

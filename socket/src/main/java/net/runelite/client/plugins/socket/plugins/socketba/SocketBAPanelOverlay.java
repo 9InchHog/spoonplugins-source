@@ -66,7 +66,7 @@ public class SocketBAPanelOverlay extends OverlayPanel {
 						.text(displayCall)
 						.build());
 
-				this.panelComponent.setPreferredSize(new Dimension(20 + (displayCall.length() * 5), 24));
+				this.panelComponent.setPreferredSize(new Dimension(23 + (displayCall.length() * 5), 24));
 			}
 		}
         return super.render(graphics);

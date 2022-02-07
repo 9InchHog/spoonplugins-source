@@ -27,7 +27,7 @@ import ProjectVersions.rlVersion
 
 version = "1.0.0"
 
-project.extra["PluginName"] = "Zulrah"
+project.extra["PluginName"] = "[S] Zulrah"
 project.extra["PluginDescription"] = "All-in-one plugin for Zulrah"
 
 dependencies {

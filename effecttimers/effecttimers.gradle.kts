@@ -27,7 +27,7 @@ import ProjectVersions.rlVersion
 
 version = "1.0.0"
 
-project.extra["PluginName"] = "Effect Timers"
+project.extra["PluginName"] = "[S] Effect Timers"
 project.extra["PluginDescription"] = "Effect timer overlay on players"
 
 dependencies {
@@ -54,7 +54,7 @@ tasks {
                     "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
                     "Plugin-Provider" to project.extra["PluginProvider"],
                     "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-Dependencies" to "multilines-plugin",
+                    "Plugin-Dependencies" to "smultilines-plugin",
                     "Plugin-License" to project.extra["PluginLicense"]
             ))
         }

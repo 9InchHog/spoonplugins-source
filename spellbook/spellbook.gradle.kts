@@ -27,7 +27,7 @@ import ProjectVersions.rlVersion
 
 version = "1.0.0"
 
-project.extra["PluginName"] = "Spellbook"
+project.extra["PluginName"] = "[S] Spellbook"
 project.extra["PluginDescription"] = "Resizes and reorders spells in the spellbook"
 
 dependencies {

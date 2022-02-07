@@ -195,9 +195,6 @@ public class SocketHealingPlugin extends Plugin {
     @Subscribe
     public void onMenuEntryAdded(MenuEntryAdded event) {
         if (config.hpMenu()) {
-            int type = event.getType();
-            if (type >= 2000)
-                type -= 2000;
             Color color = Color.GREEN;
             String target = event.getTarget().replaceAll("[^A-Za-z0-9-()<>=]", " ");
             for (String playerName : getPartyMembers().keySet()) {
@@ -238,11 +235,13 @@ public class SocketHealingPlugin extends Plugin {
             for (MenuEntry me : menuEntries) {
                 String option = Text.removeTags(me.getOption()).toLowerCase();
                 String target = Text.removeTags(me.getTarget()).toLowerCase();
+
                 if (option.contains("cast") && target.contains("heal other ->")) {
+                    target = target.substring(target.indexOf("-> ") + 3, target.indexOf("  (level-")).replaceAll("[^A-Za-z0-9]", " ");
                     for (String playerName : getPartyMembers().keySet()) {
                         if(target.contains(playerName.toLowerCase())) {
                             if(partyMembers.get(playerName).getHealth() < lowestHp) {
-                                lowestHpName = playerName;
+                                lowestHpName = playerName.toLowerCase();
                                 lowestHp = partyMembers.get(playerName).getHealth();
                             }
                             break;
@@ -254,8 +253,11 @@ public class SocketHealingPlugin extends Plugin {
             for (MenuEntry me : menuEntries) {
                 String option = Text.removeTags(me.getOption()).toLowerCase();
                 String target = Text.removeTags(me.getTarget()).toLowerCase();
-                if (option.contains("cast") && target.contains("heal other ->") && !target.contains(lowestHpName.toLowerCase())) {
-                    me.setDeprioritized(true);
+                if (option.contains("cast") && target.contains("heal other ->")) {
+                    target = target.substring(target.indexOf("-> ") + 3, target.indexOf("  (level-")).replaceAll("[^A-Za-z0-9]", " ");
+                    if (!target.contains(lowestHpName)) {
+                        me.setDeprioritized(true);
+                    }
                 }
             }
         }

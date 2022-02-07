@@ -22,11 +22,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.coxadditions.overlays.*;
 import net.runelite.client.plugins.coxadditions.utils.HealingPoolInfo;
 import net.runelite.client.plugins.coxadditions.utils.ShamanInfo;
-import net.runelite.client.plugins.spoonezswaps.util.AbstractComparableEntry;
-import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;

@@ -3,7 +3,6 @@ package net.runelite.client.plugins.socket.plugins.socketba;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.inject.Provides;
 import net.runelite.api.*;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
@@ -14,12 +13,15 @@ import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.socket.SocketPlugin;
 import net.runelite.client.plugins.socket.org.json.JSONArray;
 import net.runelite.client.plugins.socket.org.json.JSONObject;
 import net.runelite.client.plugins.socket.packet.SocketBroadcastPacket;
 import net.runelite.client.plugins.socket.packet.SocketReceivePacket;
 import net.runelite.client.ui.overlay.OverlayManager;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import java.awt.*;
@@ -27,12 +29,14 @@ import java.util.*;
 import java.util.List;
 import java.util.function.Predicate;
 
+@Extension
 @PluginDescriptor(
-        name = "Socket - Barbarian Assault",
-        description = "Socket BA",
-        tags = {"ba", "barb assault", "spoon", "spoonlite"},
+		name = "Socket - Barbarian Assault",
+		description = "Socket BA",
+		tags = {"ba", "barb assault", "spoon", "spoonlite"},
 		enabledByDefault = false
 )
+@PluginDependency(SocketPlugin.class)
 public class SocketBAPlugin extends Plugin {
     @Inject
     private Client client;
@@ -73,7 +77,6 @@ public class SocketBAPlugin extends Plugin {
 	public int equippedWeaponTypeVarbit = -1;
 	public AttackStyle attackStyle;
 	public String roleWidgetText = "";
-	public Map<WorldPoint, Integer> eggMap = new HashMap<>();
 	public ArrayList<GameObject> vendingMachines = new ArrayList<>();
 	public Map<GameObject, Color> eggHoppers = new HashMap<>();
 	public Map<NPC, Color> cannons = new HashMap<>();
@@ -91,15 +94,15 @@ public class SocketBAPlugin extends Plugin {
     }
 
     protected void startUp() throws Exception {
+		this.overlayManager.add(this.overlay);
+        this.overlayManager.add(this.panelOverlay);
+		this.overlayManager.add(this.itemOverlay);
 		reset();
 		attCall = "";
 		colCall = "";
 		healCall = "";
 		defCall = "";
 		roleWidgetText = "";
-		this.overlayManager.add(this.overlay);
-        this.overlayManager.add(this.panelOverlay);
-		this.overlayManager.add(this.itemOverlay);
 		vendingMachines.clear();
 		cannons.clear();
 		eggHoppers.clear();
@@ -107,15 +110,15 @@ public class SocketBAPlugin extends Plugin {
     }
 
     protected void shutDown() throws Exception {
+		this.overlayManager.remove(this.overlay);
+        this.overlayManager.remove(this.panelOverlay);
+		this.overlayManager.remove(this.itemOverlay);
         reset();
 		attCall = "";
 		colCall = "";
 		healCall = "";
 		defCall = "";
 		roleWidgetText = "";
-        this.overlayManager.remove(this.overlay);
-        this.overlayManager.remove(this.panelOverlay);
-		this.overlayManager.remove(this.itemOverlay);
 		attackStyleVarbit = -1;
 		equippedWeaponTypeVarbit = -1;
 		vendingMachines.clear();
@@ -131,79 +134,42 @@ public class SocketBAPlugin extends Plugin {
 		rangersDead = false;
 		arrowEquiped = 0;
 		roleWidgetText = "";
-		eggMap.clear();
 		queen = null;
     }
 
 	@Subscribe
 	private void onConfigChanged(ConfigChanged event) {
-		Widget hpWidget = client.getWidget(WidgetInfo.BA_HEAL_TEAMMATES.getGroupId(), WidgetInfo.BA_HEAL_TEAMMATES.getChildId());
-		if(hpWidget != null) {
-			hpWidget.setHidden(config.hideHpOverlay());
-		}
-	}
-
-	@Subscribe
-	private void onItemSpawned(ItemSpawned event) {
 		if(this.client.getVar(Varbits.IN_GAME_BA) == 1) {
-			int id = event.getItem().getId();
-			if(id == 10534 || id == 10531 || id == 10532 || id == 10533) {
-				for (int i=0; i<event.getItem().getQuantity(); i++) {
-					eggMap.put(event.getTile().getWorldLocation(), id);
-				}
+			Widget hpWidget = client.getWidget(WidgetInfo.BA_HEAL_TEAMMATES.getGroupId(), WidgetInfo.BA_HEAL_TEAMMATES.getChildId());
+			if(hpWidget != null && event.getKey().equals("hideHpOverlay")) {
+				hpWidget.setHidden(config.hideHpOverlay());
 			}
-		}
-	}
-
-	@Subscribe
-	private void onItemDespawned(ItemDespawned event) {
-		if(this.client.getVar(Varbits.IN_GAME_BA) == 1) {
-			eggMap.remove(event.getTile().getWorldLocation(), event.getItem().getId());
 		}
 	}
 
 	@Subscribe
 	private void onGameObjectSpawned(GameObjectSpawned event) {
-		if(this.client.getVar(Varbits.IN_GAME_BA) == 1) {
-			int id = event.getGameObject().getId();
-			if(id == 20241 || id == 20242 || id == 20243) {
-				vendingMachines.removeIf(obj -> obj.getId() == id);
-				vendingMachines.add(event.getGameObject());
-			} else if(id == 20267) {
-				eggHoppers.put(event.getGameObject(), Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
-			}
-		}
-	}
-
-	@Subscribe
-	private void onGameObjectDespawned(GameObjectDespawned event) {
-		if(this.client.getVar(Varbits.IN_GAME_BA) == 1) {
-			int id = event.getGameObject().getId();
-			if(id == 20241 || id == 20242 || id == 20243) {
-				vendingMachines.remove(event.getGameObject());
-			} else if(id == 20267) {
-				eggHoppers.remove(event.getGameObject());
-			}
+		int id = event.getGameObject().getId();
+		if(id == 20241 || id == 20242 || id == 20243) {
+			vendingMachines.removeIf(obj -> obj.getId() == id);
+			vendingMachines.add(event.getGameObject());
+		} else if(id == 20267) {
+			eggHoppers.remove(event.getGameObject());
+			eggHoppers.put(event.getGameObject(), Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
 		}
 	}
 
 	@Subscribe
 	private void onGroundObjectSpawned(GroundObjectSpawned event) {
-		if(this.client.getVar(Varbits.IN_GAME_BA) == 1) {
-			int id = event.getGroundObject().getId();
-			if(id >= 20136  && id <= 20147) {
-				discoTiles.put(event.getGroundObject(), Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
-			}
+		if(event.getGroundObject().getId() >= 20136  && event.getGroundObject().getId() <= 20147) {
+			discoTiles.put(event.getGroundObject(), Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
 		}
 	}
 
 	@Subscribe
 	private void onGroundObjectDespawned(GroundObjectDespawned event) {
-		if(this.client.getVar(Varbits.IN_GAME_BA) == 1) {
-			int id = event.getGroundObject().getId();
-			if(id >= 20136  && id <= 20147) {
-				discoTiles.remove(event.getGroundObject());
-			}
+		if(event.getGroundObject().getId() >= 20136  && event.getGroundObject().getId() <= 20147) {
+			discoTiles.remove(event.getGroundObject());
 		}
 	}
 
@@ -590,9 +556,9 @@ public class SocketBAPlugin extends Plugin {
 
 		if (this.config.leftClickEggs() && type >= 18 && type <= 22 && (id == 10531 || id == 10532 || id == 10533 || id == 10534)) {
 			if(!role.equals("Collector")
-					|| ((colCall.equalsIgnoreCase("Green egg") && (id == 10532 || id == 10533))
-					|| (colCall.equalsIgnoreCase("Red egg") && (id == 10531 || id == 10533))
-					|| (colCall.equalsIgnoreCase("Blue egg") && (id == 10531 || id == 10532)))){
+					|| ((colCall.equalsIgnoreCase("Green eggs") && (id == 10532 || id == 10533))
+					|| (colCall.equalsIgnoreCase("Red eggs") && (id == 10531 || id == 10533))
+					|| (colCall.equalsIgnoreCase("Blue eggs") && (id == 10531 || id == 10532)))){
 				return false;
 			}
 		}
@@ -601,7 +567,6 @@ public class SocketBAPlugin extends Plugin {
 			if(option.contains("attack")) {
 				WeaponType wepType =  WeaponType.getWeaponType(equippedWeaponTypeVarbit);
 				if (!role.equals("Attacker")){
-					System.out.println("Hide Not attack\n");
 					return false;
 				} else if(wepType == WeaponType.TYPE_3 || wepType == WeaponType.TYPE_5 || wepType == WeaponType.TYPE_7 || wepType == WeaponType.TYPE_19) {
 					if((arrowEquiped == 22227 && !attCall.contains("Controlled"))

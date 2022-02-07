@@ -27,7 +27,7 @@ import ProjectVersions.rlVersion
 
 version = "1.0.0"
 
-project.extra["PluginName"] = "Spec Orb"
+project.extra["PluginName"] = "Permanent Spec Orb"
 project.extra["PluginDescription"] = "Make the special attack orb work everywhere with all weapons"
 
 dependencies {

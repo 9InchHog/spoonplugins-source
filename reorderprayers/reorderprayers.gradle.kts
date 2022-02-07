@@ -27,7 +27,7 @@ import ProjectVersions.rlVersion
 
 version = "1.0.0"
 
-project.extra["PluginName"] = "Reorder Prayers"
+project.extra["PluginName"] = "[S] Reorder Prayers"
 project.extra["PluginDescription"] = "Allows you to reorder your prayers in the prayer tab"
 
 dependencies {

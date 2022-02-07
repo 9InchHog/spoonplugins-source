@@ -36,6 +36,7 @@ dependencies {
 
     compileOnly("com.openosrs:runelite-api:$rlVersion")
     compileOnly("com.openosrs:runelite-client:$rlVersion")
+    compileOnly(project(":spoontob"))
 
     compileOnly(Libraries.guice)
     compileOnly(Libraries.lombok)

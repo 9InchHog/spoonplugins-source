@@ -27,7 +27,7 @@ import ProjectVersions.rlVersion
 
 version = "1.0.0"
 
-project.extra["PluginName"] = "Godbook"
+project.extra["PluginName"] = "Spoon Godbook"
 project.extra["PluginDescription"] = "Displays how long since someone preached. Made by Caps"
 
 dependencies {

@@ -27,7 +27,7 @@ import ProjectVersions.rlVersion
 
 version = "1.0.0"
 
-project.extra["PluginName"] = "Multi Lines"
+project.extra["PluginName"] = "[S] Multi Lines"
 project.extra["PluginDescription"] = "Show borders of multicombat and PvP safezones"
 
 dependencies {

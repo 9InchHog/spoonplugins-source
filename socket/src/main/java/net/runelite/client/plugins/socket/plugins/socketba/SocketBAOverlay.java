@@ -23,8 +23,8 @@ public class SocketBAOverlay extends OverlayPanel {
 		this.config = config;
 		this.client = client;
 		setPosition(OverlayPosition.DYNAMIC);
-		setPriority(OverlayPriority.HIGHEST);
-		setLayer(OverlayLayer.ABOVE_WIDGETS);
+		setPriority(OverlayPriority.HIGH);
+		setLayer(OverlayLayer.ABOVE_SCENE);
 	}
 
 	public Dimension render(Graphics2D graphics) {
@@ -81,28 +81,8 @@ public class SocketBAOverlay extends OverlayPanel {
 				}
 			}
 
-			if (config.highlightEggs() && plugin.role.equals("Collector") && plugin.eggMap.size() > 0) {
-				plugin.eggMap.forEach((wp, id) -> {
-					LocalPoint point = LocalPoint.fromWorld(this.client, wp);
-					if(point != null) {
-						Polygon poly = Perspective.getCanvasTilePoly(this.client, point);
-						Color color = Color.WHITE;
-						if(id == 10534){
-							color = Color.YELLOW;
-						}else if(plugin.colCall.equals("Green egg") && id == 10531){
-							color = Color.GREEN;
-						}else if(plugin.colCall.equals("Red egg") && id == 10532){
-							color = Color.RED;
-						}else if(plugin.colCall.equals("Blue egg") && id == 10533){
-							color = Color.BLUE;
-						}
-
-						if(color != Color.WHITE) {
-							graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 255));
-							graphics.drawPolygon(poly);
-						}
-					}
-				});
+			if (config.highlightEggs()) {
+				renderTileObjects(graphics);
 			}
 
 			if (config.highlightVendingMachine()) {
@@ -126,7 +106,7 @@ public class SocketBAOverlay extends OverlayPanel {
 					}
 				});
 
-				plugin.cannons.forEach((o,c) -> {
+				plugin.eggHoppers.forEach((o,c) -> {
 					if(o != null && o.getConvexHull() != null) {
 						graphics.setColor(c);
 						graphics.setStroke(new BasicStroke((float) plugin.cannonWidth));
@@ -163,6 +143,57 @@ public class SocketBAOverlay extends OverlayPanel {
 			graphics.draw(polygon);
 			graphics.setColor(fillColor);
 			graphics.fill(polygon);
+		}
+	}
+
+	private void renderTileObjects(Graphics2D graphics) {
+		Scene scene = client.getScene();
+		Tile[][][] tiles = scene.getTiles();
+		int z = client.getPlane();
+
+		for (int x = 0; x < Constants.SCENE_SIZE; ++x) {
+			for (int y = 0; y < Constants.SCENE_SIZE; ++y) {
+				Tile tile = tiles[z][x][y];
+
+				if (tile != null) {
+					if (client.getLocalPlayer() != null) {
+						renderGroundItems(graphics, tile, client.getLocalPlayer());
+					}
+				}
+			}
+		}
+	}
+
+	private void renderGroundItems(Graphics2D graphics, Tile tile, Player player) {
+		ItemLayer itemLayer = tile.getItemLayer();
+		if (itemLayer != null) {
+			if (player.getLocalLocation().distanceTo(itemLayer.getLocalLocation()) <= 2400) {
+				Node current = itemLayer.getBottom();
+				while (current instanceof TileItem) {
+					TileItem item = (TileItem) current;
+					Color color = Color.WHITE;
+					String text = "";
+					int id = item.getId();
+					if(id == 10534){
+						color = Color.YELLOW;
+						text = "Yellow egg";
+					}else if(plugin.colCall.equalsIgnoreCase("Green eggs") && id == 10531){
+						color = Color.GREEN;
+						text = "Green egg";
+					}else if(plugin.colCall.equalsIgnoreCase("Red eggs") && id == 10532){
+						color = Color.RED;
+						text = "Red egg";
+					}else if(plugin.colCall.equalsIgnoreCase("Blue eggs") && id == 10533){
+						color = Color.BLUE;
+						text = "Blue egg";
+					}
+
+					if (color != Color.WHITE)
+						OverlayUtil.renderTileOverlay(graphics, itemLayer, text, color);
+
+					current = current.getNext();
+				}
+			}
 		}
 	}
 }
