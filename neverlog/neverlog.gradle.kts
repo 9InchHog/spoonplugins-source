@@ -25,9 +25,9 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.0"
+version = "1.0.1"
 
-project.extra["PluginName"] = "[S] Never Logout"
+project.extra["PluginName"] = "Spoon Never Log"
 project.extra["PluginDescription"] = "Allows you to stay logged in for 6 hours"
 
 dependencies {

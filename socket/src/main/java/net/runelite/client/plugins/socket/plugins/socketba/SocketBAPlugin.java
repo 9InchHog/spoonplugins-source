@@ -139,7 +139,7 @@ public class SocketBAPlugin extends Plugin {
 
 	@Subscribe
 	private void onConfigChanged(ConfigChanged event) {
-		if(this.client.getVar(Varbits.IN_GAME_BA) == 1) {
+		if(event.getGroup().equals("socketBa") && this.client.getVar(Varbits.IN_GAME_BA) == 1) {
 			Widget hpWidget = client.getWidget(WidgetInfo.BA_HEAL_TEAMMATES.getGroupId(), WidgetInfo.BA_HEAL_TEAMMATES.getChildId());
 			if(hpWidget != null && event.getKey().equals("hideHpOverlay")) {
 				hpWidget.setHidden(config.hideHpOverlay());
