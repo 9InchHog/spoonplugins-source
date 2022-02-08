@@ -4,6 +4,7 @@ import net.runelite.api.Point;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.*;
 
 import javax.annotation.Nonnull;
@@ -109,7 +110,11 @@ public abstract class RoomOverlay extends Overlay {
     }
 
     protected void renderSteroidsTextLocation(Graphics2D graphics, String txtString, int fontSize, int fontStyle, Color fontColor, Point canvasPoint) {
-        graphics.setFont(new Font("Arial", fontStyle, fontSize));
+        if (config.resizeFont()) {
+            graphics.setFont(new Font(FontManager.getRunescapeSmallFont().toString(), config.fontWeight().getFont(), config.tobFontSize()));
+        } else {
+            graphics.setFont(new Font(FontManager.getRunescapeSmallFont().toString(), fontStyle, fontSize));
+        }
         if (canvasPoint != null) {
             Point canvasCenterPoint = new Point(canvasPoint.getX(), canvasPoint.getY());
             Point canvasCenterPointShadow = new Point(canvasPoint.getX() + 1, canvasPoint.getY() + 1);

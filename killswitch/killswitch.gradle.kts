@@ -25,10 +25,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.6"
+version = "1.0.0"
 
-project.extra["PluginName"] = "Spoon Tob"
-project.extra["PluginDescription"] = "All-in-one plugin for Theatre of Blood"
+project.extra["PluginName"] = "Kill Switch"
+project.extra["PluginDescription"] = "Toggles your enabled external plugins"
 
 dependencies {
     annotationProcessor(Libraries.lombok)

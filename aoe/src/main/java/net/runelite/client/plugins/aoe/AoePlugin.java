@@ -272,8 +272,9 @@ public class AoePlugin extends Plugin
 			case OLM_FIRE_LINE:
 				return config.olmFlameWall();
 			case CORPOREAL_BEAST:
-			case CORPOREAL_BEAST_DARK_CORE:
 				return config.isCorpEnabled();
+			case CORPOREAL_BEAST_DARK_CORE:
+				return config.isDarkCoreEnabled();
 			case WINTERTODT_SNOW_FALL:
 				return config.isWintertodtEnabled();
 			case XARPUS_POISON_AOE:

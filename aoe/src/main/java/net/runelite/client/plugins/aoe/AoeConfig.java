@@ -214,9 +214,7 @@ public interface AoeConfig extends Config {
 			keyName = "crystalSize",
 			name = "Olm Falling Crystals Tile",
 			description = "Makes the falling crystal single tile instead of a 3x3",
-			section = coxSection/*,
-			hidden = true,
-			unhide = "olmFallingCrystal"*/
+			section = coxSection
 	)
 	default boolean crystalSize() { return false; }
 
@@ -311,12 +309,68 @@ public interface AoeConfig extends Config {
 
 	//Other section
 	@ConfigItem(
+			keyName = "addyDrags",
+			name = "Addy Drags",
+			description = "Show Bad Areas",
+			section = otherSection
+	)
+	default boolean addyDrags() { return true; }
+
+	@ConfigItem(
+			keyName = "cerbFire",
+			name = "Cerberus Fire",
+			description = "Configures if Cerberus fire tile markers are displayed",
+			section = otherSection
+	)
+	default boolean isCerbFireEnabled() { return true; }
+
+	@ConfigItem(
+			keyName = "chaosfanatic",
+			name = "Chaos Fanatic",
+			description = "Configures whether or not AoE Projectile Warnings for Chaos Fanatic are displayed",
+			section = otherSection
+	)
+	default boolean isChaosFanaticEnabled() { return true; }
+
+	@ConfigItem(
+			keyName = "corp",
+			name = "Corporeal Beast",
+			description = "Configures whether or not AoE Projectile Warnings for the Corporeal Beast are displayed",
+			section = otherSection
+	)
+	default boolean isCorpEnabled() { return true; }
+
+	@ConfigItem(
+			keyName = "darkCore",
+			name = "Corporeal Beast - Dark Core",
+			description = "Configures whether or not AoE Projectile Warnings for the Corporeal Beast's dark core is displayed",
+			section = otherSection
+	)
+	default boolean isDarkCoreEnabled() { return true; }
+
+	@ConfigItem(
 			keyName = "archaeologistaoe",
 			name = "Crazy Archaeologist",
 			description = "Configures whether or not AoE Projectile Warnings for Archaeologist is displayed",
 			section = otherSection
 	)
 	default boolean isArchaeologistEnabled() { return true; }
+
+	@ConfigItem(
+			keyName = "demonicGorilla",
+			name = "Demonic Gorilla",
+			description = "Configures if Demonic Gorilla boulder tile markers are displayed",
+			section = otherSection
+	)
+	default boolean isDemonicGorillaEnabled() {return true;}
+
+	@ConfigItem(
+			keyName = "drake",
+			name = "Drakes Breath",
+			description = "Configures if Drakes Breath tile markers are displayed",
+			section = otherSection
+	)
+	default boolean isDrakeEnabled() { return true; }
 
 	@ConfigItem(
 			keyName = "galvek",
@@ -343,73 +397,12 @@ public interface AoeConfig extends Config {
 	default boolean isVetionEnabled() { return true; }
 
 	@ConfigItem(
-			keyName = "chaosfanatic",
-			name = "Chaos Fanatic",
-			description = "Configures whether or not AoE Projectile Warnings for Chaos Fanatic are displayed",
-			section = otherSection
-	)
-	default boolean isChaosFanaticEnabled() { return true; }
-
-	@ConfigItem(
-			keyName = "corp",
-			name = "Corporeal Beast",
-			description = "Configures whether or not AoE Projectile Warnings for the Corporeal Beast are displayed",
-			section = otherSection
-	)
-	default boolean isCorpEnabled() { return true; }
-
-	@ConfigItem(
 			keyName = "wintertodt",
 			name = "Wintertodt Snow Fall",
 			description = "Configures whether or not AOE Projectile Warnings for the Wintertodt snow fall are displayed",
 			section = otherSection
 	)
 	default boolean isWintertodtEnabled() { return true; }
-
-	@ConfigItem(
-			keyName = "addyDrags",
-			name = "Addy Drags",
-			description = "Show Bad Areas",
-			section = otherSection
-	)
-	default boolean addyDrags() { return true; }
-
-	@ConfigItem(
-			keyName = "drake",
-			name = "Drakes Breath",
-			description = "Configures if Drakes Breath tile markers are displayed",
-			section = otherSection
-	)
-	default boolean isDrakeEnabled() { return true; }
-
-	@ConfigItem(
-			keyName = "cerbFire",
-			name = "Cerberus Fire",
-			description = "Configures if Cerberus fire tile markers are displayed",
-			section = otherSection
-	)
-	default boolean isCerbFireEnabled() { return true; }
-
-	@ConfigItem(
-			keyName = "demonicGorilla",
-			name = "Demonic Gorilla",
-			description = "Configures if Demonic Gorilla boulder tile markers are displayed",
-			section = otherSection
-	)
-	default boolean isDemonicGorillaEnabled() {return true;}
-
-
-	/*@ConfigItem(
-			keyName = "vorkath",
-			name = "Vorkath",
-			description = "Configure what AoE projectiles you should be warned for at Vorkath",
-			section = otherSection,
-			enumClass = VorkathMode.class
-	)
-	default EnumSet<VorkathMode> vorkathModes()
-	{
-		return EnumSet.allOf(VorkathMode.class);
-	}*/
 
 	@ConfigItem(
 			keyName = "vorkathBombs",

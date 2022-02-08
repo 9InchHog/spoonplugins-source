@@ -206,7 +206,8 @@ public class VerzikOverlay extends RoomOverlay {
                             targetText = "Glennjamin";
                         } else if (k.getInteracting().getName().equalsIgnoreCase("xelywood")) {
                             targetText = "Femboy";
-                        } else if (k.getInteracting().getName().equalsIgnoreCase("afka") || k.getInteracting().getName().equalsIgnoreCase("rattori")) {
+                        } else if (k.getInteracting().getName().equalsIgnoreCase("afka") || k.getInteracting().getName().equalsIgnoreCase("rattori")
+                                || k.getInteracting().getName().equalsIgnoreCase("sadgecry") || k.getInteracting().getName().equalsIgnoreCase("squish that")) {
                             targetText = "thisiswhyudonthavedust";
                         } else if (k.getInteracting().getName().equalsIgnoreCase("messywalcott")) {
                             targetText = "Rat";

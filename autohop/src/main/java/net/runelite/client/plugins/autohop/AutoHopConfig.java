@@ -159,6 +159,15 @@ public interface AutoHopConfig extends Config
     default boolean autoCloseChatbox() {return false;}
 
     @ConfigItem(
+            keyName = "ignoredPlayers",
+            name = "Hop Players Blacklist",
+            description = "Will not hop when these players are visible",
+            section = "hop",
+            position = 12
+    )
+    default String ignoredPlayers() {return "";}
+
+    @ConfigItem(
             keyName = "american",
             name = "American",
             description = "Allow hopping to American worlds",

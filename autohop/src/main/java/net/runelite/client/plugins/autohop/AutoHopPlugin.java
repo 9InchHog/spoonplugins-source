@@ -17,6 +17,7 @@ import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.WorldService;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -29,9 +30,7 @@ import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import java.awt.event.KeyEvent;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.Executors;
 
 @Extension
@@ -46,6 +45,7 @@ public class AutoHopPlugin extends Plugin
     private static final int DISPLAY_SWITCHER_MAX_ATTEMPTS = 3;
     private static final int GRAND_EXCHANGE_REGION = 12598;
     private static final WorldArea FEROX_ENCLAVE_AREA = new WorldArea(new WorldPoint(3125, 3618, 0), new WorldPoint(3153, 3639, 0));
+    public Set<String> blacklistName;
 
     @Inject
     private Client client;
@@ -70,6 +70,18 @@ public class AutoHopPlugin extends Plugin
     }
 
     @Subscribe
+    public void onConfigChanged(ConfigChanged event) {
+        if (event.getGroup().equals("autohop")) {
+            if (event.getKey().equals("ignoredPlayers")) {
+                blacklistName = new HashSet<>();
+                for (String s : net.runelite.api.util.Text.COMMA_SPLITTER.split(config.ignoredPlayers().toLowerCase())) {
+                    blacklistName.add(s);
+                }
+            }
+        }
+    }
+
+    @Subscribe
     private void onGameStateChanged(GameStateChanged event)
     {
         final Player local = client.getLocalPlayer();
@@ -82,47 +94,46 @@ public class AutoHopPlugin extends Plugin
         if (config.returnInventory()) {
             openInventory = true;
         }
-        for (Player player : this.client.getPlayers()) {
-            if (player == null || player
-                    .equals(local) || (this.config
-                    .cmbBracket() && !PvPUtil.isAttackable(this.client, player)) || (this.config
-                    .hopRadius() && player.getWorldLocation().distanceTo(local.getWorldLocation()) > this.config.playerRadius()))
+        for (Player player : client.getPlayers()) {
+            if (player == null || player.equals(local) || (config.cmbBracket() && !PvPUtil.isAttackable(client, player))
+                    || (config.hopRadius() && player.getWorldLocation().distanceTo(local.getWorldLocation()) > config.playerRadius()))
                 continue;
-            if (this.config.alwaysHop()) {
+            if (config.alwaysHop()) {
                 shouldHop(player);
                 continue;
             }
-            if (this.config.underHop() && local.getWorldLocation() == player.getWorldLocation()) {
+            if (config.underHop() && local.getWorldLocation() == player.getWorldLocation()) {
                 shouldHop(player);
                 continue;
             }
-            if (this.config.skulledHop() && player.getSkullIcon() != null)
+            if (config.skulledHop() && player.getSkullIcon() != null)
                 shouldHop(player);
         }
     }
 
     @Subscribe
     private void onPlayerSpawned(PlayerSpawned event) {
-        Player local = this.client.getLocalPlayer();
+        Player local = client.getLocalPlayer();
         Player player = event.getPlayer();
-        if (local == null || player == null || player.equals(local) || (this.config.cmbBracket() && !PvPUtil.isAttackable(this.client, player)))
+        if (local == null || player == null || player.equals(local) || (config.cmbBracket() && !PvPUtil.isAttackable(client, player)))
             return;
-        if (this.config.alwaysHop()) {
+        if (config.alwaysHop()) {
             shouldHop(player);
-        } else if (this.config.underHop() && local.getWorldLocation() == player.getWorldLocation()) {
+        } else if (config.underHop() && local.getWorldLocation() == player.getWorldLocation()) {
             shouldHop(player);
-        } else if (this.config.skulledHop() && player.getSkullIcon() != null) {
+        } else if (config.skulledHop() && player.getSkullIcon() != null) {
             shouldHop(player);
         }
     }
 
     private void shouldHop(Player player)
     {
-        if ((config.friends() && this.client.isFriended(player.getName(), false)) ||
+        if ((config.friends() && client.isFriended(player.getName(), false)) ||
                 (config.clanmember() && player.isFriendsChatMember() || config.clanmember() && player.isClanMember()) ||
                 (config.hopRadius() && player.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) > config.playerRadius()) ||
                 (config.disableGrandExchange() && player.getWorldLocation().getRegionID() == GRAND_EXCHANGE_REGION) ||
-                (config.disableFeroxEnclave() && player.getWorldArea().intersectsWith(FEROX_ENCLAVE_AREA)))
+                (config.disableFeroxEnclave() && player.getWorldArea().intersectsWith(FEROX_ENCLAVE_AREA)) ||
+                (blacklistName.contains(player.getName().toLowerCase())))
         {
             return;
         }
@@ -261,21 +272,21 @@ public class AutoHopPlugin extends Plugin
     }
 
     private void pressKey() {
-        KeyEvent keyPress = new KeyEvent(this.client.getCanvas(), 401, System.currentTimeMillis(), 0, 32);
-        this.client.getCanvas().dispatchEvent(keyPress);
-        KeyEvent keyRelease = new KeyEvent(this.client.getCanvas(), 402, System.currentTimeMillis(), 0, 32);
-        this.client.getCanvas().dispatchEvent(keyRelease);
-        KeyEvent keyTyped = new KeyEvent(this.client.getCanvas(), 400, System.currentTimeMillis(), 0, 32);
-        this.client.getCanvas().dispatchEvent(keyTyped);
+        KeyEvent keyPress = new KeyEvent(client.getCanvas(), 401, System.currentTimeMillis(), 0, 32);
+        client.getCanvas().dispatchEvent(keyPress);
+        KeyEvent keyRelease = new KeyEvent(client.getCanvas(), 402, System.currentTimeMillis(), 0, 32);
+        client.getCanvas().dispatchEvent(keyRelease);
+        KeyEvent keyTyped = new KeyEvent(client.getCanvas(), 400, System.currentTimeMillis(), 0, 32);
+        client.getCanvas().dispatchEvent(keyTyped);
     }
 
     @Subscribe
     private void onGameTick(GameTick event)
     {
-        if (this.config.autoCloseChatbox() && (
-                this.client.getVar(Varbits.IN_WILDERNESS) == 1 || net.runelite.api.WorldType.isPvpWorld(this.client.getWorldType()))) {
-            Widget x = this.client.getWidget(162, 56);
-            Widget y = this.client.getWidget(162, 53);
+        if (config.autoCloseChatbox() && (
+                client.getVar(Varbits.IN_WILDERNESS) == 1 || net.runelite.api.WorldType.isPvpWorld(client.getWorldType()))) {
+            Widget x = client.getWidget(162, 56);
+            Widget y = client.getWidget(162, 53);
             if (y != null && !y.isHidden() && !y.isSelfHidden() && (
                     x == null || x.isHidden() || x.isSelfHidden()))
                 Executors.newSingleThreadExecutor().submit(this::pressKey);

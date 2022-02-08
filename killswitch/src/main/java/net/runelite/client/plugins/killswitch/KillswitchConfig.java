@@ -1,7 +1,5 @@
-import ProjectVersions.rlVersion
-
 /*
- * Copyright (c) 2021 SpoonLite
+ * Copyright (c) 2021 BikkusLite
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,36 +23,22 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.6"
+package net.runelite.client.plugins.killswitch;
 
-project.extra["PluginName"] = "Spoon Tob"
-project.extra["PluginDescription"] = "All-in-one plugin for Theatre of Blood"
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Keybind;
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-    compileOnly(Libraries.rxjava)
-    compileOnly(Libraries.apacheCommonsText)
-    compileOnly(Libraries.annotations)
-}
-
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
+@ConfigGroup("sKillswitch")
+public interface KillswitchConfig extends Config {
+    @ConfigItem(
+            keyName = "hotKey",
+            name = "Killswitch Toggle",
+            description = "Pressing this key will toggle your enabled external plugins",
+            position = 0
+    )
+    default Keybind hotKey() {
+        return Keybind.NOT_SET;
     }
 }

@@ -37,6 +37,7 @@ import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.util.Text;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.plugins.raids.solver.Room;
 import net.runelite.client.plugins.theatre.Room;
 import net.runelite.client.plugins.theatre.TheatreConfig;
 import net.runelite.client.plugins.theatre.TheatrePlugin;

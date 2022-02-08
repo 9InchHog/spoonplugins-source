@@ -1,5 +1,8 @@
 package net.runelite.client.plugins.spoontob;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.runelite.client.config.*;
 
 import java.awt.*;
@@ -63,12 +66,12 @@ public interface SpoonTobConfig extends Config {
     String misc = "misc";
 
     @ConfigSection(
-            name = "Player Ticks",
-            description = "Settings for the ticks displayed on the players",
+            name = "Font Settings",
+            description = "Font settings",
             position = 8,
             closedByDefault = true
     )
-    String playerTicks = "playerTicks";
+    String font = "font";
 
     //------------------------------------------------------------//
     // Maiden
@@ -1518,17 +1521,6 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 3,
-            keyName = "fontStyle",
-            name = "Runelite Font",
-            description = "Replaces the default font with whatever you have the dynamic font set to",
-            section = misc
-    )
-    default boolean fontStyle() {
-        return false;
-    }
-
-    @ConfigItem(
             position = 4,
             keyName = "redsTL",
             name = "Red Crabs True Tile",
@@ -1751,100 +1743,167 @@ public interface SpoonTobConfig extends Config {
     void setHighlightRangeNylo(boolean var1);
 
     //------------------------------------------------------------//
-    // Projectiles
+    // Font
     //------------------------------------------------------------//
     @ConfigItem(
             position = 0,
+            keyName = "fontStyle",
+            name = "Runelite Font",
+            description = "Replaces the default font with whatever you have the dynamic font set to",
+            section = font
+    )
+    default boolean fontStyle() {
+        return false;
+    }
+
+    @ConfigItem(
+            position = 1,
+            keyName = "resizeFont",
+            name = "Allow Resizing Font",
+            description = "Lets you resize font for overlays in Tob. Resizes ALL overlays when turned on",
+            section = font
+    )
+    default boolean resizeFont() {
+        return false;
+    }
+
+    @Range(max = 30)
+    @ConfigItem(
+            position = 2,
+            keyName = "tobFontSize",
+            name = "Overlay Font Size",
+            description = "Sets the font size for all Tob overlays. Must have 'Allow resizing font' on",
+            section = font
+    )
+    default int tobFontSize()
+    {
+        return 12;
+    }
+
+    @ConfigItem(
+            position = 3,
+            keyName = "fontWeight",
+            name = "Font Weight",
+            description = "Bold/Italics/Plain.",
+            section = font
+    )
+    default FontStyle fontWeight()
+    {
+        return FontStyle.BOLD;
+    }
+
+    @ConfigItem(
+            position = 4,
             keyName = "deathballSize",
             name = "Death Ball Font Size",
             description = "Font size for the death ball ticks - must have on player selected",
-            section = playerTicks
+            section = font,
+            hidden = true,
+            unhide = "deathTicksOnPlayer"
     )
     default int deathballSize() {return 14;}
 
     @Range(min = -60)
     @ConfigItem(
-            position = 1,
+            position = 5,
             keyName = "deathballOffset",
             name = "Death Ball Font Offset",
             description = "Offset for the death ball ticks - must have on player selected",
-            section = playerTicks
+            section = font,
+            hidden = true,
+            unhide = "deathTicksOnPlayer"
     )
     default int deathballOffset() {return 0;}
 
     @ConfigItem(
-            position = 2,
+            position = 6,
             keyName = "yellowsSize",
             name = "Yellows Font Size",
             description = "Font size for the yellows ticks - must have on player selected",
-            section = playerTicks
+            section = font,
+            hidden = true,
+            unhide = "yellowTicksOnPlayer"
     )
     default int yellowsSize() {return 14;}
 
     @Range(min = -60)
     @ConfigItem(
-            position = 3,
+            position = 7,
             keyName = "yellowsOffset",
             name = "Yellows Font Offset",
             description = "Offset for the yellows ticks - must have on player selected",
-            section = playerTicks
+            section = font,
+            hidden = true,
+            unhide = "yellowTicksOnPlayer"
     )
     default int yellowsOffset() {return 0;}
 
     @ConfigItem(
-            position = 4,
+            position = 8,
             keyName = "zapSize",
             name = "Zap Font Size",
             description = "Font size for the zap ticks - must have on player selected",
-            section = playerTicks
+            section = font,
+            hidden = true,
+            unhide = "lightningAttackTick"
     )
     default int zapSize() {return 14;}
 
     @Range(min = -60)
     @ConfigItem(
-            position = 5,
+            position = 9,
             keyName = "zapOffset",
             name = "Zap Font Offset",
             description = "Offset for the zap ticks - must have on player selected",
-            section = playerTicks
+            section = font,
+            hidden = true,
+            unhide = "lightningAttackTick"
     )
     default int zapOffset() {return 0;}
 
     @ConfigItem(
-            position = 6,
+            position = 10,
             keyName = "greenBallSize",
             name = "Green Ball Font Size",
             description = "Font size for the green ball ticks - must have on player selected",
-            section = playerTicks
+            section = font,
+            hidden = true,
+            unhide = "displayGreenBallTicks"
     )
     default int greenBallSize() {return 15;}
 
     @Range(min = -60)
     @ConfigItem(
-            position = 7,
+            position = 11,
             keyName = "greenBallOffset",
             name = "Green Ball Font Offset",
             description = "Offset for the green ball ticks - must have on player selected",
-            section = playerTicks
+            section = font,
+            hidden = true,
+            unhide = "displayGreenBallTicks"
     )
     default int greenBallOffset() {return 0;}
 
     @ConfigItem(
-            position = 8,
+            position = 12,
             keyName = "situationalTicksSize",
             name = "Sit. Ticks Font Size",
             description = "Font size for the situational ticks - must have on player selected",
-            section = playerTicks
+            section = font,
+            hidden = true,
+            unhide = "situationalTicks"
     )
     default int situationalTicksSize() {return 14;}
 
     @Range(min = -60)
     @ConfigItem(
-            position = 9,
+            position = 13,
             keyName = "situationalTicksOffset",
             name = "Sit. Ticks Font Offset",
             description = "Offset for the situational ticks - must have on player selected",
-            section = playerTicks
+            section = font,
+            hidden = true,
+            unhide = "situationalTicks"
     )
     default int situationalTicksOffset() {return 60;}
 
@@ -2074,5 +2133,26 @@ public interface SpoonTobConfig extends Config {
 
     enum raveNadoMode {
         OFF, FlOW, RAVE
+    }
+
+    //------------------------------------------------------------//
+    // Font enums
+    //------------------------------------------------------------//
+    @Getter(AccessLevel.PACKAGE)
+    @AllArgsConstructor
+    enum FontStyle
+    {
+        BOLD("Bold", Font.BOLD),
+        ITALIC("Italic", Font.ITALIC),
+        PLAIN("Plain", Font.PLAIN);
+
+        private final String name;
+        private final int font;
+
+        @Override
+        public String toString()
+        {
+            return getName();
+        }
     }
 }
