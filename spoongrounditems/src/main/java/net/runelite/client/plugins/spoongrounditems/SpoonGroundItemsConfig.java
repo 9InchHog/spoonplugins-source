@@ -354,10 +354,22 @@ public interface SpoonGroundItemsConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "lootbeamStyle",
+			name = "Lootbeam Style",
+			description = "Style of lootbeam to use",
+			position = 10,
+			section = highlight
+	)
+	default Lootbeam.Style lootbeamStyle()
+	{
+		return Lootbeam.Style.MODERN;
+	}
+
+	@ConfigItem(
 			keyName = "raveLootBeams",
 			name = "Rave Loot Beams",
 			description = "catJam",
-			position = 10,
+			position = 11,
 			section = highlight
 	)
 	default RaveLootBeamMode raveLootBeams() { return RaveLootBeamMode.OFF; }
@@ -531,7 +543,7 @@ public interface SpoonGroundItemsConfig extends Config
 	@ConfigItem(
 			keyName = "doubleTapDelay",
 			name = "Double-tap delay",
-			description = "Delay for the double-tap ALT to hide ground items. 0 to disable.",
+			description = "Delay for the double-tap Hotkey to hide ground items. 0 to disable.",
 			position = 3,
 			section = misc
 	)
@@ -539,6 +551,18 @@ public interface SpoonGroundItemsConfig extends Config
 	default int doubleTapDelay()
 	{
 		return 250;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey",
+			name = "Hotkey",
+			description = "Configures the hotkey used by the Spoon Ground Items plugin",
+			position = 4,
+			section = misc
+	)
+	default Keybind hotkey()
+	{
+		return Keybind.ALT;
 	}
 
 	public enum RaveLootBeamMode {

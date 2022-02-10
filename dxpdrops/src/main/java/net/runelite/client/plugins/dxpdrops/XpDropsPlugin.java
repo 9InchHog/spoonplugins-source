@@ -24,7 +24,11 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 
 @Extension
-@PluginDescriptor(name = "[D] XP Drops", description = "De0's XP Drops")
+@PluginDescriptor(
+        name = "[D] XP Drops",
+        description = "De0's XP Drops",
+        tags = {"de0", "xp", "drops"}
+)
 public class XpDropsPlugin extends Plugin {
     @Inject
     private OverlayManager overlayManager;

@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.0"
+version = "1.0.1"
 
 project.extra["PluginName"] = "Hop Timer"
 project.extra["PluginDescription"] = "Displays how long before you can hop worlds after combat"

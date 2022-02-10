@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.0"
+version = "1.0.1"
 
 project.extra["PluginName"] = "Default Tab"
 project.extra["PluginDescription"] = "Automatically switches back to the set tab. Made by Tyler"

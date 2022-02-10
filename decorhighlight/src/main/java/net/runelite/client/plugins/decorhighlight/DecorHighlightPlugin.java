@@ -33,39 +33,40 @@ public class DecorHighlightPlugin extends Plugin {
 
     @Provides
     DecorHighlightConfig provideConfig(ConfigManager configManager) {
-        return (DecorHighlightConfig)configManager.getConfig(DecorHighlightConfig.class);
+        return configManager.getConfig(DecorHighlightConfig.class);
     }
 
     protected void startUp() throws Exception {
-        this.overlayManager.add(this.overlay);
-        this.graphicsObjectWhitelist = new HashSet<>();
-        this.groundDecorWhitelist = new HashSet<>();
-        parse_list(this.graphicsObjectWhitelist, this.config.graphicsObjectsToHighlight());
-        parse_list(this.groundDecorWhitelist, this.config.groundDecorToHighlight());
+        overlayManager.add(overlay);
+        graphicsObjectWhitelist = new HashSet<>();
+        groundDecorWhitelist = new HashSet<>();
+        parse_list(graphicsObjectWhitelist, config.graphicsObjectsToHighlight());
+        parse_list(groundDecorWhitelist, config.groundDecorToHighlight());
     }
 
     protected void shutDown() throws Exception {
-        this.overlayManager.remove(this.overlay);
+        overlayManager.remove(overlay);
     }
 
     @Subscribe
     public void onConfigChanged(ConfigChanged e) {
         if (!"decorhighlight".equals(e.getGroup()))
             return;
-        this.graphicsObjectWhitelist.clear();
-        this.groundDecorWhitelist.clear();
-        parse_list(this.graphicsObjectWhitelist, this.config.graphicsObjectsToHighlight());
-        parse_list(this.groundDecorWhitelist, this.config.groundDecorToHighlight());
+        graphicsObjectWhitelist.clear();
+        groundDecorWhitelist.clear();
+        parse_list(graphicsObjectWhitelist, config.graphicsObjectsToHighlight());
+        parse_list(groundDecorWhitelist, config.groundDecorToHighlight());
     }
 
     private void parse_list(Set<Integer> list, String src) {
         String[] split = src.split(",");
-        for (int i = 0; i < split.length; i++) {
-            String s = split[i].trim();
+        for (String value : split) {
+            String s = value.trim();
             try {
                 int n = Integer.parseInt(s);
                 list.add(n);
-            } catch (NumberFormatException numberFormatException) {}
+            } catch (NumberFormatException ignored) {
+            }
         }
     }
 }

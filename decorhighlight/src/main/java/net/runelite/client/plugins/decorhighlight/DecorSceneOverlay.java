@@ -33,9 +33,9 @@ public class DecorSceneOverlay extends Overlay {
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         }
         g.setColor(Color.RED);
-        for (GraphicsObject go : this.client.getGraphicsObjects()) {
-            boolean debug = (this.client.isKeyPressed(86) && this.client.isKeyPressed(81));
-            if (!debug && !this.plugin.graphicsObjectWhitelist.contains(go.getId()))
+        for (GraphicsObject go : client.getGraphicsObjects()) {
+            boolean debug = (client.isKeyPressed(86) && client.isKeyPressed(81));
+            if (!debug && !plugin.graphicsObjectWhitelist.contains(go.getId()))
                 continue;
             String str = null;
             if (debug)
@@ -43,23 +43,23 @@ public class DecorSceneOverlay extends Overlay {
             LocalPoint lp = go.getLocation();
             int i = (lp.getX() - 64) / 128;
             int y = (lp.getY() - 64) / 128;
-            tile(g, i, y, this.config.highlightColor(), str);
+            tile(g, i, y, config.highlightColor(), str);
         }
         for (int x = 0; x < 104; x++) {
             for (int y = 0; y < 104; y++) {
-                Tile t = this.client.getScene().getTiles()[this.client.getPlane()][x][y];
+                Tile t = client.getScene().getTiles()[client.getPlane()][x][y];
                 if (t != null) {
                     GroundObject decor = t.getGroundObject();
                     if (decor != null) {
-                        boolean debug = (this.client.isKeyPressed(86) && this.client.isKeyPressed(81));
-                        if (debug || this.plugin.groundDecorWhitelist.contains(decor.getId())) {
+                        boolean debug = (client.isKeyPressed(KeyCode.KC_ALT) && client.isKeyPressed(KeyCode.KC_SHIFT));
+                        if (debug || plugin.groundDecorWhitelist.contains(decor.getId())) {
                             String str = null;
                             if (debug)
                                 str = Integer.toString(decor.getId());
                             LocalPoint lp = decor.getLocalLocation();
                             int _x = (lp.getX() - 64) / 128;
                             int _y = (lp.getY() - 64) / 128;
-                            tile(g, _x, _y, this.config.highlightColor(), str);
+                            tile(g, _x, _y, config.highlightColor(), str);
                         }
                     }
                 }
@@ -69,19 +69,19 @@ public class DecorSceneOverlay extends Overlay {
     }
 
     private void tile(Graphics g, int x, int y, Color c, String textLine1) {
-        byte[][][] s = this.client.getTileSettings();
-        int l = ((s[1][x][y] & 0x2) != 0) ? 1 : this.client.getPlane();
-        int[][] h = this.client.getTileHeights()[l];
+        byte[][][] s = client.getTileSettings();
+        int l = ((s[1][x][y] & 0x2) != 0) ? 1 : client.getPlane();
+        int[][] h = client.getTileHeights()[l];
         g.setColor(c);
         line(g, x, y, x + 1, y, h);
         line(g, x, y, x, y + 1, h);
         line(g, x, y + 1, x + 1, y + 1, h);
         line(g, x + 1, y, x + 1, y + 1, h);
         int x0 = x, x1 = x + 1, y0 = y, y1 = y + 1;
-        Point p0 = Perspective.localToCanvas(this.client, x0 << 7, y0 << 7, h[x0][y0]);
-        Point p1 = Perspective.localToCanvas(this.client, x1 << 7, y0 << 7, h[x1][y0]);
-        Point p3 = Perspective.localToCanvas(this.client, x0 << 7, y1 << 7, h[x0][y1]);
-        Point p2 = Perspective.localToCanvas(this.client, x1 << 7, y1 << 7, h[x1][y1]);
+        Point p0 = Perspective.localToCanvas(client, x0 << 7, y0 << 7, h[x0][y0]);
+        Point p1 = Perspective.localToCanvas(client, x1 << 7, y0 << 7, h[x1][y0]);
+        Point p3 = Perspective.localToCanvas(client, x0 << 7, y1 << 7, h[x0][y1]);
+        Point p2 = Perspective.localToCanvas(client, x1 << 7, y1 << 7, h[x1][y1]);
         if (p0 != null && p1 != null && p3 != null && p2 != null) {
             int[] xPoints = { p0.getX(), p1.getX(), p2.getX(), p3.getX() };
             int[] yPoints = { p0.getY(), p1.getY(), p2.getY(), p3.getY() };
@@ -90,8 +90,7 @@ public class DecorSceneOverlay extends Overlay {
         }
         if (textLine1 != null) {
             LocalPoint lp = new LocalPoint(x * 128 + 64, y * 128 + 64);
-            Point p = Perspective.getCanvasTextLocation(this.client, (Graphics2D)g, lp,
-                    textLine1, 0);
+            Point p = Perspective.getCanvasTextLocation(client, (Graphics2D)g, lp, textLine1, 0);
             if (p != null) {
                 g.setColor(Color.BLACK);
                 g.drawString(textLine1, p.getX() + 1, p.getY() + 1);
@@ -102,8 +101,8 @@ public class DecorSceneOverlay extends Overlay {
     }
 
     private void line(Graphics g, int x0, int y0, int x1, int y1, int[][] h) {
-        Point p0 = Perspective.localToCanvas(this.client, x0 << 7, y0 << 7, h[x0][y0]);
-        Point p1 = Perspective.localToCanvas(this.client, x1 << 7, y1 << 7, h[x1][y1]);
+        Point p0 = Perspective.localToCanvas(client, x0 << 7, y0 << 7, h[x0][y0]);
+        Point p1 = Perspective.localToCanvas(client, x1 << 7, y1 << 7, h[x1][y1]);
         if (p0 != null && p1 != null)
             g.drawLine(p0.getX(), p0.getY(), p1.getX(), p1.getY());
     }
