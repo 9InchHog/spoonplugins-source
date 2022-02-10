@@ -67,7 +67,7 @@ public class XpDropsPlugin extends Plugin {
 
     @Provides
     XpDropsConfig provideConfig(ConfigManager configManager) {
-        return (XpDropsConfig)configManager.getConfig(XpDropsConfig.class);
+        return configManager.getConfig(XpDropsConfig.class);
     }
 
     protected void startUp() throws Exception {

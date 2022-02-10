@@ -4,7 +4,6 @@ import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.experiencedrop.XpDropConfig;
-import net.runelite.client.plugins.experiencedrop.XpDropPlugin;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 
@@ -13,13 +12,13 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.Objects;
 
 public class XpDropsOverlay extends Overlay {
-    private Client client;
-    private XpDropsPlugin plugin;
-    private XpDropsConfig config;
-    private XpDropConfig xpDropConfig;
-    private XpDropPlugin xpDropPlugin;
+    private final Client client;
+    private final XpDropsPlugin plugin;
+    private final XpDropsConfig config;
+    private final XpDropConfig xpDropConfig;
     private BufferedImage[] stat_icons;
     private BufferedImage fake_icon;
     private static final int NUM_STATS = 23;
@@ -29,10 +28,10 @@ public class XpDropsOverlay extends Overlay {
     private static final int MAGE_ON = 145227776;
     private static final int MIN_SEP = 24;
     private static final int QUEUE_SIZE = 10;
-    private int[] drop_offset = new int[QUEUE_SIZE];
-    private int[] drop_value = new int[QUEUE_SIZE];
-    private int[] drop_stats = new int[QUEUE_SIZE];
-    private int[] drop_praymode = new int[QUEUE_SIZE];
+    private final int[] drop_offset = new int[QUEUE_SIZE];
+    private final int[] drop_value = new int[QUEUE_SIZE];
+    private final int[] drop_stats = new int[QUEUE_SIZE];
+    private final int[] drop_praymode = new int[QUEUE_SIZE];
     private int[] stat_display_order;
 
     @Inject
@@ -58,28 +57,27 @@ public class XpDropsOverlay extends Overlay {
         Widget xpWidget = client.getWidget(122, 0);
         if (xpWidget == null) {
             return null;
-        } else {
-            update();
-            int h = Math.max(100, getBounds().height);
-            int x0 = 0;
-            int last_y = -MIN_SEP;
+        }
+        update();
+        int h = Math.max(100, getBounds().height);
+        int x0 = 0;
+        int last_y = -MIN_SEP;
 
-            for(int i = 0; i < QUEUE_SIZE; ++i) {
-                int y = ++drop_offset[i] * plugin.speed / 2;
+        for (int i = 0; i < QUEUE_SIZE; ++i) {
+            int y = ++drop_offset[i] * plugin.speed / 2;
 
-                if (y < last_y + MIN_SEP) {
-                    y = last_y + MIN_SEP;
-                }
-
-                last_y = y;
-                int heightLimit = h + (50 / plugin.speed);
-                if (drop_stats[i] != 0 && drop_offset[i] < heightLimit) {
-                    draw_drop(g, i, x0, h - y);
-                }
+            if (y < last_y + MIN_SEP) {
+                y = last_y + MIN_SEP;
             }
 
-            return new Dimension(37, h);
+            last_y = y;
+            int heightLimit = h + (50 / plugin.speed);
+            if (drop_stats[i] != 0 && drop_offset[i] < heightLimit) {
+                draw_drop(g, i, x0, h - y);
+            }
         }
+
+        return new Dimension(37, h);
     }
 
     private void draw_drop(Graphics2D g, int i, int x0, int y0) {
@@ -98,7 +96,7 @@ public class XpDropsOverlay extends Overlay {
                 g.drawImage(fake_icon, xRight - xpDrop_Bounds - xoff, j, null);
             }
 
-            for(j = 22; j >= 0; --j) {
+            for (j = 22; j >= 0; --j) {
                 int st = stat_display_order[j];
                 if ((drop_stats[i] & 1 << st) != 0) {
                     xoff += stat_icons[st].getWidth() + 3;
@@ -116,7 +114,7 @@ public class XpDropsOverlay extends Overlay {
         g.setColor(Color.BLACK);
         g.drawString(Integer.toString(drop_value[i]), xRight - xpDrop_Bounds + 1, y0 + 1);
         Color c;
-        switch(drop_praymode[i]) {
+        switch (drop_praymode[i]) {
             case 0:
                 c = plugin.color;
                 break;
@@ -146,52 +144,46 @@ public class XpDropsOverlay extends Overlay {
 
         varp = plugin.varps[83];
         int praymode = 0;
-        if ((varp & RANGE_ON) != 0) {
+        if ((varp & 0x1540000) != 0) {
             if (gain[4] > 0) {
                 praymode = 2;
             }
-        } else if ((varp & MAGE_ON) != 0) {
+        } else if ((varp & 0x8A80000) != 0) {
             if (gain[6] > 0) {
                 praymode = 3;
             }
-        } else if ((varp & MELEE_ON) != 0 && (gain[0] > 0 || gain[2] > 0 || gain[1] > 0)) {
+        } else if ((varp & 0x6000C36) != 0 && (gain[0] > 0 || gain[2] > 0 || gain[1] > 0)) {
             praymode = 1;
         }
 
         int sum_gain = 0;
         int statset = 0;
-        int[] var9;
-        int var8 = (var9 = stat_display_order).length;
-
-        for(int var7 = 0; var7 < var8; ++var7) {
-            int st = var9[var7];
+        byte b;
+        int j;
+        int[] arrayOfInt1;
+        for (j = (arrayOfInt1 = stat_display_order).length, b = 0; b < j; ) {
+            int st = arrayOfInt1[b];
             if (gain[st] > 0) {
                 int stat = 1 << st;
-                if (plugin.fake_xp[st] > 0) {
+                if (plugin.fake_xp[st] > 0)
                     stat |= Integer.MIN_VALUE;
-                }
-
                 if (!plugin.group) {
                     queue_drop(gain[st], stat, praymode);
                 } else {
                     statset |= stat;
                 }
-
                 sum_gain += gain[st];
             }
-
             plugin.prev_xp[st] = plugin.curr_xp[st];
             plugin.fake_xp[st] = 0;
+            b++;
         }
-
-        if (plugin.group && sum_gain > 0) {
+        if (this.plugin.group && sum_gain > 0)
             queue_drop(sum_gain, statset, praymode);
-        }
-
     }
 
     private void queue_drop(int value, int stats, int praymode) {
-        for(int i = QUEUE_SIZE-1; i > 0; --i) {
+        for (int i = QUEUE_SIZE-1; i > 0; --i) {
             drop_offset[i] = drop_offset[i - 1];
             drop_value[i] = drop_value[i - 1];
             drop_stats[i] = drop_stats[i - 1];
@@ -230,10 +222,10 @@ public class XpDropsOverlay extends Overlay {
         load_staticon(20, 215);
         load_staticon(21, 220);
         load_staticon(22, 221);
-        fake_icon = client.getSprites(client.getIndexSprites(), 423, 0)[11].toBufferedImage();
+        fake_icon = Objects.requireNonNull(client.getSprites(client.getIndexSprites(), 423, 0))[11].toBufferedImage();
     }
 
     private void load_staticon(int stat, int icon) {
-        stat_icons[stat] = client.getSprites(client.getIndexSprites(), icon, 0)[0].toBufferedImage();
+        stat_icons[stat] = Objects.requireNonNull(client.getSprites(client.getIndexSprites(), icon, 0))[0].toBufferedImage();
     }
 }

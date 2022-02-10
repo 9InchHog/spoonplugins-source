@@ -26,7 +26,7 @@
 rootProject.name = "Spoon Plugins"
 
 //------------------------------------------------------------//
-// Private Plugins
+// Client Plugins
 //------------------------------------------------------------//
 ///*
 include(":alchemicalhydra")
