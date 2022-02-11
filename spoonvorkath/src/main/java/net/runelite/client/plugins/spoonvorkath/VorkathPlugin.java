@@ -5,6 +5,7 @@ import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.Projectile;
 import net.runelite.api.events.*;
+import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
@@ -29,6 +30,9 @@ public class VorkathPlugin extends Plugin {
 
     @Inject
     private Client client;
+
+    @Inject
+    private Notifier notifier;
 
     @Inject
     OverlayManager overlayManager;
@@ -129,6 +133,8 @@ public class VorkathPlugin extends Plugin {
                 this.nextVorkathPhase = VorkathUtils.VorkathPhase.ACID;
                 log.debug("[Vorkath] Projectile: {}, Attacks Left: {}, Current Phase: {}, Next Phase: {}", projectileId, this.attacksLeft, this.currentVorkathPhase, this.nextVorkathPhase);
             }
+
+        if ((projectileId == 1471 || projectileId ==1481) && config.afkNotifier()) {notifier.notify("Vorkath");}
     }
 
     @Subscribe
