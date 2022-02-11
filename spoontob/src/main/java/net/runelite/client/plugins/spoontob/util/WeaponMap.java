@@ -779,8 +779,8 @@ public class WeaponMap
 		StyleMap.put(ItemID.GUTHIX_CROZIER, WeaponStyle.MAGIC);
 		StyleMap.put(ItemID.GUTHIX_STAFF, WeaponStyle.MAGIC);
 		StyleMap.put(ItemID.HARMONISED_NIGHTMARE_STAFF, WeaponStyle.MAGIC);
-		StyleMap.put(ItemID.HOLY_SANGUINESTI_STAFF, WeaponStyle.MAGIC);
-		StyleMap.put(ItemID.HOLY_SANGUINESTI_STAFF_UNCHARGED, WeaponStyle.MAGIC);
+		//StyleMap.put(ItemID.HOLY_SANGUINESTI_STAFF, WeaponStyle.MAGIC);
+		//StyleMap.put(ItemID.HOLY_SANGUINESTI_STAFF_UNCHARGED, WeaponStyle.MAGIC);
 		StyleMap.put(ItemID.IBANS_STAFF, WeaponStyle.MAGIC);
 		StyleMap.put(ItemID.IBANS_STAFF_1410, WeaponStyle.MAGIC);
 		StyleMap.put(ItemID.IBANS_STAFF_U, WeaponStyle.MAGIC);
@@ -827,8 +827,8 @@ public class WeaponMap
 		StyleMap.put(ItemID.ROD_OF_IVANDIS_7, WeaponStyle.MAGIC);
 		StyleMap.put(ItemID.ROD_OF_IVANDIS_8, WeaponStyle.MAGIC);
 		StyleMap.put(ItemID.ROD_OF_IVANDIS_9, WeaponStyle.MAGIC);
-		StyleMap.put(ItemID.SANGUINESTI_STAFF, WeaponStyle.MAGIC);
-		StyleMap.put(ItemID.SANGUINESTI_STAFF_UNCHARGED, WeaponStyle.MAGIC);
+		//StyleMap.put(ItemID.SANGUINESTI_STAFF, WeaponStyle.MAGIC);
+		//StyleMap.put(ItemID.SANGUINESTI_STAFF_UNCHARGED, WeaponStyle.MAGIC);
 		StyleMap.put(ItemID.SARADOMIN_CROZIER, WeaponStyle.MAGIC);
 		StyleMap.put(ItemID.SARADOMIN_STAFF, WeaponStyle.MAGIC);
 		StyleMap.put(ItemID.SKULL_SCEPTRE, WeaponStyle.MAGIC);
@@ -855,7 +855,7 @@ public class WeaponMap
 		StyleMap.put(ItemID.TOKTZMEJTAL, WeaponStyle.MAGIC);
 		StyleMap.put(ItemID.TOXIC_STAFF_OF_THE_DEAD, WeaponStyle.MAGIC);
 		StyleMap.put(ItemID.TOXIC_STAFF_UNCHARGED, WeaponStyle.MAGIC);
-		StyleMap.put(ItemID.TRIDENT_OF_THE_SEAS, WeaponStyle.MAGIC);
+		/*StyleMap.put(ItemID.TRIDENT_OF_THE_SEAS, WeaponStyle.MAGIC);
 		StyleMap.put(ItemID.TRIDENT_OF_THE_SEAS_E, WeaponStyle.MAGIC);
 		StyleMap.put(ItemID.TRIDENT_OF_THE_SEAS_FULL, WeaponStyle.MAGIC);
 		StyleMap.put(ItemID.TRIDENT_OF_THE_SWAMP, WeaponStyle.MAGIC);
@@ -863,7 +863,7 @@ public class WeaponMap
 		StyleMap.put(ItemID.UNCHARGED_TOXIC_TRIDENT, WeaponStyle.MAGIC);
 		StyleMap.put(ItemID.UNCHARGED_TOXIC_TRIDENT_E, WeaponStyle.MAGIC);
 		StyleMap.put(ItemID.UNCHARGED_TRIDENT, WeaponStyle.MAGIC);
-		StyleMap.put(ItemID.UNCHARGED_TRIDENT_E, WeaponStyle.MAGIC);
+		StyleMap.put(ItemID.UNCHARGED_TRIDENT_E, WeaponStyle.MAGIC);*/
 		StyleMap.put(ItemID.VOID_KNIGHT_MACE, WeaponStyle.MAGIC);
 		StyleMap.put(ItemID.VOID_KNIGHT_MACE_BROKEN, WeaponStyle.MAGIC);
 		StyleMap.put(ItemID.VOLATILE_NIGHTMARE_STAFF, WeaponStyle.MAGIC);
@@ -877,5 +877,20 @@ public class WeaponMap
 		StyleMap.put(ItemID.ZURIELS_STAFF_23617, WeaponStyle.MAGIC);
 		//what the fuck...
 		StyleMap.put(ItemID.GNOMEBALL, WeaponStyle.MAGIC);
+
+		//Tridents
+		StyleMap.put(ItemID.HOLY_SANGUINESTI_STAFF, WeaponStyle.TRIDENTS);
+		StyleMap.put(ItemID.HOLY_SANGUINESTI_STAFF_UNCHARGED, WeaponStyle.TRIDENTS);
+		StyleMap.put(ItemID.SANGUINESTI_STAFF, WeaponStyle.TRIDENTS);
+		StyleMap.put(ItemID.SANGUINESTI_STAFF_UNCHARGED, WeaponStyle.TRIDENTS);
+		StyleMap.put(ItemID.TRIDENT_OF_THE_SEAS, WeaponStyle.TRIDENTS);
+		StyleMap.put(ItemID.TRIDENT_OF_THE_SEAS_E, WeaponStyle.TRIDENTS);
+		StyleMap.put(ItemID.TRIDENT_OF_THE_SEAS_FULL, WeaponStyle.TRIDENTS);
+		StyleMap.put(ItemID.TRIDENT_OF_THE_SWAMP, WeaponStyle.TRIDENTS);
+		StyleMap.put(ItemID.TRIDENT_OF_THE_SWAMP_E, WeaponStyle.TRIDENTS);
+		StyleMap.put(ItemID.UNCHARGED_TOXIC_TRIDENT, WeaponStyle.TRIDENTS);
+		StyleMap.put(ItemID.UNCHARGED_TOXIC_TRIDENT_E, WeaponStyle.TRIDENTS);
+		StyleMap.put(ItemID.UNCHARGED_TRIDENT, WeaponStyle.TRIDENTS);
+		StyleMap.put(ItemID.UNCHARGED_TRIDENT_E, WeaponStyle.TRIDENTS);
 	}
 }

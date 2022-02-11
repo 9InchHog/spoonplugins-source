@@ -984,6 +984,7 @@ public class Nylocas extends Room {
         } else if ((config.wheelchairNylo() == SpoonTobConfig.wheelchairMode.BOSS || config.wheelchairNylo() == SpoonTobConfig.wheelchairMode.BOTH)
                 && nylocasBoss != null && event.getMenuTarget().contains(BOSS_NYLO) && event.getMenuAction() == MenuAction.NPC_SECOND_OPTION && weaponStyle != null) {
             switch (weaponStyle) {
+                case TRIDENTS:
                 case MAGIC:
                     if (nylocasBoss.getId() != NYLOCAS_VASILIAS_8356 && nylocasBoss.getId() != NYLOCAS_VASILIAS_10788
                             && nylocasBoss.getId() != NYLOCAS_VASILIAS_10809) {
@@ -1059,16 +1060,19 @@ public class Nylocas extends Room {
             if ((config.wheelchairNylo() == SpoonTobConfig.wheelchairMode.WAVES || config.wheelchairNylo() == SpoonTobConfig.wheelchairMode.BOTH)
                     && entry.getType() == MenuAction.NPC_SECOND_OPTION.getId() && weaponStyle != null) {
                 switch (weaponStyle) {
-                    case MAGIC:
+                    case TRIDENTS:
                         if (target.contains(MELEE_NYLO) || target.contains(RANGE_NYLO)) {
                             client.setMenuOptionCount(client.getMenuOptionCount() - 1);
                         }
-                        if (target.contains(MAGE_NYLO)) {
-                            if (client.getLocalPlayer() != null && client.getLocalPlayer().getPlayerComposition() != null
-                                    && !TRIDENT_IDS.contains(client.getLocalPlayer().getPlayerComposition().getEquipmentId(KitType.WEAPON))) {
-                                if (!client.getSpellSelected() && client.getVarbitValue(275) == 0) {
-                                    client.setMenuOptionCount(client.getMenuOptionCount() - 1);
-                                }
+                        break;
+                    case MAGIC:
+                        if (config.manualCast()) {
+                            if (target.contains(MELEE_NYLO) || target.contains(RANGE_NYLO) || target.contains(MAGE_NYLO)) {
+                                client.setMenuOptionCount(client.getMenuOptionCount() - 1);
+                            }
+                        } else {
+                            if (target.contains(MELEE_NYLO) || target.contains(RANGE_NYLO)) {
+                                client.setMenuOptionCount(client.getMenuOptionCount() - 1);
                             }
                         }
                         break;
@@ -1093,6 +1097,7 @@ public class Nylocas extends Room {
             if ((config.wheelchairNylo() == SpoonTobConfig.wheelchairMode.BOSS || config.wheelchairNylo() == SpoonTobConfig.wheelchairMode.BOTH)
                     && nyloMiniboss != null && target.contains(DEMIBOSS_NYLO) && entry.getType() == MenuAction.NPC_SECOND_OPTION.getId() && weaponStyle != null) {
                 switch (weaponStyle) {
+                    case TRIDENTS:
                     case MAGIC:
                         if (nyloMiniboss.getId() != NYLOCAS_PRINKIPAS_10805) {
                             client.setMenuOptionCount(client.getMenuOptionCount() - 1);

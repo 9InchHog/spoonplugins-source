@@ -9,6 +9,8 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.plugins.spoontob.RoomOverlay;
 import net.runelite.client.plugins.spoontob.SpoonTobConfig;
 import net.runelite.client.plugins.spoontob.SpoonTobPlugin;
+import net.runelite.client.ui.FontManager;
+import net.runelite.client.ui.overlay.OverlayUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -209,7 +211,7 @@ public class NylocasOverlay extends RoomOverlay {
                         if (config.fontStyle()) {
                             renderTextLocation(graphics, Integer.toString(ticks), Color.WHITE, textLocation);
                         } else {
-                            renderSteroidsTextLocation(graphics, Integer.toString(ticks), Font.BOLD, 13, Color.WHITE, textLocation);
+                            renderBigSplitsTextLocation(graphics, Integer.toString(ticks), textLocation);
                         }
                     }
                 });
@@ -250,6 +252,16 @@ public class NylocasOverlay extends RoomOverlay {
             graphics.draw(polygon);
             graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0));
             graphics.fill(polygon);
+        }
+    }
+
+    protected void renderBigSplitsTextLocation(Graphics2D graphics, String txtString, Point canvasPoint) {
+        graphics.setFont(new Font(FontManager.getRunescapeSmallFont().toString(), Font.BOLD, 13));
+        if (canvasPoint != null) {
+            Point canvasCenterPoint = new Point(canvasPoint.getX(), canvasPoint.getY());
+            Point canvasCenterPointShadow = new Point(canvasPoint.getX() + 1, canvasPoint.getY() + 1);
+            OverlayUtil.renderTextLocation(graphics, canvasCenterPointShadow, txtString, Color.BLACK);
+            OverlayUtil.renderTextLocation(graphics, canvasCenterPoint, txtString, Color.WHITE);
         }
     }
 }

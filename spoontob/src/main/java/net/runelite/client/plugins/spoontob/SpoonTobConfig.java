@@ -532,6 +532,17 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
+            position = 1,
+            keyName = "manualCast",
+            name = "Wheelchair - Manual Cast Wands",
+            description = "Only lets you manually cast spells on all nylos when a wand or staff is equipped. Ignores tridents/sangs",
+            section = nylocas
+    )
+    default boolean manualCast() {
+        return false;
+    }
+
+    @ConfigItem(
             position = 2,
             keyName = "showPhaseChange",
             name = "Show Boss Phase Change",
