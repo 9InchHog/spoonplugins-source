@@ -1,7 +1,6 @@
 package net.runelite.client.plugins.spoontob.rooms.Sotetseg;
 
 import net.runelite.api.Perspective;
-import net.runelite.api.Player;
 import net.runelite.api.Point;
 import net.runelite.api.Projectile;
 import net.runelite.api.coords.LocalPoint;
@@ -190,13 +189,13 @@ public class SotetsegOverlay extends RoomOverlay {
                 this.renderTextLocation(graphics, text, Color.WHITE, textLocation);
                 if(!config.deathballSingleLine() && !yuriText.equals("")) {
                     Point yuriTextLocation = sotetseg.sotetsegNPC.getCanvasTextLocation(graphics, yuriText, 200);
-                    this.renderTextLocation(graphics, yuriText, Color.ORANGE, yuriTextLocation);
+                    renderTextLocation(graphics, yuriText, Color.ORANGE, yuriTextLocation);
                 }
             } else {
-                this.renderSteroidsTextLocation(graphics, text, 14, Font.BOLD, Color.WHITE, textLocation);
+                renderResizeTextLocation(graphics, text, 14, Font.BOLD, Color.WHITE, textLocation);
                 if(!config.deathballSingleLine() && !yuriText.equals("")) {
                     Point yuriTextLocation = sotetseg.sotetsegNPC.getCanvasTextLocation(graphics, yuriText, 200);
-                    this.renderSteroidsTextLocation(graphics, yuriText, 14, Font.BOLD, Color.ORANGE, yuriTextLocation);
+                    renderResizeTextLocation(graphics, yuriText, 14, Font.BOLD, Color.ORANGE, yuriTextLocation);
                 }
             }
         }

@@ -8,7 +8,6 @@ import net.runelite.client.plugins.spoontob.RoomOverlay;
 import net.runelite.client.plugins.spoontob.SpoonTobConfig;
 import net.runelite.client.plugins.spoontob.SpoonTobPlugin;
 import net.runelite.client.ui.overlay.OverlayUtil;
-import net.runelite.client.util.ImageUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -161,7 +160,7 @@ public class VerzikOverlay extends RoomOverlay {
                         if (config.fontStyle()) {
                             renderTextLocation(graphics, text, Color.WHITE, point);
                         } else {
-                            renderSteroidsTextLocation(graphics, text, 12, Font.BOLD, Color.WHITE, point);
+                            renderResizeTextLocation(graphics, text, 12, Font.BOLD, Color.WHITE, point);
                         }
                     }
                 }
@@ -235,7 +234,7 @@ public class VerzikOverlay extends RoomOverlay {
                         if (config.fontStyle()) {
                             renderTextLocation(graphics, targetText, color, textLocation);
                         } else {
-                            renderSteroidsTextLocation(graphics, targetText, 14, Font.BOLD, color, textLocation);
+                            renderResizeTextLocation(graphics, targetText, 14, Font.BOLD, color, textLocation);
                         }
                     }
                 }
@@ -278,7 +277,7 @@ public class VerzikOverlay extends RoomOverlay {
                         if (config.fontStyle()) {
                             renderTextLocation(graphics, text, textColor, textLoc);
                         } else {
-                            renderSteroidsTextLocation(graphics, text, 14, Font.BOLD, textColor, textLoc);
+                            renderResizeTextLocation(graphics, text, 14, Font.BOLD, textColor, textLoc);
                         }
                     }
                     index++;
@@ -327,7 +326,7 @@ public class VerzikOverlay extends RoomOverlay {
                     if (config.fontStyle()) {
                         renderTextLocation(graphics, text, col, canvasPoint);
                     } else {
-                        renderSteroidsTextLocation(graphics, text, 15, Font.BOLD, col, canvasPoint);
+                        renderResizeTextLocation(graphics, text, 15, Font.BOLD, col, canvasPoint);
                     }
                 }
             }
@@ -346,7 +345,7 @@ public class VerzikOverlay extends RoomOverlay {
                         if (config.fontStyle()) {
                             renderTextLocation(graphics, zapText, Color.ORANGE, canvasPoint);
                         } else {
-                            renderSteroidsTextLocation(graphics, zapText, 15, Font.BOLD, Color.ORANGE, canvasPoint);
+                            renderResizeTextLocation(graphics, zapText, 15, Font.BOLD, Color.ORANGE, canvasPoint);
                         }
                     }
                 }

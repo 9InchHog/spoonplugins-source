@@ -6,27 +6,24 @@ import net.runelite.api.Perspective;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.client.plugins.spoontob.RoomOverlay;
 import net.runelite.client.plugins.spoontob.SpoonTobConfig;
-import net.runelite.client.ui.overlay.*;
 
 import javax.inject.Inject;
 import java.awt.*;
 import java.util.ArrayList;
 @Slf4j
-public class YellowGrouperOverlay extends Overlay {
-    private final Client client;
-    private final Verzik verzik;
-    private final SpoonTobConfig config;
+public class YellowGrouperOverlay extends RoomOverlay {
+    @Inject
+    private Client client;
+    @Inject
+    private Verzik verzik;
+    @Inject
+    private SpoonTobConfig config;
 
     @Inject
-    private YellowGrouperOverlay(Client client, Verzik verzik, SpoonTobConfig config) {
-        this.client = client;
-        this.verzik = verzik;
-        this.config = config;
-
-        setPosition(OverlayPosition.DYNAMIC);
-        setPriority(OverlayPriority.HIGH);
-        setLayer(OverlayLayer.ABOVE_SCENE);
+    protected YellowGrouperOverlay(SpoonTobConfig config) {
+        super(config);
     }
 
     @Override
@@ -88,7 +85,7 @@ public class YellowGrouperOverlay extends Overlay {
                             if (config.fontStyle()) {
                                 renderTextLocation(graphics, text, Color.WHITE, point);
                             } else {
-                                renderSteroidsTextLocation(graphics, text, 12, Font.BOLD, Color.WHITE, point);
+                                renderResizeTextLocation(graphics, text, 12, Font.BOLD, Color.WHITE, point);
                             }
                         }
                     }
@@ -97,24 +94,5 @@ public class YellowGrouperOverlay extends Overlay {
             }
         }
         return null;
-    }
-
-    protected void renderTextLocation(Graphics2D graphics, String txtString, Color fontColor, Point canvasPoint) {
-        if (canvasPoint != null) {
-            Point canvasCenterPoint = new Point(canvasPoint.getX(), canvasPoint.getY());
-            Point canvasCenterPoint_shadow = new Point(canvasPoint.getX() + 1, canvasPoint.getY() + 1);
-            OverlayUtil.renderTextLocation(graphics, canvasCenterPoint_shadow, txtString, Color.BLACK);
-            OverlayUtil.renderTextLocation(graphics, canvasCenterPoint, txtString, fontColor);
-        }
-    }
-
-    protected void renderSteroidsTextLocation(Graphics2D graphics, String txtString, int fontSize, int fontStyle, Color fontColor, Point canvasPoint) {
-        graphics.setFont(new Font("Arial", fontStyle, fontSize));
-        if (canvasPoint != null) {
-            Point canvasCenterPoint = new Point(canvasPoint.getX(), canvasPoint.getY());
-            Point canvasCenterPointShadow = new Point(canvasPoint.getX() + 1, canvasPoint.getY() + 1);
-            OverlayUtil.renderTextLocation(graphics, canvasCenterPointShadow, txtString, Color.BLACK);
-            OverlayUtil.renderTextLocation(graphics, canvasCenterPoint, txtString, fontColor);
-        }
     }
 }

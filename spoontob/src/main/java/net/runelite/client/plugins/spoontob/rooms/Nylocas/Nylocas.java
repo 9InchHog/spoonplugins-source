@@ -94,6 +94,11 @@ public class Nylocas extends Room {
             NYLOCAS_HAGIOS_10793, NYLOCAS_HAGIOS_10796, NYLOCAS_HAGIOS_10799, NYLOCAS_HAGIOS_10802 // HM
     );
 
+    protected static final Set<Integer> TRIDENT_IDS = ImmutableSet.of(
+            ItemID.SANGUINESTI_STAFF, ItemID.HOLY_SANGUINESTI_STAFF, ItemID.TRIDENT_OF_THE_SEAS_E, ItemID.TRIDENT_OF_THE_SEAS,
+            ItemID.TRIDENT_OF_THE_SEAS_FULL, ItemID.TRIDENT_OF_THE_SWAMP_E, ItemID.TRIDENT_OF_THE_SWAMP
+    );
+
     @Getter
     @Setter
     private static Runnable wave31Callback = null;
@@ -1058,6 +1063,14 @@ public class Nylocas extends Room {
                         if (target.contains(MELEE_NYLO) || target.contains(RANGE_NYLO)) {
                             client.setMenuOptionCount(client.getMenuOptionCount() - 1);
                         }
+                        if (target.contains(MAGE_NYLO)) {
+                            if (client.getLocalPlayer() != null && client.getLocalPlayer().getPlayerComposition() != null
+                                    && !TRIDENT_IDS.contains(client.getLocalPlayer().getPlayerComposition().getEquipmentId(KitType.WEAPON))) {
+                                if (!client.getSpellSelected() && client.getVarbitValue(275) == 0) {
+                                    client.setMenuOptionCount(client.getMenuOptionCount() - 1);
+                                }
+                            }
+                        }
                         break;
                     case MELEE:
                         if (target.contains(RANGE_NYLO) || target.contains(MAGE_NYLO)) {
@@ -1127,10 +1140,10 @@ public class Nylocas extends Room {
     }
 
     boolean isInNyloRegion() {
-        return client.isInInstancedRegion() && client.getMapRegions().length > 0 && client.getMapRegions()[0] == 13122;
+        return client.isInInstancedRegion() && client.getMapRegions().length > 0 && client.getMapRegions()[0] == NYLO_MAP_REGION;
     }
 
     private boolean isInBloatRegion() {
-        return client.isInInstancedRegion() && client.getMapRegions().length > 0 && client.getMapRegions()[0] == 13125;
+        return client.isInInstancedRegion() && client.getMapRegions().length > 0 && client.getMapRegions()[0] == BLOAT_MAP_REGION;
     }
 }

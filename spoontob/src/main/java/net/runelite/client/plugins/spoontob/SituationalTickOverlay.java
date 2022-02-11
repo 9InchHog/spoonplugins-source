@@ -9,21 +9,17 @@ import javax.inject.Inject;
 import java.awt.*;
 import java.util.Arrays;
 
-public class SituationalTickOverlay extends Overlay {
-    private final Client client;
-
-    private final SpoonTobConfig config;
-
-    private final SpoonTobPlugin plugin;
+public class SituationalTickOverlay extends RoomOverlay {
+    @Inject
+    private Client client;
+    @Inject
+    private SpoonTobConfig config;
+    @Inject
+    private SpoonTobPlugin plugin;
 
     @Inject
-    SituationalTickOverlay(Client client, SpoonTobConfig config, SpoonTobPlugin plugin) {
-        this.client = client;
-        this.config = config;
-        this.plugin = plugin;
-        setPosition(OverlayPosition.DYNAMIC);
-        setPriority(OverlayPriority.HIGH);
-        setLayer(OverlayLayer.ALWAYS_ON_TOP);
+    protected SituationalTickOverlay(SpoonTobConfig config) {
+        super(config);
     }
 
     public Dimension render(Graphics2D graphics) {
@@ -70,16 +66,6 @@ public class SituationalTickOverlay extends Overlay {
             Point canvasCenterPoint = new Point(canvasPoint.getX(), canvasPoint.getY());
             Point canvasCenterPoint_shadow = new Point(canvasPoint.getX() + 1, canvasPoint.getY() + 1);
             OverlayUtil.renderTextLocation(graphics, canvasCenterPoint_shadow, txtString, Color.BLACK);
-            OverlayUtil.renderTextLocation(graphics, canvasCenterPoint, txtString, fontColor);
-        }
-    }
-
-    protected void renderSteroidsTextLocation(Graphics2D graphics, String txtString, int fontSize, int fontStyle, Color fontColor, Point canvasPoint) {
-        graphics.setFont(new Font("Arial", fontStyle, fontSize));
-        if (canvasPoint != null) {
-            Point canvasCenterPoint = new Point(canvasPoint.getX(), canvasPoint.getY());
-            Point canvasCenterPointShadow = new Point(canvasPoint.getX() + 1, canvasPoint.getY() + 1);
-            OverlayUtil.renderTextLocation(graphics, canvasCenterPointShadow, txtString, Color.BLACK);
             OverlayUtil.renderTextLocation(graphics, canvasCenterPoint, txtString, fontColor);
         }
     }

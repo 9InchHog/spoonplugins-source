@@ -38,7 +38,6 @@ public class VerzikRedsOverlay extends RoomOverlay {
     public VerzikRedsOverlay(Client client, SpoonTobConfig config, SpoonTobPlugin plugin) {
         super(config);
         this.client = client;
-        //this.config = config;
         this.plugin = plugin;
         this.setPosition(OverlayPosition.DYNAMIC);
         this.setPriority(OverlayPriority.HIGH);

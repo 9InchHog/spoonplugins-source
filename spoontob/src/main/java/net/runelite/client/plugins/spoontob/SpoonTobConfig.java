@@ -674,9 +674,7 @@ public interface SpoonTobConfig extends Config {
             description = "Highlight nylocas that are aggressive.",
             section = nylocas
     )
-    default boolean nyloAggressiveOverlay() {
-        return false;
-    }
+    default aggroStyle nyloAggressiveOverlay() { return aggroStyle.TILE; }
 
     @ConfigItem(
             position = 15,
@@ -1995,6 +1993,10 @@ public interface SpoonTobConfig extends Config {
         OFF, WAVES, BOSS, BOTH
     }
 
+    enum nyloBossPhaseChange {
+        OFF, BOSS, BOTH
+    }
+
     enum nyloExplosionType {
         TILE, EXPLOSION
     }
@@ -2007,8 +2009,8 @@ public interface SpoonTobConfig extends Config {
         COUNTUP, COUNTDOWN
     }
 
-    enum nyloBossPhaseChange {
-        OFF, BOSS, BOTH
+    enum aggroStyle {
+        OFF, HULL, TILE
     }
 
     enum nyloSplitsMessage {
