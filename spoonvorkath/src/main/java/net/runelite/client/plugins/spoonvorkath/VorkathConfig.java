@@ -33,4 +33,15 @@ public interface VorkathConfig extends Config {
     default Color zombifiedSpawnColor() {
         return Color.RED;
     }
+
+    @ConfigItem(
+            position = 4,
+            keyName = "afkNotifier",
+            name = "AFK Notifier",
+            description = "Sends a Notification if Pink Dragonfire Attack or Deadly Dragonfire Attack is shot."
+    )
+    default boolean afkNotifier()
+    {
+        return false;
+    }
 }
