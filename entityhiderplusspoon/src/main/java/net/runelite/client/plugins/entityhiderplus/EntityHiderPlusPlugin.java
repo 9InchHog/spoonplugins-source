@@ -187,7 +187,7 @@ public class EntityHiderPlusPlugin extends Plugin {
                 hideGraphicsObjects.add(Integer.parseInt(s));
             } catch (NumberFormatException ignored) {
             }
-            client.setHiddenGraphicsObjects(hideGraphicsObjects);
+
         }
     }
 
@@ -229,6 +229,19 @@ public class EntityHiderPlusPlugin extends Plugin {
             }
         }
         return matched;
+    }
+
+    @Subscribe
+    public void onGraphicsObjectCreated(GraphicsObjectCreated event){
+        if(hideGraphicsObjects.contains(event.getGraphicsObject().getId())){
+            Field f = event.getGraphicsObject().getClass().getDeclaredFields()[9];
+            f.setAccessible(true);
+            try {
+                f.setBoolean(event.getGraphicsObject(), true);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Subscribe
