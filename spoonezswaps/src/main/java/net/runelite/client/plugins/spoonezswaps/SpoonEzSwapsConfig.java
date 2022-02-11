@@ -137,10 +137,38 @@ public interface SpoonEzSwapsConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "afkConstructionMahoganyHomes",
+			name = "Afk Construction (Mahogany Homes)",
+			description = "",
+			position = 3,
+			section = skillingSection,
+			hidden = true,
+			unhide = "afkConstruction"
+	)
+	default boolean afkConstructionMahoganyHomes()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "getAfkConstructionMahoganyHomesMode",
+			name = "Afk Construction Mode",
+			description = "Teaks or Mahogany",
+			position = 4,
+			section = skillingSection,
+			hidden = true,
+			unhide = "afkConstructionMahoganyHomes"
+	)
+	default AfkConstructionMahoganyHomesMode getAfkConstructionMahoganyHomesMode()
+	{
+		return AfkConstructionMahoganyHomesMode.TEAK_HOMES;
+	}
+
+	@ConfigItem(
 			keyName = "stringAmulet",
 			name = "String Amulet Overlay",
 			description = "Overlay indicating how many amulets in your invent are strung",
-			position = 3,
+			position = 5,
 			section = skillingSection
 	)
 	default boolean getStringAmulet() {
@@ -151,7 +179,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "cookPie",
 			name = "Bake Pie Overlay",
 			description = "Overlay indicating how many summer pies in your inventory are baked",
-			position = 4,
+			position = 6,
 			section = skillingSection
 	)
 	default boolean getBakePie() {
@@ -162,7 +190,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "swapPickpocket",
 			name = "Pickpocket",
 			description = "Swap Talk-to with Pickpocket on NPC<br>Example: Man, Woman",
-			position = 5,
+			position = 7,
 			section = skillingSection
 	)
 	default boolean swapPickpocket()
@@ -174,7 +202,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "swapHerblore",
 			name = "Herblore",
 			description = "Removes the `drink` option on herblore potions - for herblore training",
-			position = 6,
+			position = 8,
 			section = skillingSection
 	)
 	default boolean swapHerblore()
@@ -186,7 +214,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "karambwans",
 			name = "Karambwans",
 			description = "Swaps max cape left click teleports depending on location.",
-			position = 7,
+			position = 9,
 			section = skillingSection,
 			disabledBy = "swapMaxCape"
 	)
@@ -199,7 +227,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "customDrop",
 			name = "Left Click Drop",
 			description = "Anything in the list will be dropped on left click",
-			position = 8,
+			position = 10,
 			section = skillingSection
 	)
 	default String customDrop()

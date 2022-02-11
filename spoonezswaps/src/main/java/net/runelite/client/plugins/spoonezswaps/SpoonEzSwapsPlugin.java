@@ -28,6 +28,7 @@ import net.runelite.client.plugins.spoonezswaps.config.*;
 import net.runelite.client.plugins.spoonezswaps.util.CustomSwaps;
 import net.runelite.client.plugins.spoonezswaps.util.DelayUtils;
 import net.runelite.client.plugins.spoonezswaps.util.MinionData;
+import net.runelite.client.ui.ClientUI;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.apache.commons.lang3.ObjectUtils;
 import org.pf4j.Extension;
@@ -99,6 +100,9 @@ public class SpoonEzSwapsPlugin extends Plugin {
 
 	@Inject
 	private DelayUtils delayUtils;
+
+	@Inject
+	private ClientUI clientUI;
 
 	private static <T extends Comparable<? super T>> void sortedInsert(List<T> list, T value) // NOPMD: UnusedPrivateMethod: false positive
 	{
@@ -1138,13 +1142,18 @@ public class SpoonEzSwapsPlugin extends Plugin {
 		updateitemCounts();
 
 		if (config.afkConstruction() && config.getEasyConstruction()) {
+			if (!clientUI.isFocused())
+			{
+				return;
+			}
+
 			Widget createMenu = client.getWidget(458, 1);
-			Widget demonSendBank = client.getWidget(219, 1);
+			Widget dialogOptions = client.getWidget(219, 1);
 			Widget demonPayment = client.getWidget(231, 5);
 			int delay = delayUtils.nextInt(0, 578);
 
-			if (demonSendBank != null && !demonSendBank.isHidden() && !demonSendBank.isSelfHidden()) {
-				for (Widget child : demonSendBank.getDynamicChildren()) {
+			if (dialogOptions != null && !dialogOptions.isHidden() && !dialogOptions.isSelfHidden()) {
+				for (Widget child : dialogOptions.getDynamicChildren()) {
 					if (child.getText().contains("Really remove it?") || child.getText().contains("Repeat last task?")) {
 						delayUtils.delayKey(KeyEvent.VK_1, delay);
 					} else if (child.getText().contains("Okay, here's 10,000 coins.")) {
@@ -1159,8 +1168,40 @@ public class SpoonEzSwapsPlugin extends Plugin {
 				}
 			}
 
-			if (createMenu != null && !createMenu.isHidden() && !createMenu.isSelfHidden()) {
+			if (createMenu != null && !createMenu.isHidden() && !createMenu.isSelfHidden() & !config.afkConstructionMahoganyHomes()) {
 				delayUtils.delayKey(KeyEvent.VK_6, delay);
+			}
+
+			//Mahogany homes afk con
+
+			if (config.afkConstructionMahoganyHomes()) {
+				int key = config.getAfkConstructionMahoganyHomesMode().getKey(); //keypress for config, presses 3 if teak, 4 if mahog
+				Widget playerDialog = client.getWidget(217,6);
+				Widget npcDialog = client.getWidget(231,6);
+
+				if (dialogOptions!=null){
+					if (dialogOptions.getChild(3)!=null && dialogOptions.getChild(3).getText().contains("Adept Contract (Requires 50 Construction)")){
+						delayUtils.delayKey(key, delay);
+					}
+					if (dialogOptions.getChild(0)!=null && dialogOptions.getChild(0).getText().contains("Take tea?")){
+						delayUtils.delayKey(KeyEvent.VK_1, delay);
+					}
+				}
+
+				if (playerDialog!=null && (playerDialog.getText().contains("I'd like a construction contract.")
+						||playerDialog.getText().contains("Could I have an adept contract please?")
+						||playerDialog.getText().contains("Could I have an expert contract please?")
+						||playerDialog.getText().contains("I've finished with the work you wanted.")
+						||playerDialog.getText().contains("Yes, I'd love a cuppa."))
+						|| npcDialog!=null && (npcDialog.getText().contains("What kind of contract would you like?")
+						||npcDialog.getText().contains("Thank you so much! Would you like a cup of tea<br>before you go?"))){
+					delayUtils.delayKey(KeyEvent.VK_SPACE, delay);
+				}
+
+				if (createMenu!=null && createMenu.getChild(1)!=null &&
+						createMenu.getChild(1).getText().contains("Furniture Creation Menu")) {
+					delayUtils.delayKey(key, delay);
+				}
 			}
 		}
 	}
