@@ -176,6 +176,8 @@ public class TobSoundsPlugin extends Plugin {
 
     @Subscribe
     public void onActorDeath(ActorDeath event) {
+        if (!config.tobDeath()) return;
+
         if (event.getActor() instanceof Player) {
             if (client.getVar(Varbits.THEATRE_OF_BLOOD)==2){ // 1=In Party, 2=Inside/Spectator, 3=Dead Spectating
                 try {

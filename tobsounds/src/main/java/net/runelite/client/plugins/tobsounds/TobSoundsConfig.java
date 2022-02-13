@@ -47,4 +47,14 @@ public interface TobSoundsConfig extends Config {
     default boolean tankGay() {
         return false;
     }
+
+    @ConfigItem(
+            keyName = "tobDeath",
+            name = "Tob Death",
+            description = "Horse go Neigh",
+            position = 5
+    )
+    default boolean tobDeath() {
+        return false;
+    }
 }
