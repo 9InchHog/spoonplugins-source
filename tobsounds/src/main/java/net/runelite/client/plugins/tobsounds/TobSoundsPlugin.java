@@ -1,12 +1,8 @@
 package net.runelite.client.plugins.tobsounds;
 
 import com.google.inject.Provides;
-import net.runelite.api.Client;
-import net.runelite.api.NPC;
-import net.runelite.api.events.AnimationChanged;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.InteractingChanged;
+import net.runelite.api.*;
+import net.runelite.api.events.*;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
@@ -161,6 +157,31 @@ public class TobSoundsPlugin extends Plugin {
                     event.getSource().getInteracting().getName().equalsIgnoreCase(this.client.getLocalPlayer().getName())) {
                 try {
                     AudioInputStream stream = AudioSystem.getAudioInputStream(new BufferedInputStream(TobSoundsPlugin.class.getResourceAsStream("wayabovegay.wav")));
+                    AudioFormat format = stream.getFormat();
+                    DataLine.Info info = new DataLine.Info(Clip.class, format);
+                    clip = (Clip) AudioSystem.getLine(info);
+                    clip.open(stream);
+                    FloatControl control = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                    if (control != null) {
+                        control.setValue((float) (this.config.soundVolume() / 2 - 45));
+                    }
+                    clip.setFramePosition(0);
+                    clip.start();
+                } catch (Exception var6) {
+                    clip = null;
+                }
+            }
+        }
+    }
+
+    @Subscribe
+    public void onActorDeath(ActorDeath event) {
+        if (!config.tobDeath()) return;
+
+        if (event.getActor() instanceof Player) {
+            if (client.getVar(Varbits.THEATRE_OF_BLOOD)==2){ // 1=In Party, 2=Inside/Spectator, 3=Dead Spectating
+                try {
+                    AudioInputStream stream = AudioSystem.getAudioInputStream(new BufferedInputStream(TobSoundsPlugin.class.getResourceAsStream("horsey.wav")));
                     AudioFormat format = stream.getFormat();
                     DataLine.Info info = new DataLine.Info(Clip.class, format);
                     clip = (Clip) AudioSystem.getLine(info);

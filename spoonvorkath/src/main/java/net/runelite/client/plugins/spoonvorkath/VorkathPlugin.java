@@ -133,7 +133,11 @@ public class VorkathPlugin extends Plugin {
                 this.nextVorkathPhase = VorkathUtils.VorkathPhase.ACID;
                 log.debug("[Vorkath] Projectile: {}, Attacks Left: {}, Current Phase: {}, Next Phase: {}", projectileId, this.attacksLeft, this.currentVorkathPhase, this.nextVorkathPhase);
             }
+    }
 
+    @Subscribe
+    private void onProjectileSpawned(ProjectileSpawned event) {
+        int projectileId = event.getProjectile().getId();
         if ((projectileId == 1471 || projectileId ==1481) && config.afkNotifier()) {notifier.notify("Vorkath");}
     }
 
