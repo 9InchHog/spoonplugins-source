@@ -26,6 +26,9 @@
  */
 package net.runelite.client.plugins.aoe;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.runelite.client.config.*;
 
 import java.awt.*;
@@ -110,7 +113,7 @@ public interface AoeConfig extends Config {
 			position = 4,
 			section = displaySection
 	)
-	default int aoeThiCC() { return 1; }
+	default double aoeThiCC() { return 1; }
 
 	@ConfigItem(
 			keyName = "delay",
@@ -169,10 +172,22 @@ public interface AoeConfig extends Config {
 	default int textSize() { return 14; }
 
 	@ConfigItem(
+			keyName = "fontWeight",
+			name = "Font Weight",
+			description = "Bold/Italics/Plain.",
+			position = 11,
+			section = displaySection
+	)
+	default FontStyle fontWeight()
+	{
+		return FontStyle.BOLD;
+	}
+
+	@ConfigItem(
 			keyName = "raveHighlights",
 			name = "Rave",
 			description = ":catJam:",
-			position = 11,
+			position = 12,
 			section = displaySection
 	)
 	default raveMode raveHighlights() { return raveMode.OFF; }
@@ -442,5 +457,23 @@ public interface AoeConfig extends Config {
 
 	enum raveMode {
 		OFF, FLOW, RAVE
+	}
+
+	@Getter(AccessLevel.PACKAGE)
+	@AllArgsConstructor
+	enum FontStyle
+	{
+		BOLD("Bold", Font.BOLD),
+		ITALIC("Italic", Font.ITALIC),
+		PLAIN("Plain", Font.PLAIN);
+
+		private final String name;
+		private final int font;
+
+		@Override
+		public String toString()
+		{
+			return getName();
+		}
 	}
 }

@@ -28,10 +28,10 @@
 package net.runelite.client.plugins.aoe;
 
 import net.runelite.api.Point;
-import net.runelite.api.ProjectileID;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -194,8 +194,8 @@ public class AoeOverlay extends Overlay {
 					outlineAlpha = 255;
 				}
 
-				if (this.config.aoeThiCC() >= 1) {
-					if(config.raveHighlights() != AoeConfig.raveMode.OFF) {
+				if (config.aoeThiCC() > 0) {
+					if (config.raveHighlights() != AoeConfig.raveMode.OFF) {
 						if (config.raveHighlights() == AoeConfig.raveMode.RAVE) {
 							Color raveColor = plugin.raveColors.get(index.intValue());
 							graphics.setColor(new Color(raveColor.getRed(), raveColor.getGreen(), raveColor.getBlue(), outlineAlpha));
@@ -205,6 +205,7 @@ public class AoeOverlay extends Overlay {
 					} else {
 						graphics.setColor(new Color(setAlphaComponent(config.AoEColor().getRGB(), outlineAlpha), true));
 					}
+					graphics.setStroke(new BasicStroke((float) config.aoeThiCC()));
 					graphics.drawPolygon(tilePoly);
 				}
 
@@ -220,7 +221,7 @@ public class AoeOverlay extends Overlay {
 					if (config.fontType()) {
 						renderTextLocation(graphics, Integer.toString(tickProgress), color, point);
 					} else {
-						renderCustomTextLocation(graphics, Integer.toString(tickProgress), config.textSize(), 1, color, point);
+						renderCustomTextLocation(graphics, Integer.toString(tickProgress), config.textSize(), config.fontWeight().getFont(), color, point);
 					}
 					previousPoints.add(proj.getTargetPoint());
 				}
@@ -258,7 +259,7 @@ public class AoeOverlay extends Overlay {
 	}
 
 	protected void renderCustomTextLocation(Graphics2D graphics, String txtString, int fontSize, int fontStyle, Color fontColor, Point canvasPoint) {
-		graphics.setFont(new Font("Arial", fontStyle, fontSize));
+		graphics.setFont(new Font(FontManager.getRunescapeSmallFont().toString(), fontStyle, fontSize));
 		if (canvasPoint != null) {
 			Point canvasCenterPoint = new Point(canvasPoint.getX(), canvasPoint.getY());
 			Point canvasCenterPointShadow = new Point(canvasPoint.getX() + 1, canvasPoint.getY() + 1);
