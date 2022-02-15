@@ -1,10 +1,7 @@
 package net.runelite.client.plugins.entityhiderplus;
 
 import com.google.inject.Provides;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.NPC;
+import net.runelite.api.*;
 import net.runelite.api.events.*;
 import net.runelite.api.util.Text;
 import net.runelite.client.config.ConfigManager;
@@ -233,14 +230,8 @@ public class EntityHiderPlusPlugin extends Plugin {
 
     @Subscribe
     public void onGraphicsObjectCreated(GraphicsObjectCreated event){
-        if(hideGraphicsObjects.contains(event.getGraphicsObject().getId())){
-            Field f = event.getGraphicsObject().getClass().getDeclaredFields()[9];
-            f.setAccessible(true);
-            try {
-                f.setBoolean(event.getGraphicsObject(), true);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
+        if (hideGraphicsObjects.contains(event.getGraphicsObject().getId())) {
+           event.getGraphicsObject().setFinished(true);
         }
     }
 

@@ -24,7 +24,7 @@ public class SpoonNexTimerBox extends InfoBox {
 
     @Override
     public String getText() {
-        return plugin.timerTicksLeft > 0 ? plugin.ticksToTime(plugin.p5Tick - plugin.startTick) : plugin.ticksToTime(client.getTickCount() - plugin.startTick);
+        return plugin.timerTicksLeft > 0 ? plugin.ticksToSeconds(plugin.p5Tick - plugin.startTick) : plugin.ticksToSeconds(client.getTickCount() - plugin.startTick);
     }
 
     @Override

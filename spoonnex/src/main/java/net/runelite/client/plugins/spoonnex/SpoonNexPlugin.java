@@ -552,12 +552,18 @@ public class SpoonNexPlugin extends Plugin {
 
 		return Banker != null;
 	}
-
 	public String ticksToTime(int ticks) {
-        int min = ticks / 100;
-        int tmp = (ticks - min * 100) * 6;
-        int sec = tmp / 10;
-        int sec_tenth = tmp - sec * 10;
+		int min = ticks / 100;
+		int tmp = (ticks - min * 100) * 6;
+		int sec = tmp / 10;
+		int sec_tenth = tmp - sec * 10;
 		return config.usePrecise() ? min + (sec < 10 ? ":0" : ":") + sec + "." + sec_tenth : min + (sec < 10 ? ":0" : ":") + sec;
-    }
+	}
+
+	public String ticksToSeconds(int ticks) {
+		int min = ticks / 100;
+		int tmp = (ticks - min * 100) * 6;
+		int sec = tmp / 10;
+		return min + (sec < 10 ? ":0" : ":") + sec;
+	}
 }
