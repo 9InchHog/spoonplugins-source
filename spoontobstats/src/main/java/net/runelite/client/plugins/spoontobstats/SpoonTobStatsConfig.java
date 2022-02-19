@@ -150,11 +150,11 @@ public interface SpoonTobStatsConfig extends Config
     @ConfigItem(
             name = "Custom Font Name",
             keyName = "fontName",
-            description = "Custom font override. Leave blank to disable",
+            description = "Custom font override. Leave blank to disable. Sansserif to look like Steroid",
             position = 102
     )
     default String fontName() {
-        return "sansserif";
+        return "";
     }
 
     @ConfigItem(

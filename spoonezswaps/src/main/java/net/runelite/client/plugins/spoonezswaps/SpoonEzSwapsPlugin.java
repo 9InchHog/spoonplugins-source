@@ -1147,6 +1147,7 @@ public class SpoonEzSwapsPlugin extends Plugin {
 				return;
 			}
 
+			int afkKey = config.getAfkConstructionHouseMode().getKey();
 			Widget createMenu = client.getWidget(458, 1);
 			Widget dialogOptions = client.getWidget(219, 1);
 			Widget demonPayment = client.getWidget(231, 5);
@@ -1169,7 +1170,7 @@ public class SpoonEzSwapsPlugin extends Plugin {
 			}
 
 			if (createMenu != null && !createMenu.isHidden() && !createMenu.isSelfHidden() & !config.afkConstructionMahoganyHomes()) {
-				delayUtils.delayKey(KeyEvent.VK_6, delay);
+				delayUtils.delayKey(afkKey, delay);
 			}
 
 			//Mahogany homes afk con

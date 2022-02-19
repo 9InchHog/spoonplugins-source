@@ -125,7 +125,7 @@ public interface SpoonEzSwapsConfig extends Config
 	@ConfigItem(
 			keyName = "afkConstruction",
 			name = "Afk Construction",
-			description = "You click, it presses key. Basically one click. <br> Presses 1 for removing/repeat task/payment, presses 6 to build mahogany tables",
+			description = "You click, it presses key.",
 			position = 2,
 			section = skillingSection,
 			hidden = true,
@@ -137,10 +137,21 @@ public interface SpoonEzSwapsConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "getAfkConstructionHouseMode",
+			name = "Afk Construction Mode",
+			description = "Mythcape or Mahogany tables",
+			position = 3,
+			section = skillingSection,
+			hidden = true,
+			unhide = "afkConstruction"
+	)
+	default AfkConstructionHouseMode getAfkConstructionHouseMode() { return AfkConstructionHouseMode.MAHOGANY_TABLES; }
+
+	@ConfigItem(
 			keyName = "afkConstructionMahoganyHomes",
 			name = "Afk Construction (Mahogany Homes)",
 			description = "",
-			position = 3,
+			position = 4,
 			section = skillingSection,
 			hidden = true,
 			unhide = "afkConstruction"
@@ -154,7 +165,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "getAfkConstructionMahoganyHomesMode",
 			name = "Afk Construction Mode",
 			description = "Teaks or Mahogany",
-			position = 4,
+			position = 5,
 			section = skillingSection,
 			hidden = true,
 			unhide = "afkConstructionMahoganyHomes"
@@ -168,7 +179,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "stringAmulet",
 			name = "String Amulet Overlay",
 			description = "Overlay indicating how many amulets in your invent are strung",
-			position = 5,
+			position = 6,
 			section = skillingSection
 	)
 	default boolean getStringAmulet() {
@@ -179,7 +190,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "cookPie",
 			name = "Bake Pie Overlay",
 			description = "Overlay indicating how many summer pies in your inventory are baked",
-			position = 6,
+			position = 7,
 			section = skillingSection
 	)
 	default boolean getBakePie() {
@@ -190,7 +201,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "swapPickpocket",
 			name = "Pickpocket",
 			description = "Swap Talk-to with Pickpocket on NPC<br>Example: Man, Woman",
-			position = 7,
+			position = 8,
 			section = skillingSection
 	)
 	default boolean swapPickpocket()
@@ -202,7 +213,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "swapHerblore",
 			name = "Herblore",
 			description = "Removes the `drink` option on herblore potions - for herblore training",
-			position = 8,
+			position = 9,
 			section = skillingSection
 	)
 	default boolean swapHerblore()
@@ -214,7 +225,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "karambwans",
 			name = "Karambwans",
 			description = "Swaps max cape left click teleports depending on location.",
-			position = 9,
+			position = 10,
 			section = skillingSection,
 			disabledBy = "swapMaxCape"
 	)
@@ -227,12 +238,12 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "customDrop",
 			name = "Left Click Drop",
 			description = "Anything in the list will be dropped on left click",
-			position = 10,
+			position = 11,
 			section = skillingSection
 	)
 	default String customDrop()
 	{
-		return "iron ore, blisterwood log, redwood log, empty plant pot, leaping trout, leaping salmon, leaping sturgeon, sandstone (1kg), sandstone (2kg), sandstone (5kg), sandstone (10kg), granite (500g), granite (2kg), granite (5kg)";
+		return "";
 	}
 
 	//------------------------------------------------------------//
