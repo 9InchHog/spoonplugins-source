@@ -46,15 +46,4 @@ public interface TzhaarTimersConfig extends Config
     {
         return true;
     }
-
-    @ConfigItem(
-            keyName = "exportTime",
-            name = "Export Times",
-            description = "Exports wave splits and end times in the Fight Caves and Inferno",
-            position = 0
-    )
-    default boolean exportTime()
-    {
-        return true;
-    }
 }
