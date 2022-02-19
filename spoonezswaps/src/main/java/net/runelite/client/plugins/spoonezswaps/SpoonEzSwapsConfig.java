@@ -154,7 +154,7 @@ public interface SpoonEzSwapsConfig extends Config
 			position = 4,
 			section = skillingSection,
 			hidden = true,
-			unhide = "afkConstruction"
+			unhide = "getEasyConstruction"
 	)
 	default boolean afkConstructionMahoganyHomes()
 	{

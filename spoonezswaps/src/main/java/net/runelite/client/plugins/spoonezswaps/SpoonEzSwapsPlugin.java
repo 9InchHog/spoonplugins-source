@@ -1141,7 +1141,7 @@ public class SpoonEzSwapsPlugin extends Plugin {
 
 		updateitemCounts();
 
-		if (config.afkConstruction() && config.getEasyConstruction()) {
+		if (config.getEasyConstruction()) {
 			if (!clientUI.isFocused())
 			{
 				return;
@@ -1153,24 +1153,26 @@ public class SpoonEzSwapsPlugin extends Plugin {
 			Widget demonPayment = client.getWidget(231, 5);
 			int delay = delayUtils.nextInt(0, 578);
 
-			if (dialogOptions != null && !dialogOptions.isHidden() && !dialogOptions.isSelfHidden()) {
-				for (Widget child : dialogOptions.getDynamicChildren()) {
-					if (child.getText().contains("Really remove it?") || child.getText().contains("Repeat last task?")) {
-						delayUtils.delayKey(KeyEvent.VK_1, delay);
-					} else if (child.getText().contains("Okay, here's 10,000 coins.")) {
-						delayUtils.delayKey(KeyEvent.VK_1, delay);
+			if (config.afkConstruction()) {
+				if (dialogOptions != null && !dialogOptions.isHidden() && !dialogOptions.isSelfHidden()) {
+					for (Widget child : dialogOptions.getDynamicChildren()) {
+						if (child.getText().contains("Really remove it?") || child.getText().contains("Repeat last task?")) {
+							delayUtils.delayKey(KeyEvent.VK_1, delay);
+						} else if (child.getText().contains("Okay, here's 10,000 coins.")) {
+							delayUtils.delayKey(KeyEvent.VK_1, delay);
+						}
 					}
 				}
-			}
 
-			if (demonPayment != null && !demonPayment.isHidden() && !demonPayment.isSelfHidden()) {
-				if (demonPayment.getText().contains("Master, if thou desire")) {
-					delayUtils.delayKey(KeyEvent.VK_SPACE, delay);
+				if (demonPayment != null && !demonPayment.isHidden() && !demonPayment.isSelfHidden()) {
+					if (demonPayment.getText().contains("Master, if thou desire")) {
+						delayUtils.delayKey(KeyEvent.VK_SPACE, delay);
+					}
 				}
-			}
 
-			if (createMenu != null && !createMenu.isHidden() && !createMenu.isSelfHidden() & !config.afkConstructionMahoganyHomes()) {
-				delayUtils.delayKey(afkKey, delay);
+				if (createMenu != null && !createMenu.isHidden() && !createMenu.isSelfHidden() & !config.afkConstructionMahoganyHomes()) {
+					delayUtils.delayKey(afkKey, delay);
+				}
 			}
 
 			//Mahogany homes afk con
