@@ -139,7 +139,7 @@ public interface SpoonEzSwapsConfig extends Config
 	@ConfigItem(
 			keyName = "getAfkConstructionHouseMode",
 			name = "Afk Construction Mode",
-			description = "Mythcape or Mahogany tables",
+			description = "Sets the key to the item you want to make",
 			position = 3,
 			section = skillingSection,
 			hidden = true,
