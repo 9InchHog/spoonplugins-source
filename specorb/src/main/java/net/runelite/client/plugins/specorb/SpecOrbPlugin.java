@@ -31,7 +31,7 @@ public class SpecOrbPlugin extends Plugin
     @Subscribe
     public void onMenuEntryAdded(MenuEntryAdded event)
     {
-        if (event.getMenuAction() == MenuAction.CC_OP && event.getParam1() == 160)
+        if (event.getMenuAction() == MenuAction.CC_OP && event.getParam1() == WidgetInfo.MINIMAP_SPEC_CLICKBOX.getGroupId())
         {
             client.setMenuOptionCount(client.getMenuOptionCount() - 1);
         }
@@ -40,7 +40,7 @@ public class SpecOrbPlugin extends Plugin
     @Subscribe
     private void onClientTick(ClientTick event)
     {
-        Widget specOrb = client.getWidget(160, 30);
+        Widget specOrb = client.getWidget(WidgetInfo.MINIMAP_SPEC_CLICKBOX);
         Point mousePosition = client.getMouseCanvasPosition();
 
         if (specOrb == null || mousePosition.equals(invalidMouseLocation))
