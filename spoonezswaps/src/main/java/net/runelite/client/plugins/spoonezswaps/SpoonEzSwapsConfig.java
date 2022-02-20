@@ -31,9 +31,17 @@ public interface SpoonEzSwapsConfig extends Config
 	String keyCustomSwapsSection = "Hotkey Swaps";
 
 	@ConfigSection(
+			name = "Region Swaps",
+			description = "Configuration for Region Swaps",
+			position = 3,
+			closedByDefault = true
+	)
+	String regionSwapsSection = "Region Swaps";
+
+	@ConfigSection(
 			name = "Remove Options",
 			description = "Configuration for removing swaps",
-			position = 3,
+			position = 4,
 			closedByDefault = true
 	)
 	String removeSwapsSection = "Remove Options";
@@ -41,7 +49,7 @@ public interface SpoonEzSwapsConfig extends Config
 	@ConfigSection(
 			name = "Skilling",
 			description = "",
-			position = 4,
+			position = 5,
 			keyName = "skillingSection",
 			closedByDefault = true
 	)
@@ -50,7 +58,7 @@ public interface SpoonEzSwapsConfig extends Config
 	@ConfigSection(
 			name = "Diary",
 			description = "",
-			position = 5,
+			position = 6,
 			keyName = "diarySection",
 			closedByDefault = true
 	)
@@ -59,7 +67,7 @@ public interface SpoonEzSwapsConfig extends Config
 	@ConfigSection(
 			name = "Teleportation",
 			description = "",
-			position = 6,
+			position = 7,
 			keyName = "teleportationSection",
 			closedByDefault = true
 	)
@@ -68,7 +76,7 @@ public interface SpoonEzSwapsConfig extends Config
 	@ConfigSection(
 			name = "Misc",
 			description = "",
-			position = 7,
+			position = 8,
 			keyName = "miscSection",
 			closedByDefault = true
 	)
@@ -77,7 +85,7 @@ public interface SpoonEzSwapsConfig extends Config
 	@ConfigSection(
 			name = "PvM",
 			description = "",
-			position = 8,
+			position = 9,
 			keyName = "pvmSection",
 			closedByDefault = true
 	)
@@ -86,7 +94,7 @@ public interface SpoonEzSwapsConfig extends Config
 	@ConfigSection(
 			name = "Audio",
 			description = "",
-			position = 9,
+			position = 10,
 			keyName = "audioSection",
 			closedByDefault = true
 	)
@@ -1004,6 +1012,7 @@ public interface SpoonEzSwapsConfig extends Config
 		return "";
 	}
 
+	//Shift Section
 	@ConfigItem(
 			name = "Shift Swaps Toggle",
 			keyName = "shiftCustomSwapsToggle",
@@ -1040,6 +1049,7 @@ public interface SpoonEzSwapsConfig extends Config
 		return "";
 	}
 
+	//Hotkey Section
 	@ConfigItem(
 			name = "Hotkey Swaps Toggle",
 			keyName = "keyCustomSwapsToggle",
@@ -1088,6 +1098,53 @@ public interface SpoonEzSwapsConfig extends Config
 		return "";
 	}
 
+	//Region Section
+	@ConfigItem(
+			name = "Region Swaps Toggle",
+			keyName = "regionSwapsToggle",
+			description = "Toggles the use of the Custom Swaps",
+			section = regionSwapsSection,
+			position = 1
+	)
+	default boolean regionCustomSwapsToggle()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			name = "Region IDs",
+			keyName = "regionSpecificRegions",
+			description = "Find these by going to developer tools in the side bar and turning on 'location'<br> The default ID is the ID for player owned house",
+			section = regionSwapsSection,
+			position = 2
+	)
+	default String regionSpecificRegions() { return ""; }
+
+	@ConfigItem(
+			name = "Region Swaps",
+			keyName = "regionCustomSwapsStr",
+			description = "",
+			section = regionSwapsSection,
+			position = 3
+	)
+	default String regionCustomSwapsString()
+	{
+		return "";
+	}
+
+	@ConfigItem(
+			name = "Region Bank Swaps",
+			keyName = "bankRegionCustomSwapsStr",
+			description = "",
+			section = regionSwapsSection,
+			position = 4
+	)
+	default String bankRegionCustomSwapsString()
+	{
+		return "";
+	}
+
+	//Remove Section
 	@ConfigItem(
 			name = "Remove Options Toggle",
 			keyName = "removeOptionsToggle",

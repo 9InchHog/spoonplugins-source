@@ -4,10 +4,8 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
 import lombok.Getter;
 import lombok.Setter;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.MenuAction;
-import net.runelite.api.MenuEntry;
+import net.runelite.api.*;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.FocusChanged;
 import net.runelite.api.events.GameStateChanged;
@@ -118,6 +116,8 @@ public class CustomSwaps implements KeyListener
 
 	private final ArrayList<EntryFromConfig> keyCustomSwaps = new ArrayList<>();
 
+	private final ArrayList<EntryFromConfig> regionCustomSwaps = new ArrayList<>();
+
 	private final ArrayList<EntryFromConfig> removeOptions = new ArrayList<>();
 
 	private final ArrayList<EntryFromConfig> bankCustomSwaps = new ArrayList<>();
@@ -125,6 +125,10 @@ public class CustomSwaps implements KeyListener
 	private final ArrayList<EntryFromConfig> shiftBankCustomSwaps = new ArrayList<>();
 
 	private final ArrayList<EntryFromConfig> keyBankCustomSwaps = new ArrayList<>();
+
+	private final ArrayList<EntryFromConfig> regionBankCustomSwaps = new ArrayList<>();
+
+	private final ArrayList<Integer> regionIDs = new ArrayList<>();
 
 	private boolean holdingShift = false;
 
@@ -140,10 +144,12 @@ public class CustomSwaps implements KeyListener
 		parseConfigToList(config.customSwapsString(), customSwaps);
 		parseConfigToList(config.shiftCustomSwapsString(), shiftCustomSwaps);
 		parseConfigToList(config.keyCustomSwapsString(), keyCustomSwaps);
+		parseConfigToList(config.regionCustomSwapsString(), regionCustomSwaps);
 		parseConfigToList(config.removeOptionsString(), removeOptions);
 		parseConfigToList(config.bankCustomSwapsString(), bankCustomSwaps);
 		parseConfigToList(config.bankShiftCustomSwapsString(), shiftBankCustomSwaps);
 		parseConfigToList(config.bankKeyCustomSwapsString(), keyBankCustomSwaps);
+		parseConfigToList(config.bankRegionCustomSwapsString(), regionBankCustomSwaps);
 	}
 
 	public void shutdown() {
@@ -154,10 +160,13 @@ public class CustomSwaps implements KeyListener
 		customSwaps.clear();
 		shiftCustomSwaps.clear();
 		keyCustomSwaps.clear();
+		regionCustomSwaps.clear();
 		removeOptions.clear();
 		bankCustomSwaps.clear();
 		shiftBankCustomSwaps.clear();
 		keyBankCustomSwaps.clear();
+		regionBankCustomSwaps.clear();
+		regionIDs.clear();
 		hasLoaded = false;
 	}
 
@@ -171,6 +180,8 @@ public class CustomSwaps implements KeyListener
 				parseConfigToList(config.shiftCustomSwapsString(), shiftCustomSwaps);
 				keyCustomSwaps.clear();
 				parseConfigToList(config.keyCustomSwapsString(), keyCustomSwaps);
+				regionCustomSwaps.clear();
+				parseConfigToList(config.regionCustomSwapsString(), regionCustomSwaps);
 				removeOptions.clear();
 				parseConfigToList(config.removeOptionsString(), removeOptions);
 				bankCustomSwaps.clear();
@@ -179,6 +190,10 @@ public class CustomSwaps implements KeyListener
 				parseConfigToList(config.bankShiftCustomSwapsString(), shiftBankCustomSwaps);
 				keyBankCustomSwaps.clear();
 				parseConfigToList(config.bankKeyCustomSwapsString(), keyBankCustomSwaps);
+				regionBankCustomSwaps.clear();
+				parseConfigToList(config.bankRegionCustomSwapsString(), regionBankCustomSwaps);
+				regionIDs.clear();
+				parseConfigToInt(config.regionSpecificRegions(), regionIDs);
 				hasLoaded = true;
 			}
 		}
@@ -200,6 +215,10 @@ public class CustomSwaps implements KeyListener
 					keyCustomSwaps.clear();
 					parseConfigToList(config.keyCustomSwapsString(), keyCustomSwaps);
 					break;
+				case "regionCustomSwapsStr":
+					regionCustomSwaps.clear();
+					parseConfigToList(config.regionCustomSwapsString(), regionCustomSwaps);
+					break;
 				case "removeOptionsStr":
 					removeOptions.clear();
 					parseConfigToList(config.removeOptionsString(), removeOptions);
@@ -215,6 +234,14 @@ public class CustomSwaps implements KeyListener
 				case "bankKeyCustomSwapsStr":
 					keyBankCustomSwaps.clear();
 					parseConfigToList(config.bankKeyCustomSwapsString(), keyBankCustomSwaps);
+					break;
+				case "bankRegionCustomSwapsStr":
+					regionBankCustomSwaps.clear();
+					parseConfigToList(config.bankRegionCustomSwapsString(), regionBankCustomSwaps);
+					break;
+				case "regionSpecificRegions":
+					regionIDs.clear();
+					parseConfigToInt(config.regionSpecificRegions(), regionIDs);
 					break;
 			}
 		}
@@ -242,6 +269,23 @@ public class CustomSwaps implements KeyListener
 			EntryFromConfig entryFromConfig = new EntryFromConfig(option, target, topOption, topTarget);
 			set.add(entryFromConfig);
 		}
+	}
+
+	private void parseConfigToInt(String value, List<Integer> set) {
+		String[] splitList = value.split(",");
+		for (String s : splitList) {
+			s = s.trim();
+			Integer strToInt = Integer.valueOf(s);
+			set.add(strToInt);
+		}
+	}
+
+	public static int getCurrentRegionID(Client client) {
+		Player localPlayer = client.getLocalPlayer();
+		if (localPlayer == null)
+			return -1;
+		WorldPoint wp = WorldPoint.fromLocalInstance(client, localPlayer.getLocalLocation());
+		return (wp == null) ? -1 : wp.getRegionID();
 	}
 
 	private static int topEntryIndex(MenuEntry[] entries)
@@ -343,6 +387,15 @@ public class CustomSwaps implements KeyListener
 					priority = index;
 				}
 			}
+			else if (config.regionCustomSwapsToggle() && regionIDs.contains(getCurrentRegionID(client)))
+			{
+				int index = indexOfEntry(regionCustomSwaps, entryFromConfig, menuEntries);
+				if (index > priority)
+				{
+					entryIndex = i;
+					priority = index;
+				}
+			}
 			else if (config.customSwapsToggle())
 			{
 				int index = indexOfEntry(customSwaps, entryFromConfig, menuEntries);
@@ -405,6 +458,16 @@ public class CustomSwaps implements KeyListener
 			else if (holdingKeybind && config.keyCustomSwapsToggle())
 			{
 				int index = indexOfEntry(keyBankCustomSwaps, entryFromConfig, menuEntries);
+				if (index > priority)
+				{
+					entryIndex = i;
+					priority = index;
+				}
+			}
+
+			else if (config.regionCustomSwapsToggle() && regionIDs.contains(getCurrentRegionID(client)))
+			{
+				int index = indexOfEntry(regionBankCustomSwaps, entryFromConfig, menuEntries);
 				if (index > priority)
 				{
 					entryIndex = i;
