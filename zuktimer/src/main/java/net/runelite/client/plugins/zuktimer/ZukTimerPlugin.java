@@ -1,5 +1,6 @@
 package net.runelite.client.plugins.zuktimer;
 
+import com.google.common.collect.ImmutableSet;
 import com.openosrs.client.game.NPCManager;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,6 +17,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
+import java.util.Set;
 
 @Extension
 @PluginDescriptor(
@@ -56,6 +58,10 @@ public class ZukTimerPlugin extends Plugin
 
 	private ZukSetInfobox spawnTimerInfoBox;
 
+	private boolean jadSpawned;
+
+	protected static final Set<Integer> JAD_IDS = ImmutableSet.of(NpcID.JALTOKJAD, NpcID.JALTOKJAD_7704, NpcID.JALTOKJAD_10623);
+
 	@Override
 	protected void startUp()
 	{
@@ -72,6 +78,7 @@ public class ZukTimerPlugin extends Plugin
 	{
 		if (!isInInferno())
 		{
+			jadSpawned = false;
 			return;
 		}
 
@@ -122,6 +129,10 @@ public class ZukTimerPlugin extends Plugin
 
 				break;
 		}
+
+		if (zuk != null && JAD_IDS.contains(npcId)) {
+			jadSpawned = true;
+		}
 	}
 
 	@Subscribe
@@ -166,6 +177,7 @@ public class ZukTimerPlugin extends Plugin
 		{
 			zukShield = null;
 			zuk = null;
+			jadSpawned = false;
 
 			if (spawnTimerInfoBox != null)
 			{
@@ -200,7 +212,7 @@ public class ZukTimerPlugin extends Plugin
 
 		if (spawnTimerInfoBox.isRunning())
 		{
-			if (hp >= resumeHp && hp < pauseHp)
+			if (hp >= resumeHp && hp < pauseHp && !jadSpawned)
 			{
 				spawnTimerInfoBox.pause();
 			}
