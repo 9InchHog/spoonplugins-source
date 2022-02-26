@@ -17,7 +17,6 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.spoontob.Room;
 import net.runelite.client.plugins.spoontob.SpoonTobConfig;
 import net.runelite.client.plugins.spoontob.SpoonTobPlugin;
-import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.infobox.Counter;
 import net.runelite.client.ui.overlay.infobox.InfoBox;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;

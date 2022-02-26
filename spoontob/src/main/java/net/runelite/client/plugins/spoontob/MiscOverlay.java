@@ -29,6 +29,7 @@ public class MiscOverlay extends Overlay {
 	@Override
 	public Dimension render(Graphics2D graphics) {
 		if (config.lootReminder() != SpoonTobConfig.lootReminderMode.OFF && plugin.bankLootChest != null && this.client.getLocalPlayer() != null) {
+			Color raveColor = plugin.raveUtils.getColor(plugin.bankLootChest.hashCode(), true);
 			if(plugin.bankLootChest.getRenderable().getModel().getModelHeight() == 119) {
 				if(config.lootReminder() == SpoonTobConfig.lootReminderMode.DUMBER || config.lootReminder() == SpoonTobConfig.lootReminderMode.DUMBEST
 						|| config.lootReminder() == SpoonTobConfig.lootReminderMode.DUMBEREST) {
@@ -37,7 +38,7 @@ public class MiscOverlay extends Overlay {
 					}
 
 					if (config.lootReminder() == SpoonTobConfig.lootReminderMode.DUMBEST) {
-						graphics.setColor(new Color(plugin.flowColor.getRed(), plugin.flowColor.getGreen(), plugin.flowColor.getBlue(), config.lootReminderColor().getAlpha()));
+						graphics.setColor(new Color(raveColor.getRed(), raveColor.getGreen(), raveColor.getBlue(), config.lootReminderColor().getAlpha()));
 					} else if (config.lootReminder() == SpoonTobConfig.lootReminderMode.DUMBEREST){
 						graphics.setColor(new Color(plugin.raveBankChestColor.getRed(), plugin.raveBankChestColor.getBlue(), plugin.raveBankChestColor.getGreen(), config.lootReminderColor().getAlpha()));
 					} else {

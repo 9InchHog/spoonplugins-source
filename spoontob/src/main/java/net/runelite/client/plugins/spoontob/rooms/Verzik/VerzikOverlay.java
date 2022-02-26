@@ -108,16 +108,10 @@ public class VerzikOverlay extends RoomOverlay {
 				}
             }
 
-            if(config.raveNados() != SpoonTobConfig.raveNadoMode.OFF && verzik.verzikPhase == Verzik.Phase.PHASE3 && verzik.raveNadoColors.size() > 0){
-                int index = 0;
-                Color color;
+            if(config.raveNados() && verzik.verzikPhase == Verzik.Phase.PHASE3 && verzik.raveNadoColors.size() > 0){
                 for (NPC nado : client.getNpcs()) {
+                    Color color = plugin.raveUtils.getColor(nado.hashCode(), true);
                     if (Verzik.NADO_IDS.contains(nado.getId())){
-                        if (config.raveNados() == SpoonTobConfig.raveNadoMode.FlOW) {
-                            color = plugin.flowColor;
-                        } else {
-                            color = verzik.raveNadoColors.get(index);
-                        }
                         renderTargetOverlay(graphics, nado, color);
                     }
                 }
@@ -215,6 +209,8 @@ public class VerzikOverlay extends RoomOverlay {
                             targetText = "Lil Bitch";
                         } else if (k.getInteracting().getName().equalsIgnoreCase("null god")) {
                             targetText = "Click";
+                        } else if (k.getInteracting().getName().equalsIgnoreCase("noobtype")) {
+                            targetText = "Sick Invite";
                         } else if (k.getInteracting().getName().equalsIgnoreCase("turbosmurf") || k.getInteracting().getName().equalsIgnoreCase("yukinon fan") ) {
                             targetText = k.getInteracting().getName();
                             BufferedImage icon = verzik.icon;

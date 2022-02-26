@@ -173,7 +173,6 @@ public class XarpusOverlay extends RoomOverlay {
                     LocalPoint lp = LocalPoint.fromWorld(client, worldPoint.getX(), worldPoint.getY());
                     int x = lp.getX();
                     int y = lp.getY();
-                    int s = 64;
                     switch(dir) {
                         case NORTHEAST:
                             return Perspective.localToCanvas(client, new LocalPoint(x - 64, y - 64), client.getPlane());
@@ -191,12 +190,8 @@ public class XarpusOverlay extends RoomOverlay {
                 });
 
                 Color color;
-                if(config.raveLos() != SpoonTobConfig.raveLosMode.OFF) {
-                    if (config.raveLos() == SpoonTobConfig.raveLosMode.FlOW) {
-                        color = plugin.flowColor;
-                    } else {
-                        color = xarpus.losRaveColor;
-                    }
+                if(config.raveLos()) {
+                    color = plugin.raveUtils.getColor(poly.hashCode(), true);
                     renderXarpusPolygon(graphics, poly, color);
                 } else {
                     renderXarpusPolygon(graphics, poly, config.xarpusLosColor());

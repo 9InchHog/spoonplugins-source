@@ -24,9 +24,9 @@ import net.runelite.client.plugins.spoontob.rooms.Sotetseg.Sotetseg;
 import net.runelite.client.plugins.spoontob.rooms.Verzik.Verzik;
 import net.runelite.client.plugins.spoontob.rooms.Xarpus.Xarpus;
 import net.runelite.client.plugins.spoontob.util.CustomGameObject;
+import net.runelite.client.plugins.spoontob.util.RaveUtils;
 import net.runelite.client.plugins.spoontob.util.TheatreInputListener;
 import net.runelite.client.plugins.spoontob.util.TheatreRegions;
-import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.Text;
 import org.apache.commons.lang3.ArrayUtils;
@@ -76,6 +76,8 @@ public class SpoonTobPlugin extends Plugin {
     private SituationalTickOverlay tickOverlay;
     @Inject
     private MaidenRedsOverlay redsOverlay;
+    @Inject
+    public RaveUtils raveUtils;
 
     public Color c;
     private Color rave;

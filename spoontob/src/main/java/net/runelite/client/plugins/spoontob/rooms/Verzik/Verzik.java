@@ -1,7 +1,6 @@
 package net.runelite.client.plugins.spoontob.rooms.Verzik;
 
 import com.google.common.collect.ImmutableSet;
-import com.openosrs.client.util.*;
 import lombok.Getter;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
@@ -17,7 +16,6 @@ import net.runelite.client.plugins.spoontob.SpoonTobPlugin;
 import net.runelite.client.plugins.spoontob.util.TheatreRegions;
 import net.runelite.client.plugins.spoontob.util.PoisonStyle;
 import net.runelite.client.plugins.spoontob.util.PoisonWeaponMap;
-import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.util.ImageUtil;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.MutablePair;

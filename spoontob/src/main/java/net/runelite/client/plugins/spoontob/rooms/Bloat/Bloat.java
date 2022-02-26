@@ -16,7 +16,6 @@ import net.runelite.client.plugins.spoontob.SpoonTobPlugin;
 import net.runelite.client.plugins.spoontob.rooms.Bloat.stomp.BloatDown;
 import net.runelite.client.plugins.spoontob.rooms.Bloat.stomp.def.BloatChunk;
 import net.runelite.client.plugins.spoontob.util.TheatreRegions;
-import net.runelite.client.ui.overlay.OverlayLayer;
 
 import javax.inject.Inject;
 import javax.sound.sampled.*;

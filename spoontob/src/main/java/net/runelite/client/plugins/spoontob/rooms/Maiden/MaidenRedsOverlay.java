@@ -1,7 +1,6 @@
 package net.runelite.client.plugins.spoontob.rooms.Maiden;
 
 import net.runelite.api.Client;
-import net.runelite.api.NPC;
 import net.runelite.api.NPCComposition;
 import net.runelite.api.Perspective;
 import net.runelite.api.coords.LocalPoint;
@@ -9,11 +8,7 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.plugins.spoontob.RoomOverlay;
 import net.runelite.client.plugins.spoontob.SpoonTobConfig;
 import net.runelite.client.plugins.spoontob.SpoonTobPlugin;
-import net.runelite.client.plugins.spoontob.rooms.Maiden.Maiden;
-import net.runelite.client.plugins.spoontob.rooms.Maiden.MaidenCrabInfo;
-import net.runelite.client.plugins.spoontob.rooms.Verzik.Verzik;
 import net.runelite.client.plugins.spoontob.util.TheatreRegions;
-import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;

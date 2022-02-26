@@ -1671,9 +1671,7 @@ public interface SpoonTobConfig extends Config {
             section = misc,
             position = 99
     )
-    default raveNadoMode raveNados() {
-        return raveNadoMode.OFF;
-    }
+    default boolean raveNados() { return false; }
 
     @ConfigItem(
             position = 99,
@@ -1693,9 +1691,17 @@ public interface SpoonTobConfig extends Config {
             description = "No attack here... rave",
             section = misc
     )
-    default raveLosMode raveLos() {
-        return raveLosMode.OFF;
-    }
+    default boolean raveLos() { return false; }
+
+    @ConfigItem(
+            position = 100,
+            keyName = "raveSpeed",
+            name = "Rave Speed",
+            description = "Sets the speed the overlays rave at",
+            section = misc
+    )
+    @Units(Units.MILLISECONDS)
+    default int raveSpeed() { return 6000; }
 
     @ConfigItem(
             keyName = "highlightMelee",
@@ -1921,7 +1927,7 @@ public interface SpoonTobConfig extends Config {
     // Maiden enums
     //------------------------------------------------------------//
     enum maidenBloodSplatMode {
-        OFF, COLOR, FLOW, RAVE
+        OFF, COLOR, RAVE
     }
 
     enum maidenFreezeTimerMode {
@@ -1982,11 +1988,11 @@ public interface SpoonTobConfig extends Config {
     }
 
     enum bloatHandsMode{
-        OFF, COLOR, FLOW, RAVE, RAVEST
+        OFF, COLOR, RAVE, RAVEST
     }
 
     enum bloatStompMode {
-        OFF, COLOR, FLOW, RAVE
+        OFF, COLOR, RAVE
     }
 
     enum bloatTurnMode {
@@ -2138,14 +2144,6 @@ public interface SpoonTobConfig extends Config {
 
     enum lootReminderMode {
         OFF, DUMB, DUMBER, DUMBEST, DUMBEREST
-    }
-
-    enum raveLosMode {
-        OFF, FlOW, RAVE
-    }
-
-    enum raveNadoMode {
-        OFF, FlOW, RAVE
     }
 
     //------------------------------------------------------------//

@@ -1,6 +1,5 @@
 package net.runelite.client.plugins.spoontob.rooms.Maiden;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.tuple.Pair;
 import lombok.Getter;
@@ -11,19 +10,15 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.spoontob.Room;
 import net.runelite.client.plugins.spoontob.SpoonTobConfig;
 import net.runelite.client.plugins.spoontob.SpoonTobPlugin;
-import net.runelite.client.ui.overlay.Overlay;
-import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.Text;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import static net.runelite.api.NpcID.*;
 

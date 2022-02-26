@@ -42,11 +42,9 @@ public class BloatOverlay extends RoomOverlay {
                 Color color = config.bloatHandColor();
                 for (WorldPoint point : bloat.getBloathands().keySet()) {
                     if (config.showBloatHands() == SpoonTobConfig.bloatHandsMode.RAVE) {
-                        color = bloat.getHandColor();
+                        color = plugin.raveUtils.getColor(bloat.getBloathands().hashCode(), true);
                     } else if (config.showBloatHands() == SpoonTobConfig.bloatHandsMode.RAVEST) {
                         color = bloat.bloathandsColors.get(index);
-                    } else if (config.showBloatHands() == SpoonTobConfig.bloatHandsMode.FLOW) {
-                        color = plugin.flowColor;
                     }
                     drawTile(graphics, point, color, 1, config.bloatHandColor().getAlpha(), config.bloatColorFill());
 
@@ -122,9 +120,7 @@ public class BloatOverlay extends RoomOverlay {
             safespot.getSafespotLines().forEach((line) -> {
                 Color color = config.bloatStompColor();
                 if (config.bloatStompMode() == SpoonTobConfig.bloatStompMode.RAVE){
-                    color = bloat.raveStompColor;
-                } else if (config.bloatStompMode() == SpoonTobConfig.bloatStompMode.FLOW) {
-                    color = plugin.flowColor;
+                    color = plugin.raveUtils.getColor(line.hashCode(), true);
                 }
                 drawLine(graphics, line, color, config.bloatStompWidth());
             });
