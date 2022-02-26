@@ -7,7 +7,6 @@ import net.runelite.client.config.Range;
 
 @ConfigGroup("SpoonCursed")
 public interface CursedConfig extends Config {
-
     @ConfigItem(keyName = "swapEssenceRunning", name = "Essence Running", description = "Don't", position = 0)
     default boolean swapEssenceRunning() { return false; }
 
@@ -25,11 +24,11 @@ public interface CursedConfig extends Config {
 
     @ConfigItem(keyName = "npcEpilepsy", name = "NPC Epilepsy", description = "Get help", position = 5)
     default boolean npcEpilepsy() { return false; }
-	
-	@ConfigItem(keyName = "raveProjectiles", name = "Rave Projectiles", description = "Never enough rave plugins", position = 6)
+
+    @ConfigItem(keyName = "raveProjectiles", name = "Rave Projectiles", description = "Never enough rave plugins", position = 6)
     default boolean raveProjectiles() { return false; }
-	
-	@ConfigItem(keyName = "pulsingPlayers", name = "Pulsing Players", description = "Lets just see what happens", position = 7)
+
+    @ConfigItem(keyName = "pulsingPlayers", name = "Pulsing Players", description = "Lets just see what happens", position = 7)
     default boolean pulsingPlayers() { return false; }
 
     @ConfigItem(keyName = "psychedelicNpcs", name = "Psychedelic NPC", description = "Woah maaaaaaan", position = 8)
@@ -44,4 +43,14 @@ public interface CursedConfig extends Config {
     @Range(min = 0, max = 100)
     @ConfigItem(keyName = "catJamVolume", name = "Cat Jam Volume", description = "Oh god no my ears", position = 11)
     default int catJamVolume() { return 40; }
+
+    @ConfigItem(keyName = "diabloBrews", name = "Diablo Brews", description = "Some good ole nostalgia", position = 12)
+    default boolean diabloBrews() { return false; }
+
+    @Range(min = 0, max = 100)
+    @ConfigItem(keyName = "diabloBrewsVolume", name = "Diablo Brews Volume", description = "Trying not to go deaf by 30", position = 13)
+    default int diabloBrewsVolume() { return 40; }
+
+    @ConfigItem(keyName = "bigDie", name = "Big Die", description = "Big die", position = 14)
+    default boolean bigDie() { return false; }
 }

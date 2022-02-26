@@ -14,30 +14,30 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class CursedOverlay extends OverlayPanel {
-    private final Client client;
-    private final CursedPlugin plugin;
-    private final CursedConfig config;
+	private final Client client;
+	private final CursedPlugin plugin;
+	private final CursedConfig config;
 
-    @Inject
-    private CursedOverlay(final Client client, final CursedPlugin plugin, final CursedConfig config) {
-        this.client = client;
-        this.plugin = plugin;
-        this.config = config;
-        setPosition(OverlayPosition.DYNAMIC);
-        setPriority(OverlayPriority.HIGH);
-        setLayer(OverlayLayer.ABOVE_SCENE);
-    }
+	@Inject
+	private CursedOverlay(final Client client, final CursedPlugin plugin, final CursedConfig config) {
+		this.client = client;
+		this.plugin = plugin;
+		this.config = config;
+		setPosition(OverlayPosition.DYNAMIC);
+		setPriority(OverlayPriority.HIGHEST);
+		setLayer(OverlayLayer.ABOVE_WIDGETS);
+	}
 
-    @Override
-    public Dimension render(Graphics2D graphics) {
-    	if(this.client.getLocalPlayer() != null && config.catJam() && plugin.playCatJam) {
+	@Override
+	public Dimension render(Graphics2D graphics) {
+		if(this.client.getLocalPlayer() != null && config.catJam() && plugin.playCatJam) {
 			Point base = Perspective.localToCanvas(this.client, this.client.getLocalPlayer().getLocalLocation(), this.client.getPlane(), this.client.getLocalPlayer().getLogicalHeight() / 2 - 10);
 			if (base != null) {
 				String pngName;
 				if(plugin.catJamFrame > 99) {
-					 pngName = "frame_" + plugin.catJamFrame + "_delay-0.03s.png";
+					pngName = "frame_" + plugin.catJamFrame + "_delay-0.03s.png";
 				} else if (plugin.catJamFrame > 10) {
-					 pngName = "frame_0" + plugin.catJamFrame + "_delay-0.03s.png";
+					pngName = "frame_0" + plugin.catJamFrame + "_delay-0.03s.png";
 				} else {
 					pngName = "frame_00" + plugin.catJamFrame + "_delay-0.03s.png";
 				}
@@ -52,23 +52,23 @@ public class CursedOverlay extends OverlayPanel {
 			}
 		}
 
-        if(config.npcEpilepsy()){
-            for(NPC npc : this.client.getNpcs()){
-                NPCComposition npcComposition = npc.getTransformedComposition();
-                int size = 0;
-                if(npcComposition != null) {
+		if(config.npcEpilepsy()){
+			for(NPC npc : this.client.getNpcs()){
+				NPCComposition npcComposition = npc.getTransformedComposition();
+				int size = 0;
+				if(npcComposition != null) {
 					size = npcComposition.getSize();
 				}
-                LocalPoint lp = npc.getLocalLocation();
-                Polygon tilePoly = Perspective.getCanvasTileAreaPoly(client, lp, size);
-                ArrayList<Color> colorList = new ArrayList<>(Arrays.asList(Color.blue, Color.red, Color.green, Color.yellow, Color.cyan, Color.magenta, Color.orange));
-                Random rand = new Random();
-                int rng = rand.nextInt(6);
-                Color color = colorList.get(rng);
-                renderPoly(graphics, color, tilePoly);
-            }
-        }
-		
+				LocalPoint lp = npc.getLocalLocation();
+				Polygon tilePoly = Perspective.getCanvasTileAreaPoly(client, lp, size);
+				ArrayList<Color> colorList = new ArrayList<>(Arrays.asList(Color.blue, Color.red, Color.green, Color.yellow, Color.cyan, Color.magenta, Color.orange));
+				Random rand = new Random();
+				int rng = rand.nextInt(6);
+				Color color = colorList.get(rng);
+				renderPoly(graphics, color, tilePoly);
+			}
+		}
+
 		if(config.raveProjectiles()){
 			int index = 0;
 			for (Projectile p : client.getProjectiles()) {
@@ -85,8 +85,8 @@ public class CursedOverlay extends OverlayPanel {
 				}
 				index++;
 			}
-        }
-		
+		}
+
 		if(config.pulsingPlayers()){
 			for(Player player : this.client.getPlayers()){
 				Shape box = player.getConvexHull();
@@ -96,7 +96,7 @@ public class CursedOverlay extends OverlayPanel {
 					graphics.fill(box);
 				}
 			}
-        }
+		}
 
 		if(config.psychedelicNpcs()){
 			for(NPC npc : this.client.getNpcs()){
@@ -108,16 +108,23 @@ public class CursedOverlay extends OverlayPanel {
 				}
 			}
 		}
-        return super.render(graphics);
-    }
 
-    private void renderPoly(Graphics2D graphics, Color color, Shape polygon){
-        if (polygon != null){
-            graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 255));
-            graphics.setStroke(new BasicStroke(2));
-            graphics.draw(polygon);
-            graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 20));
-            graphics.fill(polygon);
-        }
-    }
+		if (client.getLocalPlayer() != null && plugin.clippyTicks > 0) {
+			BufferedImage icon = ImageUtil.loadImageResource(CursedPlugin.class, "Clippy.png");
+			if (icon != null) {
+				graphics.drawImage(icon, (client.getCanvasWidth() - 210) / 2, (client.getCanvasHeight() - 250) / 2, 210, 250, null);
+			}
+		}
+		return super.render(graphics);
+	}
+
+	private void renderPoly(Graphics2D graphics, Color color, Shape polygon){
+		if (polygon != null){
+			graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 255));
+			graphics.setStroke(new BasicStroke(2));
+			graphics.draw(polygon);
+			graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 20));
+			graphics.fill(polygon);
+		}
+	}
 }

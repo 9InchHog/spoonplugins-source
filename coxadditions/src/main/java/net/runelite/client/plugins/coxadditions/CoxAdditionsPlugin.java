@@ -91,6 +91,9 @@ public class CoxAdditionsPlugin extends Plugin {
     private MeatTreeCycleOverlay meatTreeCycleOverlay;
 
     @Inject
+    private OlmPhasePanel olmPhasePanel;
+
+    @Inject
     private EventBus eventBus;
 
     private final ArrayListMultimap<String, Integer> optionIndexes = ArrayListMultimap.create();
@@ -344,6 +347,7 @@ public class CoxAdditionsPlugin extends Plugin {
         overlayManager.add(itemOverlay);
         overlayManager.add(instanceTimerOverlay);
         overlayManager.add(meatTreeCycleOverlay);
+        overlayManager.add(olmPhasePanel);
     }
 
     @Override
@@ -362,6 +366,7 @@ public class CoxAdditionsPlugin extends Plugin {
         overlayManager.remove(itemOverlay);
         overlayManager.remove(instanceTimerOverlay);
         overlayManager.remove(meatTreeCycleOverlay);
+        overlayManager.remove(olmPhasePanel);
     }
 
     @Subscribe
@@ -453,11 +458,11 @@ public class CoxAdditionsPlugin extends Plugin {
                 crystalsTicks = 23;
                 crystalsActive = true;
             } else if (msg.equalsIgnoreCase("the great olm rises with the power of crystal.")){
-                olmPhase = "crystal";
+                olmPhase = "Crystal";
             } else if (msg.equalsIgnoreCase("the great olm rises with the power of acid.")){
-                olmPhase = "acid";
+                olmPhase = "Acid";
             } else if (msg.equalsIgnoreCase("the great olm rises with the power of flame.")){
-                olmPhase = "flame";
+                olmPhase = "Flame";
             } else if (msg.equalsIgnoreCase("you drink some of your strong prayer enhance potion.")){
                 prayerEnhanceTicks = 7;
                 prayerEnhanceActive = true;

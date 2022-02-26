@@ -248,13 +248,13 @@ public class CoxAdditionsOverlay extends Overlay {
 					if (tilePoly != null) {
 						Color color = config.olmHighlightColor();
 						switch (plugin.olmPhase) {
-							case "crystal":
+							case "Crystal":
 								color = Color.MAGENTA;
 								break;
-							case "acid":
+							case "Acid":
 								color = Color.GREEN;
 								break;
-							case "flame":
+							case "Flame":
 								color = Color.RED;
 								break;
 						}

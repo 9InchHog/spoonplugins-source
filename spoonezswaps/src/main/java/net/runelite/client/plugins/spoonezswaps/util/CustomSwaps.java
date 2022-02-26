@@ -275,8 +275,12 @@ public class CustomSwaps implements KeyListener
 		String[] splitList = value.split(",");
 		for (String s : splitList) {
 			s = s.trim();
-			Integer strToInt = Integer.valueOf(s);
-			set.add(strToInt);
+			try {
+				Integer strToInt = Integer.valueOf(s);
+				set.add(strToInt);
+			} catch (Exception ignored) {
+
+			}
 		}
 	}
 

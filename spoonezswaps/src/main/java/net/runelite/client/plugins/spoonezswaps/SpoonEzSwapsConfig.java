@@ -832,10 +832,19 @@ public interface SpoonEzSwapsConfig extends Config
 	default boolean deprioVetion() { return false; }
 
 	@ConfigItem(
+			keyName = "vetionBoosting",
+			name = "Vet'ion Boosting",
+			description = "Deprioritizes attack if you dont attack within 1 tick of the alt",
+			position = 9,
+			section = pvmSection
+	)
+	default boolean vetionBoosting() { return false; }
+
+	@ConfigItem(
 			keyName = "vengDeezNuts",
 			name = "Vengeance Message",
 			description = "Replaces 'Taste Vengeance' with a custom message",
-			position = 9,
+			position = 10,
 			section = pvmSection
 	)
 	default boolean vengDeezNuts() { return false; }
@@ -844,7 +853,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "vengMessage",
 			name = "Vengeance Message Text",
 			description = "Sets the overhead text to the custom message when vengeance is popped",
-			position = 10,
+			position = 11,
 			section = pvmSection,
 			hidden = true,
 			unhide = "vengDeezNuts"
@@ -855,7 +864,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "hideAttackBandos",
 			name = "Hide Attack Graardor",
 			description = "Hides attack on Graardor while minions are alive",
-			position = 11,
+			position = 12,
 			section = pvmSection
 	)
 	default boolean hideAttackBandos() { return false; }
@@ -864,7 +873,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "hideAttackBandosMinions",
 			name = "Hide Attack Bandos Minions",
 			description = "Hides attack on minions while Graardor is alive",
-			position = 12,
+			position = 13,
 			section = pvmSection
 	)
 	default boolean hideAttackBandosMinions() { return false; }
@@ -873,7 +882,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "hideAttackSara",
 			name = "Hide Attack Zilyana",
 			description = "Hides attack on Zilyana when any minion is alive",
-			position = 13,
+			position = 14,
 			section = pvmSection
 	)
 	default boolean hideAttackSara() { return false; }
@@ -882,7 +891,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "hideAttackSaraMinions",
 			name = "Hide Attack Sara Minions",
 			description = "Hides attack on Starlight while Zilyana is alive",
-			position = 14,
+			position = 15,
 			section = pvmSection
 	)
 	default boolean hideAttackSaraMinions() { return true; }
@@ -891,7 +900,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "hideAttackZammy",
 			name = "Hide Attack K'ril",
 			description = "Hides attack on K'ril when any minion is alive",
-			position = 15,
+			position = 16,
 			section = pvmSection
 	)
 	default boolean hideAttackZammy() { return false; }
@@ -900,7 +909,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "hideAttackZammyMinions",
 			name = "Hide Attack Zammy Minions",
 			description = "Hides attack on minions when Kril is alive",
-			position = 16,
+			position = 17,
 			section = pvmSection
 	)
 	default boolean hideAttackZammyMinions() { return false; }
@@ -909,7 +918,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "hideAttackKree",
 			name = "Deprio Attack Kree",
 			description = "Deprioritizes attack on Kree when any minion is alive",
-			position = 17,
+			position = 18,
 			section = pvmSection
 	)
 	default boolean hideAttackKree() { return false; }
@@ -918,7 +927,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "hideAttackArmaMinions",
 			name = "Deprio Attack Arma Minions",
 			description = "Deprioritizes attack on minions while Kree is alive",
-			position = 18,
+			position = 19,
 			section = pvmSection
 	)
 	default boolean hideAttackArmaMinions() { return false; }

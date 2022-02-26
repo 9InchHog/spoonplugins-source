@@ -124,12 +124,21 @@ public interface CoxAdditionsConfig extends Config {
         return false;
     }
 
+    @ConfigItem(
+            position = 10,
+            keyName = "olmPhasePanel",
+            name = "Show Phase Panel",
+            description = "Displays Olm phase in an infobox",
+            section = olmSection
+    )
+    default boolean olmPhasePanel() { return false; }
+
     @Alpha
     @ConfigItem(
             name = "Final Phase Color",
             keyName = "olmHighlightColor",
             description = "Configures the color of the Olm phase highlight",
-            position = 10,
+            position = 11,
             section = olmSection)
     default Color olmHighlightColor() {
         return Color.CYAN;
@@ -140,7 +149,7 @@ public interface CoxAdditionsConfig extends Config {
             name = "Olm Outline Width",
             keyName = "olmThiCC",
             description = "Outline width for Olm phase highlight",
-            position = 11,
+            position = 12,
             section = olmSection)
     default int olmThiCC() {
         return 2;
@@ -150,7 +159,7 @@ public interface CoxAdditionsConfig extends Config {
             name = "Olm Orbs",
             keyName = "olmOrbs",
             description = "Puts an infobox and prayer tab marker whenever an orb is directed at you",
-            position = 12,
+            position = 13,
             section = olmSection)
     default boolean olmOrbs() { return false; }
 
@@ -159,7 +168,7 @@ public interface CoxAdditionsConfig extends Config {
             name = "Orbs Prayer Tab Width",
             keyName = "prayerStrokeSize",
             description = "Adjusts the width of the prayer tab marker when Infobox is selected for Olm Orbs",
-            position = 13,
+            position = 14,
             section = olmSection)
     default int prayerStrokeSize() { return 2; }
 
@@ -167,22 +176,22 @@ public interface CoxAdditionsConfig extends Config {
             keyName = "hideAttackHead",
             name = "Hide Attack Head",
             description = "Removes the attack option on Olms Head before head phase",
-            position = 17,
+            position = 15,
             section = olmSection)
     default boolean hideAttackHead() {
         return true;
     }
 
-	@ConfigItem(
+    @ConfigItem(
             name = "Olm Hands Health",
             keyName = "olmHandsHealth",
             description = "Puts an overlay on Olm's hands showing their current HP",
-            position = 18,
+            position = 16,
             section = olmSection)
     default olmHandsHealthMode olmHandsHealth() { return olmHandsHealthMode.OFF; }
 
     @ConfigItem(
-            position = 19,
+            position = 17,
             keyName = "olmSide",
             name = "Olm Side Highlight",
             description = "Highlights a tile indicating which side olm will spawn on - disappears when he pops up",
@@ -195,14 +204,14 @@ public interface CoxAdditionsConfig extends Config {
             keyName = "olmSideColor",
             name = "Olm Side Color",
             description = "Configures the color of the Olm side highlight",
-            position = 20,
+            position = 18,
             section = olmSection)
     default Color olmSideColor() {
         return Color.RED;
     }
 
     @ConfigItem(
-            position = 21,
+            position = 19,
             keyName = "olmTp",
             name = "Teleport Portals Arrow",
             description = "Puts a retard-proof arrow on the teleports in solo",
@@ -211,7 +220,7 @@ public interface CoxAdditionsConfig extends Config {
     default boolean olmTp() { return false; }
 
     @ConfigItem(
-            position = 22,
+            position = 20,
             keyName = "teleportTarget",
             name = "Teleport Target",
             description = "Highlights the player paired with for portals that you're about to yeet cross map",
@@ -220,7 +229,7 @@ public interface CoxAdditionsConfig extends Config {
     default boolean teleportTarget() { return false; }
 
     @ConfigItem(
-            position = 23,
+            position = 21,
             keyName = "teleportTargetTicks",
             name = "Teleport Target Ticks",
             description = "Shows ticks until teleport attack activates",
@@ -229,7 +238,7 @@ public interface CoxAdditionsConfig extends Config {
     default boolean teleportTargetTicks() { return false; }
 
     @ConfigItem(
-            position = 24,
+            position = 22,
             keyName = "teleportColor",
             name = "Teleport Target Color",
             description = "Changes color for Teleport Target and Teleport Target Ticks",
@@ -672,8 +681,8 @@ public interface CoxAdditionsConfig extends Config {
         HULL,
         OUTLINE
     }
-	
-	public enum olmHandsHealthMode {
+
+    public enum olmHandsHealthMode {
         OFF,
         INFOBOX,
         OVERLAY
