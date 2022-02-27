@@ -52,19 +52,12 @@ public class Bloat extends Room {
     @Getter
     private BloatDown bloatDown = null;
 
-    private Color[] colors;
-    @Getter
-    private Color handColor;
-    private final Random colorGenerator;
-
     @Getter
     private final HashMap<WorldPoint, Integer> bloathands;
-    public ArrayList<Color> bloathandsColors = new ArrayList<>();
 
     public static final Set<Integer> topOfTankObjectIDs = ImmutableSet.of(32958, 32962, 32964, 32965, 33062);
     public static final Set<Integer> tankObjectIDs = ImmutableSet.of(32957, 32955, 32959, 32960, 32964, 33084);
     public static final Set<Integer> ceilingChainsObjectIDs = ImmutableSet.of(32949, 32950, 32951, 32952, 32953, 32954, 32970);
-    public Color raveStompColor;
 
     public int handTicks = 4;
     public boolean handsFalling = false;
@@ -81,9 +74,6 @@ public class Bloat extends Room {
     @Inject
     protected Bloat(SpoonTobPlugin plugin, SpoonTobConfig config) {
         super(plugin, config);
-        colors = new Color[]{Color.BLUE, Color.YELLOW, Color.CYAN, Color.GREEN, Color.MAGENTA, Color.ORANGE, Color.RED, Color.PINK};
-        handColor = colors[0];
-        colorGenerator = new Random();
         bloathands = new HashMap();
     }
 
@@ -145,7 +135,6 @@ public class Bloat extends Room {
             if (graphicsObject.getId() >= 1560 && graphicsObject.getId() <= 1590) {
                 WorldPoint point = WorldPoint.fromLocal(client, graphicsObject.getLocation());
                 if (!bloathands.containsKey(point)) {
-                    bloathandsColors.add(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
                     bloathands.put(point, 4);
 
                     if(!handsFalling) {
@@ -278,12 +267,6 @@ public class Bloat extends Room {
                     handsFalling = false;
                 }
             }
-            bloathandsColors.clear();
-            for(int i=0; i<bloathands.size(); i++){
-                bloathandsColors.add(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
-            }
-            handColor = colors[colorGenerator.nextInt(colors.length)];
-            raveStompColor = Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F);
 
             ++bloatDownCount;
             bloathands.values().removeIf((v) -> v <= 0);

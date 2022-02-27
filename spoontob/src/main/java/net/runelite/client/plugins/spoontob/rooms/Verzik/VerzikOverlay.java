@@ -108,12 +108,19 @@ public class VerzikOverlay extends RoomOverlay {
 				}
             }
 
-            if(config.raveNados() && verzik.verzikPhase == Verzik.Phase.PHASE3 && verzik.raveNadoColors.size() > 0){
+            if(config.raveNados() != SpoonTobConfig.raveNadoMode.OFF && verzik.verzikPhase == Verzik.Phase.PHASE3){
+                int index = 0;
+                Color color;
                 for (NPC nado : client.getNpcs()) {
-                    Color color = plugin.raveUtils.getColor(nado.hashCode(), true);
                     if (Verzik.NADO_IDS.contains(nado.getId())){
+                        if (config.raveNados() == SpoonTobConfig.raveNadoMode.RAVE) {
+                            color = plugin.raveUtils.getColor(nado.hashCode(), true);
+                        } else {
+                            color = plugin.raveUtils.getColor(index * 50, false);
+                        }
                         renderTargetOverlay(graphics, nado, color);
                     }
+                    index++;
                 }
             }
 

@@ -161,8 +161,6 @@ public class Verzik extends Room {
     public ArrayList<Integer> lastRatioList = new ArrayList<>();
     public ArrayList<Integer> lastHealthScaleList = new ArrayList<>();
 
-    public ArrayList<Color> raveNadoColors = new ArrayList<>();
-
     public ArrayList<GameObject> acidSpots = new ArrayList<>();
     public ArrayList<Integer> acidSpotsTimer = new ArrayList<>();
 
@@ -884,11 +882,6 @@ public class Verzik extends Room {
             if (purpleCrabProjectile.size() > 0) {
                 purpleCrabProjectile.values().removeIf(valueIsZero);
                 purpleCrabProjectile.replaceAll(updateTicks);
-            }
-
-            raveNadoColors.clear();
-            for(int i=0; i<nadosOut; i++){
-                raveNadoColors.add(Color.getHSBColor(new Random().nextFloat(), 0.9F, 1.0F));
             }
 
             if (verzikPhase == Verzik.Phase.PHASE2) {

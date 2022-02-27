@@ -44,7 +44,7 @@ public class BloatOverlay extends RoomOverlay {
                     if (config.showBloatHands() == SpoonTobConfig.bloatHandsMode.RAVE) {
                         color = plugin.raveUtils.getColor(bloat.getBloathands().hashCode(), true);
                     } else if (config.showBloatHands() == SpoonTobConfig.bloatHandsMode.RAVEST) {
-                        color = bloat.bloathandsColors.get(index);
+                        color = plugin.raveUtils.getColor(index * 50, false);
                     }
                     drawTile(graphics, point, color, 1, config.bloatHandColor().getAlpha(), config.bloatColorFill());
 

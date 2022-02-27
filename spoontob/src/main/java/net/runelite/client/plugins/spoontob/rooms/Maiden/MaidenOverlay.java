@@ -152,7 +152,9 @@ public class MaidenOverlay extends RoomOverlay {
                 for (int i = 0; i < maiden.getMaidenBloodSplatters().size(); i++) {
                     WorldPoint wp = maiden.getMaidenBloodSplatters().get(i);
                     Color color = config.bloodTossColour();
-                    if (config.maidenBlood() == SpoonTobConfig.maidenBloodSplatMode.RAVE) {
+                    if (config.maidenBlood() == SpoonTobConfig.maidenBloodSplatMode.RAVEST) {
+                        color = plugin.raveUtils.getColor(i * 50, false);
+                    } else if (config.maidenBlood() == SpoonTobConfig.maidenBloodSplatMode.RAVE) {
                         color = plugin.raveUtils.getColor(maiden.getMaidenBloodSplatters().hashCode(), true);
                     }
                     drawTile(graphics, wp, color, 1, config.bloodTossColour().getAlpha(), config.bloodTossFill());

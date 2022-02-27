@@ -1671,7 +1671,9 @@ public interface SpoonTobConfig extends Config {
             section = misc,
             position = 99
     )
-    default boolean raveNados() { return false; }
+    default raveNadoMode raveNados() {
+        return raveNadoMode.OFF;
+    }
 
     @ConfigItem(
             position = 99,
@@ -1927,7 +1929,7 @@ public interface SpoonTobConfig extends Config {
     // Maiden enums
     //------------------------------------------------------------//
     enum maidenBloodSplatMode {
-        OFF, COLOR, RAVE
+        OFF, COLOR, RAVE, RAVEST
     }
 
     enum maidenFreezeTimerMode {
@@ -1938,7 +1940,7 @@ public interface SpoonTobConfig extends Config {
         OFF, CAST, ATTACK, BOTH
     }
 
-    public enum MaidenMaxHitTTMode {
+    enum MaidenMaxHitTTMode {
         OFF("Off"),
         REGULAR("Regular"),
         ELY("Elysian"),
@@ -1954,12 +1956,12 @@ public interface SpoonTobConfig extends Config {
             return this.name;
         }
 
-        private MaidenMaxHitTTMode(String name) {
+        MaidenMaxHitTTMode(String name) {
             this.name = name;
         }
     }
 
-    public enum MaidenMaxHit {
+    enum MaidenMaxHit {
         OFF("Off"),
         REGULAR("Regular"),
         ELY("Elysian"),
@@ -1975,7 +1977,7 @@ public interface SpoonTobConfig extends Config {
             return this.name;
         }
 
-        private MaidenMaxHit(String name) {
+        MaidenMaxHit(String name) {
             this.name = name;
         }
     }
@@ -2144,6 +2146,10 @@ public interface SpoonTobConfig extends Config {
 
     enum lootReminderMode {
         OFF, DUMB, DUMBER, DUMBEST, DUMBEREST
+    }
+
+    enum raveNadoMode {
+        OFF, RAVE, RAVEST
     }
 
     //------------------------------------------------------------//

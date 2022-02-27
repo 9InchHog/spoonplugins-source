@@ -66,7 +66,7 @@ public class Xarpus extends Room {
     int healCount = 0;
 
     private boolean xarpusStarted = false;
-	public Color losRaveColor = null;
+
 	private static Clip clip;
 
 	private boolean mirrorMode;
@@ -336,8 +336,6 @@ public class Xarpus extends Room {
                     xarpusTicksUntilAttack = 4;
                 }
             }
-			
-			losRaveColor = Color.getHSBColor(new Random().nextFloat(), 0.9F, 1.0F);
         }
 
         instanceTimer = (instanceTimer + 1) % 4;
