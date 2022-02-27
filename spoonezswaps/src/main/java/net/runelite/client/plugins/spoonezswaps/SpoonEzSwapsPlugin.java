@@ -289,14 +289,15 @@ public class SpoonEzSwapsPlugin extends Plugin {
 				skipTickCheck = true;
 				weaponStyle = newStyle;
 			}
-		} else if (event.getMenuAction() == MenuAction.NPC_SECOND_OPTION && event.getMenuTarget().contains("Vet'ion") && event.getMenuOption().contains("Attack") && vetionAttWindow != 1) {
+		} else if (event.getMenuAction() == MenuAction.NPC_SECOND_OPTION && vetionAttWindow != 1 && config.vetionBoosting()
+				&& event.getMenuTarget().contains("Vet'ion") && event.getMenuOption().contains("Attack")) {
 			event.consume();
 		}
 	}
 
 	@Subscribe
 	public void onAnimationChanged(AnimationChanged event) {
-		if (event.getActor() instanceof Player && config.vetionBoosting() && event.getActor().getAnimation() == 1162){
+		if (event.getActor() instanceof Player && config.vetionBoosting() && event.getActor().getAnimation() == 1162 && client.getVar(Varbits.IN_WILDERNESS) == 1){
 			vetionAttWindow = 2;
 		}
 	}
