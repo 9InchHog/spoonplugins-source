@@ -475,10 +475,10 @@ public class CoxAdditionsOverlay extends Overlay {
 		return null;
 	}
 
-	private void renderPoly(Graphics2D graphics, Color color, Shape polygon, int width) {
+	private void renderPoly(Graphics2D graphics, Color color, Shape polygon, double width) {
 		if (polygon != null) {
 			graphics.setColor(color);
-			graphics.setStroke(new BasicStroke(width));
+			graphics.setStroke(new BasicStroke((float) width));
 			graphics.draw(polygon);
 			graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0));
 			graphics.fill(polygon);
@@ -542,13 +542,13 @@ public class CoxAdditionsOverlay extends Overlay {
 					Shape poly = npc.getConvexHull();
 					if (poly != null) {
 						graphics.setColor(new Color(config.chinRopeColor().getRed(), config.chinRopeColor().getGreen(), config.chinRopeColor().getBlue(), 255));
-						graphics.setStroke(new BasicStroke(this.config.chinRopeThiCC()));
+						graphics.setStroke(new BasicStroke(config.chinRopeThiCC()));
 						graphics.draw(poly);
 						graphics.setColor(new Color(config.chinRopeColor().getRed(), config.chinRopeColor().getGreen(), config.chinRopeColor().getBlue(), 0));
 						graphics.fill(poly);
 					}
 				}else if(config.chinRope() == CoxAdditionsConfig.chinRopeMode.OUTLINE) {
-					this.modelOutlineRenderer.drawOutline(npc, this.config.chinRopeThiCC(), config.chinRopeColor(), 2);
+					modelOutlineRenderer.drawOutline(npc, config.chinRopeThiCC(), config.chinRopeColor(), 2);
 				}
 			}
 		}

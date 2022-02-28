@@ -151,7 +151,7 @@ public interface CoxAdditionsConfig extends Config {
             description = "Outline width for Olm phase highlight",
             position = 12,
             section = olmSection)
-    default int olmThiCC() {
+    default double olmThiCC() {
         return 2;
     }
 
@@ -404,7 +404,7 @@ public interface CoxAdditionsConfig extends Config {
             description = "Outline width for true location highlight",
             position = 17,
             section = roomSection)
-    default int tlThiCC() {
+    default double tlThiCC() {
         return 2;
     }
 
