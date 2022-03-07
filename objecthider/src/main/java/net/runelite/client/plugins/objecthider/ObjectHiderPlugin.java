@@ -4,9 +4,7 @@ import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.GroundObjectDespawned;
-import net.runelite.api.events.GroundObjectSpawned;
+import net.runelite.api.events.*;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -32,8 +30,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @Extension
 @PluginDescriptor(
-        name = "Ground Object Hider",
-        description = "Hides Ground Objects. A selector is used to choose objects to hide.",
+        name = "<html><font color=#25c550>[S] Object Hider",
+        description = "Hides Ground and Game Objects. A selector is used to choose objects to hide.",
         tags = {"external", "objects", "memory", "usage", "ground", "decorations", "performance"}
 )
 public class ObjectHiderPlugin extends Plugin {
@@ -62,8 +60,11 @@ public class ObjectHiderPlugin extends Plugin {
     private MouseManager mouseManager;
 
     public boolean selectGroundObjectMode = false;
+    public boolean selectGameObjectMode = false;
 
     private HashMap<WorldPoint, GroundObject> hiddenObjects = new HashMap<>();
+
+    private Set<Integer> objectIds = new HashSet<>();
 
     /**
      * groundObjectsKeyListener is an instance of `HotkeyListener` designed to
@@ -75,11 +76,17 @@ public class ObjectHiderPlugin extends Plugin {
             if (config.hideGroundObjectKey().matches(e)) {
                 selectGroundObjectMode = true;
             }
+            if (config.hideGameObjectKey().matches(e)) {
+                selectGameObjectMode = true;
+            }
         }
         @Override
         public void keyReleased(KeyEvent e) {
             if (config.hideGroundObjectKey().matches(e)) {
                 selectGroundObjectMode = false;
+            }
+            if (config.hideGameObjectKey().matches(e)) {
+                selectGameObjectMode = false;
             }
         }
     };
@@ -92,25 +99,45 @@ public class ObjectHiderPlugin extends Plugin {
         @Override
         public MouseEvent mouseClicked(MouseEvent mouseEvent) {
             if (SwingUtilities.isRightMouseButton(mouseEvent)) {
-                if (!selectGroundObjectMode) {
-                    return mouseEvent;
-                }
-                final Tile tile = client.getSelectedSceneTile();
-                if (tile == null) {
-                    return mouseEvent;
-                }
-                // have a selected tile, in a suitable mode, so consume event:
-                mouseEvent.consume();
-
-                // get current list:
-                final List<Integer> curGroundHide =  new ArrayList<>(getGroundObjects());
-                final GroundObject obj = tile.getGroundObject();
-                if (obj != null) {
-                    if (!curGroundHide.contains(obj.getId())) {
-                        curGroundHide.add(obj.getId());
-                        log.debug("added Ground Object with ID: {}", obj.getId());
+                if (selectGroundObjectMode) {
+                    final Tile tile = client.getSelectedSceneTile();
+                    if (tile == null) {
+                        return mouseEvent;
                     }
-                    config.setGroundObjectsToHide(Text.toCSV(curGroundHide.stream().map(String::valueOf).collect(Collectors.toList())));
+                    // have a selected tile, in a suitable mode, so consume event:
+                    mouseEvent.consume();
+
+                    // get current list:
+                    final List<Integer> curGroundHide = new ArrayList<>(getGroundObjects());
+                    final GroundObject obj = tile.getGroundObject();
+                    if (obj != null) {
+                        if (!curGroundHide.contains(obj.getId())) {
+                            curGroundHide.add(obj.getId());
+                            log.debug("added Ground Object with ID: {}", obj.getId());
+                        }
+                        config.setGroundObjectsToHide(Text.toCSV(curGroundHide.stream().map(String::valueOf).collect(Collectors.toList())));
+                    }
+                }
+
+                if (selectGameObjectMode) {
+                    System.out.println("In mode");
+                    final Tile tile = client.getSelectedSceneTile();
+                    if (tile == null) {
+                        return mouseEvent;
+                    }
+                    // have a selected tile, in a suitable mode, so consume event:
+                    mouseEvent.consume();
+
+                    // get current list:
+                    final List<Integer> curGameHide = new ArrayList<>(getGameObjects());
+
+                    for (GameObject gameObject : tile.getGameObjects()) {
+                        if (gameObject != null && !curGameHide.contains(gameObject.getId())) {
+                            curGameHide.add(gameObject.getId());
+                            log.debug("added Game Object with ID: {}", gameObject.getId());
+                        }
+                        config.setGameObjectsToHide(Text.toCSV(curGameHide.stream().map(String::valueOf).collect(Collectors.toList())));
+                    }
                 }
             }
             return mouseEvent;
@@ -162,6 +189,9 @@ public class ObjectHiderPlugin extends Plugin {
         keyManager.registerKeyListener(groundObjectsKeyListener);
         mouseManager.registerMouseListener(mouseListener);
         overlayManager.add(overlay);
+
+        objectIds.clear();
+        populateList();
     }
 
     @Override
@@ -172,6 +202,9 @@ public class ObjectHiderPlugin extends Plugin {
         overlayManager.remove(overlay);
         unhideAllGroundObjects();
         this.hiddenObjects = new HashMap<>();  // free any dangling references
+
+        objectIds.clear();
+        refreshScene();
     }
 
     /**
@@ -302,6 +335,22 @@ public class ObjectHiderPlugin extends Plugin {
     }
 
     /**
+     * getGameObjects retrieves the list of Game Objects to hide from the
+     * config, and transforms into a `List<Integer>` for consumption.
+     *
+     * If something goes wrong, an empty list will be returned.
+     * @return configured list of Ground Objects to hide
+     */
+    List<Integer> getGameObjects() {
+        try {
+            return intsFromCSVString(config.objectList());
+        } catch (NumberFormatException ex) {
+            log.warn("unable to load Ground Objects to hide: bad input: {}", ex.toString());
+            return Collections.emptyList();
+        }
+    }
+
+    /**
      * intsFromCSVStrong takes a String containing a list of Integers and
      * returns those Integers in a `List<Integer>` format.
      * @param val - the string containing integers to parse
@@ -385,6 +434,65 @@ public class ObjectHiderPlugin extends Plugin {
         if (!configChanged.getGroup().equals("objecthider")) {
             return;
         }
-        clientThread.invoke(this::rebuildObjects);
+        if (configChanged.getKey().equals("toHide")) { //ground objects
+            clientThread.invoke(this::rebuildObjects);
+            refreshScene();
+        }
+
+        if (configChanged.getKey().equals("objectList")) { //game objects
+            refreshScene();
+            objectIds.clear();
+            populateList();
+        }
+    }
+
+    private void populateList() {
+        if (config.objectList().trim().length() > 0)
+            for (String objectID : config.objectList().trim().split(",")) {
+                try {
+                    objectIds.add(Integer.valueOf(objectID));
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+    }
+
+    public void refreshScene() {
+        if (client.getGameState() != GameState.LOGIN_SCREEN && client.getGameState() != GameState.HOPPING && client.getGameState() != GameState.LOGIN_SCREEN_AUTHENTICATOR)
+            clientThread.invokeLater(() -> client.setGameState(GameState.LOADING));
+    }
+
+    @Subscribe
+    public void onGameStateChanged(GameStateChanged event) {
+        removeGameObjectsFromScene(objectIds, client.getPlane());
+    }
+
+    @Subscribe
+    public void onGameObjectSpawned(GameObjectSpawned event) {
+        if (objectIds.contains(event.getGameObject().getId())) {
+            removeGameObjectsFromScene(objectIds, client.getPlane());
+        }
+    }
+
+    public void removeGameObjectsFromScene(Set<Integer> objectIds, int plane) {
+        Scene scene = client.getScene();
+        Tile[][] tiles = scene.getTiles()[plane];
+        Tile[][] tiles1 = scene.getTiles()[1];
+        for (int x = 0; x < 104; x++) {
+            for (int y = 0; y < 104; y++) {
+                Tile tile = tiles[x][y];
+                Tile tile1 = tiles1[x][y];
+                if (tile != null &&
+                        objectIds != null) {
+                    Objects.requireNonNull(scene);
+                    Arrays.stream(tile.getGameObjects()).filter(obj -> (obj != null && objectIds.contains(obj.getId()))).findFirst().ifPresent(scene::removeGameObject);
+                }
+                if (tile1 != null)
+                    for (GameObject gameObject : tile1.getGameObjects()) {
+                        if (gameObject != null && objectIds.contains(gameObject.getId()))
+                            scene.removeGameObject(gameObject);
+                    }
+            }
+        }
     }
 }

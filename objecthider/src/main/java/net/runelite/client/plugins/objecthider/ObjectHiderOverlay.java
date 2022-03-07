@@ -35,6 +35,15 @@ public class ObjectHiderOverlay extends Overlay {
                 OverlayUtil.renderPolygon(graphics, poly, Color.MAGENTA);
             }
         }
+
+        if (plugin.selectGameObjectMode && client.getSelectedSceneTile() != null) {
+            // create a polygon
+            final Polygon poly = Perspective.getCanvasTilePoly(client, client.getSelectedSceneTile().getLocalLocation());
+            if (poly != null) {
+                // and render it
+                OverlayUtil.renderPolygon(graphics, poly, Color.ORANGE);
+            }
+        }
         return null;
     }
 }

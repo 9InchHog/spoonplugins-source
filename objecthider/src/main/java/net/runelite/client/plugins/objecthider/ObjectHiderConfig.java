@@ -10,18 +10,34 @@ public interface ObjectHiderConfig extends Config
 {
     @ConfigSection(
             name = "IDs to hide",
-            description = "The list of Ground Object IDs to hide",
+            description = "The list of Object IDs to hide",
             position = 0,
             closedByDefault = true
     )
     String listSection = "listSection";
 
     @ConfigItem(
-            keyName = "toHide",
-            name = "",
-            description = "List of Ground Objects IDs to hide",
+            keyName = "objectList",
+            name = "Game Object List",
+            description = "List of game objects to hide, seperated by a comma.",
             position = 0,
-            section = "listSection"
+            section = listSection
+    )
+    default String objectList() {return "";}
+
+    @ConfigItem(
+            keyName = "objectList",
+            name = "",
+            description = ""
+    )
+    void setGameObjectsToHide(String objectList);
+
+    @ConfigItem(
+            keyName = "toHide",
+            name = "Ground Object List",
+            description = "List of Ground Objects IDs to hide",
+            position = 1,
+            section = listSection
     )
     default String getGroundObjectsToHide() {
         return "";
@@ -34,9 +50,20 @@ public interface ObjectHiderConfig extends Config
     )
     void setGroundObjectsToHide(String groundObjectsToHide);
 
+    //No section
+    @ConfigItem(
+            keyName = "gameObjectHotkey",
+            name = "Game Object Hotkey",
+            description = "When you hold this key and right-click a tile, you'll hide the Game Object on it",
+            position = 1
+    )
+    default Keybind hideGameObjectKey() {
+        return new Keybind(KeyEvent.VK_UNDEFINED, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK);
+    }
+
     @ConfigItem(
             keyName = "hotkey",
-            name = "Hotkey",
+            name = "Ground Object Hotkey",
             description = "When you hold this key and right-click a tile, you'll hide the Ground Object on it",
             position = 1
     )
@@ -46,7 +73,7 @@ public interface ObjectHiderConfig extends Config
 
     @ConfigItem(
             keyName = "hideAll",
-            name = "Hide All",
+            name = "Hide All - Ground Objects",
             description = "Whether to hide all Ground Objects regardless of the list",
             position = 2
     )
