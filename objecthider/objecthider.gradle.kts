@@ -25,10 +25,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.1"
+version = "1.0.2"
 
-project.extra["PluginName"] = "Ground Object Hider"
-project.extra["PluginDescription"] = "Hides ground objects"
+project.extra["PluginName"] = "Spoon Object Hider"
+project.extra["PluginDescription"] = "Hides game and ground objects"
 
 dependencies {
     annotationProcessor(Libraries.lombok)
