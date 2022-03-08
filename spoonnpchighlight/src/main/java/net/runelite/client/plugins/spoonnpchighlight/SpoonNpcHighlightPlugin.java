@@ -229,51 +229,20 @@ public class SpoonNpcHighlightPlugin extends Plugin {
 		if (NPC_MENU_ACTIONS.contains(menuAction)) {
 			NPC npc = client.getCachedNPCs()[event.getIdentifier()];
 
-			Color color = null;
-			if (npc.isDead()) {
-				color = config.deadNpcMenuColor();
-			} else if(config.highlightMenuNames() && npc.getName() != null){
-                String name = npc.getName().toLowerCase();
-                if ((tileNames.contains(name) || tileIds.contains(npc.getId()))
-                        || (trueTileNames.contains(name) || trueTileIds.contains(npc.getId()))
-                        || (swTileNames.contains(name) || swTileIds.contains(npc.getId()))
-                        || (hullNames.contains(name) || hullIds.contains(npc.getId()))
-                        || (areaNames.contains(name) || areaIds.contains(npc.getId()))
-                        || (outlineNames.contains(name) || outlineIds.contains(npc.getId()))
-                        || (turboNames.contains(name) || turboIds.contains(npc.getId()))) {
-                    if(config.tagStyleMode() == SpoonNpcHighlightConfig.tagStyleMode.TURBO) {
-                        color = Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F);
-                    } else {
-                        color = config.highlightColor();
-                    }
-                }else {
-                    ArrayList<ArrayList<String>> allLists = new ArrayList<ArrayList<String>>(
-                        Arrays.asList(tileNames, trueTileNames, swTileNames, hullNames, areaNames, outlineNames, turboNames)
-                    );
-                    for(ArrayList<String> strList : allLists){
-                        for(String str: strList){
-                            if(str.equalsIgnoreCase(name) || (str.contains("*")
-                                    && ((str.startsWith("*") && str.endsWith("*") && name.contains(str.replace("*", "")))
-                                    || (str.startsWith("*") && name.endsWith(str.replace("*", ""))) || name.startsWith(str.replace("*", ""))))){
-                                if(config.tagStyleMode() == SpoonNpcHighlightConfig.tagStyleMode.TURBO) {
-                                    color = Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F);
-                                }else {
-                                    color = config.highlightColor();
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
+            Color color = null;
+            if (npc.isDead()) {
+                color = config.deadNpcMenuColor();
+            } else if(config.highlightMenuNames() && npc.getName() != null && checkAllLists(npc)){
+                color = config.tagStyleMode() == SpoonNpcHighlightConfig.tagStyleMode.TURBO ? Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F) : config.highlightColor();
             }
 
-			if (color != null) {
-				MenuEntry[] menuEntries = client.getMenuEntries();
-				final MenuEntry menuEntry = menuEntries[menuEntries.length - 1];
-				final String target = ColorUtil.prependColorTag(Text.removeTags(event.getTarget()), color);
-				menuEntry.setTarget(target);
-				client.setMenuEntries(menuEntries);
-			}
+            if (color != null) {
+                MenuEntry[] menuEntries = client.getMenuEntries();
+                final MenuEntry menuEntry = menuEntries[menuEntries.length - 1];
+                final String target = ColorUtil.prependColorTag(Text.removeTags(event.getTarget()), color);
+                menuEntry.setTarget(target);
+                client.setMenuEntries(menuEntries);
+            }
 		} else if (menuAction == MenuAction.EXAMINE_NPC) {
 			final int id = event.getIdentifier();
 			final NPC npc = client.getCachedNPCs()[id];
@@ -484,31 +453,8 @@ public class SpoonNpcHighlightPlugin extends Plugin {
                 }
             }
 
-            if(event.getNpc().getName() != null){
-                String name = event.getNpc().getName().toLowerCase();
-                if ((tileNames.contains(name) || tileIds.contains(event.getNpc().getId()))
-                        || (trueTileNames.contains(name) || trueTileIds.contains(event.getNpc().getId()))
-                        || (swTileNames.contains(name) || swTileIds.contains(event.getNpc().getId()))
-                        || (hullNames.contains(name) || hullIds.contains(event.getNpc().getId()))
-                        || (areaNames.contains(name) || areaIds.contains(event.getNpc().getId()))
-                        || (outlineNames.contains(name) || outlineIds.contains(event.getNpc().getId()))
-                        || (turboNames.contains(name) || turboIds.contains(event.getNpc().getId()))) {
-                    npcSpawns.add(new NpcSpawn(event.getNpc()));   
-                }else {
-                    ArrayList<ArrayList<String>> allLists = new ArrayList<ArrayList<String>>(
-                        Arrays.asList(tileNames, trueTileNames, swTileNames, hullNames, areaNames, outlineNames, turboNames)
-                    );
-                    for(ArrayList<String> strList : allLists){
-                        for(String str: strList){
-                            if(str.equalsIgnoreCase(name) || (str.contains("*")
-                                    && ((str.startsWith("*") && str.endsWith("*") && name.contains(str.replace("*", "")))
-                                    || (str.startsWith("*") && name.endsWith(str.replace("*", ""))) || name.startsWith(str.replace("*", ""))))){
-                                npcSpawns.add(new NpcSpawn(event.getNpc()));
-                                return;
-                            }
-                        }
-                    }
-                }
+            if (checkAllLists(event.getNpc())) {
+                npcSpawns.add(new NpcSpawn(event.getNpc()));
             }
         }
     }
@@ -535,5 +481,40 @@ public class SpoonNpcHighlightPlugin extends Plugin {
         {
             configManager.setConfiguration("SpoonNpcHighlight", "tileIds", configManager.getConfiguration("highlightnpcs", "idToHighlight"));
         }
+    }
+
+    public boolean checkSpecificList(ArrayList<String> strList, ArrayList<Integer> intList, NPC npc) {
+        if (intList.contains(npc.getId())) {
+            return true;
+        } else if (npc.getName() != null) {
+            String name = npc.getName().toLowerCase();
+            for(String str : strList){
+                if(str.equalsIgnoreCase(name) || (str.contains("*")
+                        && ((str.startsWith("*") && str.endsWith("*") && name.contains(str.replace("*", "")))
+                        || (str.startsWith("*") && name.endsWith(str.replace("*", ""))) || name.startsWith(str.replace("*", ""))))){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean checkAllLists(NPC npc) {
+        int id = npc.getId();
+        if (tileIds.contains(id) || trueTileIds.contains(id) || swTileIds.contains(id) || hullIds.contains(id) || areaIds.contains(id) || outlineIds.contains(id) || turboIds.contains(id)) {
+            return true;
+        } else if (npc.getName() != null) {
+            String name = npc.getName().toLowerCase();
+            for(ArrayList<String> strList : new ArrayList<>(Arrays.asList(tileNames, trueTileNames, swTileNames, hullNames, areaNames, outlineNames, turboNames))){
+                for(String str : strList){
+                    if(str.equalsIgnoreCase(name) || (str.contains("*")
+                            && ((str.startsWith("*") && str.endsWith("*") && name.contains(str.replace("*", "")))
+                            || (str.startsWith("*") && name.endsWith(str.replace("*", ""))) || name.startsWith(str.replace("*", ""))))){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

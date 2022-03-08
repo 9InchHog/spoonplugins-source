@@ -35,7 +35,6 @@ import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import javax.sound.sampled.*;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -43,8 +42,6 @@ import java.io.FilenameFilter;
 import java.time.Instant;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -181,7 +178,7 @@ public class SpoonEzSwapsPlugin extends Plugin {
 	protected int cookedPieCount;
 	protected int totalPieCount;
 
-	public int vetionAttWindow = 0;
+	public int vetionHarmAttackedTick = -1;
 
 	@Provides
 	SpoonEzSwapsConfig provideConfig(ConfigManager configManager)
@@ -225,7 +222,7 @@ public class SpoonEzSwapsPlugin extends Plugin {
 		clip = null;
 		weaponStyle = null;
 		customDropList.clear();
-		vetionAttWindow = 0;
+		vetionHarmAttackedTick = -1;
 	}
 
 	public Swap swap(String option, String swappedOption, Supplier<Boolean> enabled)
@@ -296,7 +293,7 @@ public class SpoonEzSwapsPlugin extends Plugin {
 				skipTickCheck = true;
 				weaponStyle = newStyle;
 			}
-		} else if (event.getMenuAction() == MenuAction.NPC_SECOND_OPTION && vetionAttWindow != 1 && config.vetionBoosting()
+		} else if (event.getMenuAction() == MenuAction.NPC_SECOND_OPTION && vetionHarmAttackedTick != -1 && client.getTickCount() != vetionHarmAttackedTick + 1 && config.vetionBoosting()
 				&& event.getMenuTarget().contains("Vet'ion") && event.getMenuOption().contains("Attack")) {
 			event.consume();
 		}
@@ -304,8 +301,8 @@ public class SpoonEzSwapsPlugin extends Plugin {
 
 	@Subscribe
 	public void onAnimationChanged(AnimationChanged event) {
-		if (event.getActor() instanceof Player && config.vetionBoosting() && event.getActor().getAnimation() == 1162 && client.getVar(Varbits.IN_WILDERNESS) == 1) {
-			vetionAttWindow = 2;
+		if (event.getActor() instanceof Player && config.vetionBoosting() && event.getActor().getAnimation() == 1162 && client.getVar(Varbits.IN_WILDERNESS) == 1){
+			vetionHarmAttackedTick = client.getTickCount();
 		}
 	}
 
@@ -1062,10 +1059,6 @@ public class SpoonEzSwapsPlugin extends Plugin {
 	@Subscribe
 	private void onGameTick(GameTick event) {
 		lastTickUpdate = Instant.now();
-
-		if (vetionAttWindow > 0) {
-			vetionAttWindow--;
-		}
 
 		if (skipTickCheck) {
 			skipTickCheck = false;

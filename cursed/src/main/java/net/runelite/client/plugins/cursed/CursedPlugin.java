@@ -312,7 +312,6 @@ public class CursedPlugin extends Plugin {
 
     @Subscribe
     private void onChatMessage(ChatMessage event) {
-        System.out.println(event.getMessage());
         if (event.getMessage().contains("You drink some of the foul liquid.") && config.diabloBrews()) {
             try {
                 AudioInputStream stream = AudioSystem.getAudioInputStream(new BufferedInputStream(CursedPlugin.class.getResourceAsStream("DiabloPotion.wav")));
