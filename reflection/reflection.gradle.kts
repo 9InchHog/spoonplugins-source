@@ -25,10 +25,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.1"
+version = "1.0.2"
 
-project.extra["PluginName"] = "Reflection"
-project.extra["PluginDescription"] = "Changes the client title, client icon, and colors. Fixed by Bickus"
+project.extra["PluginName"] = "[S] Reflection"
+project.extra["PluginDescription"] = "Changes the client title, client icon, and colors. Defaults to SpoonLite"
 
 dependencies {
     annotationProcessor(Libraries.lombok)
