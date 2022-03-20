@@ -131,7 +131,7 @@ public interface SpoonVMConfig extends Config
     @ConfigItem(
             keyName = "flashLowHp",
             name = "Flash on Low HP",
-            description = "Flahes when you are beneath the set HP",
+            description = "Flashes when you are beneath the set HP",
             position = 7,
             section = alertSection
     )
