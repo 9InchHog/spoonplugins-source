@@ -2,6 +2,8 @@ package net.runelite.client.plugins.spoonvm;
 
 import net.runelite.client.config.*;
 
+import java.awt.*;
+
 @ConfigGroup("spoonvm")
 public interface SpoonVMConfig extends Config
 {
@@ -26,7 +28,7 @@ public interface SpoonVMConfig extends Config
             keyName = "warningStyle",
             description = "Notification style for the warnings.",
             position = 0,
-            section = "alert"
+            section = alertSection
     )
     default WarningStyle warningStyle() {
         return WarningStyle.NOTIFIER;
@@ -37,7 +39,7 @@ public interface SpoonVMConfig extends Config
             name = "Vent Shift Notification",
             description = "Show warning in advance of vents resetting 5 minutes into game",
             position = 1,
-            section = "alert"
+            section = alertSection
     )
     default boolean showVentWarning()
     {
@@ -49,7 +51,7 @@ public interface SpoonVMConfig extends Config
             name = "Vent Shift Warning Time",
             description = "Number of seconds before the vents reset",
             position = 1,
-            section = "alert"
+            section = alertSection
     )
     @Range(
             max = 60,
@@ -66,7 +68,7 @@ public interface SpoonVMConfig extends Config
             name = "Eruption Notification",
             description = "Show warning in advance of the volcano erupting",
             position = 2,
-            section = "alert"
+            section = alertSection
     )
     default boolean showEruptionWarning()
     {
@@ -78,7 +80,7 @@ public interface SpoonVMConfig extends Config
             name = "Eruption Warning Time",
             description = "Number of seconds before the volcano erupts",
             position = 3,
-            section = "alert"
+            section = alertSection
     )
     @Range(
             max = 60,
@@ -95,7 +97,7 @@ public interface SpoonVMConfig extends Config
             name = "Platform Despawn Notification",
             description = "Show warning for when platform below you is about to disappear",
             position = 4,
-            section = "alert"
+            section = alertSection
     )
     default boolean showPlatformWarning()
     {
@@ -107,7 +109,7 @@ public interface SpoonVMConfig extends Config
             name = "Boulder Movement Notification",
             description = "Notify when current boulder stage is complete",
             position = 5,
-            section = "alert"
+            section = alertSection
     )
     default boolean showBoulderWarning()
     {
@@ -115,11 +117,62 @@ public interface SpoonVMConfig extends Config
     }
 
     @ConfigItem(
+            keyName = "flashWarnings",
+            name = "Flash on Warnings",
+            description = "Flashes for the above notifications",
+            position = 6,
+            section = alertSection
+    )
+    default boolean flashWarnings()
+    {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "flashLowHp",
+            name = "Flash on Low HP",
+            description = "Flahes when you are beneath the set HP",
+            position = 7,
+            section = alertSection
+    )
+    default boolean flashLowHp()
+    {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "lowHpThreshold",
+            name = "Low HP Threshold",
+            description = "The HP or below to flash",
+            position = 8,
+            hidden = true,
+            unhide = "flashLowHp",
+            section = alertSection
+    )
+    default int lowHpThreshold()
+    {
+        return 40;
+    }
+
+    @Alpha
+    @ConfigItem(
+            keyName = "flashColor",
+            name = "Flash Color",
+            description = "The color of the flash",
+            position = 9,
+            section = alertSection
+    )
+    default Color flashColor()
+    {
+        return new Color(255, 0, 0, 70);
+    }
+
+    @ConfigItem(
             keyName = "platformHighlight",
             name = "Platform Timer Style",
             description = "Highlights the last stage of the platforms with a tile overlay (Green = start/ red =about to disappear).",
             position = 0,
-            section = "overlay"
+            section = overlaySection
     )
     default PlatformTimerStyle platformHighlight() { return PlatformTimerStyle.BOTH; }
 
@@ -128,7 +181,7 @@ public interface SpoonVMConfig extends Config
             name = "Swim Warning",
             description = "Surfs uup bitches.",
             position = 0,
-            section = "overlay"
+            section = overlaySection
     )
     default SwimWarningStyle swimWarning() { return SwimWarningStyle.OFF; }
 
@@ -137,7 +190,7 @@ public interface SpoonVMConfig extends Config
             keyName = "rockRespawn",
             name = "Rock Respawn",
             description = "Respawn timer on the rocks you pick up to block chambers.",
-            section = "overlay"
+            section = overlaySection
     )
     default RockRespawnStyle rockRespawn() { return RockRespawnStyle.BOTH; }
 
@@ -146,7 +199,7 @@ public interface SpoonVMConfig extends Config
             keyName = "drinkPrayer",
             name = "Prayer Warning",
             description = "Tick if you have low prayer/need to use ppots during Volcanic Mine.",
-            section = "overlay"
+            section = overlaySection
     )
     default boolean drinkPrayer() { return false; }
 

@@ -2,6 +2,9 @@ package net.runelite.client.plugins.spoonvm;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
@@ -14,10 +17,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.spoonvm.overlays.PlatformOverlay;
-import net.runelite.client.plugins.spoonvm.overlays.RockRespawnOverlay;
-import net.runelite.client.plugins.spoonvm.overlays.SwimOverlay;
-import net.runelite.client.plugins.spoonvm.overlays.VMPrayerOverlay;
+import net.runelite.client.plugins.spoonvm.overlays.*;
 import net.runelite.client.plugins.spoonvm.utils.Constants;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -109,6 +109,9 @@ public class SpoonVMPlugin extends Plugin {
     private RockRespawnOverlay rockRespawnOverlay;
 
     @Inject
+    private Flash flashOverlay;
+
+    @Inject
     private Constants constants;
 
     @Provides
@@ -123,6 +126,10 @@ public class SpoonVMPlugin extends Plugin {
     // Event warning latches
     private boolean hasWarnedVent = false;
     private boolean hasWarnedEruption = false;
+    private boolean lowHP = false;
+    @Getter
+    @Setter
+    private boolean flash = false;
 
     @Override
     protected void startUp() throws Exception {
@@ -130,6 +137,7 @@ public class SpoonVMPlugin extends Plugin {
         overlayManager.add(swimOverlay);
         overlayManager.add(prayerOverlay);
         overlayManager.add(rockRespawnOverlay);
+        overlayManager.add(flashOverlay);
     }
 
     @Override
@@ -138,6 +146,7 @@ public class SpoonVMPlugin extends Plugin {
         overlayManager.remove(swimOverlay);
         overlayManager.remove(prayerOverlay);
         overlayManager.remove(rockRespawnOverlay);
+        overlayManager.remove(flashOverlay);
         reset();
     }
 
@@ -218,22 +227,26 @@ public class SpoonVMPlugin extends Plugin {
                 if(timeSinceStart.compareTo(timeUntilVentWarning) >= 0 && !hasWarnedVent && config.showVentWarning()){
                     if (config.warningStyle() == SpoonVMConfig.WarningStyle.NOTIFIER) {
                         notifier.notify("The vents will shift in " + config.ventWarningTime() + " seconds!");
-                        hasWarnedVent = true;
                     }else {
                         config.ventWarningTime();
                         client.playSoundEffect(3522, 20);
-                        hasWarnedVent = true;
+                    }
+                    hasWarnedVent = true;
+                    if (config.flashWarnings()) {
+                        flash = true;
                     }
                 }
 
                 if(timeSinceStart.compareTo(timeUntilEruptionWarning) >= 0 && !hasWarnedEruption && config.showEruptionWarning()){
                     if (config.warningStyle() == SpoonVMConfig.WarningStyle.NOTIFIER) {
                         notifier.notify("The volcano will erupt in " + config.eruptionWarningTime() + " seconds!");
-                        hasWarnedEruption = true;
                     }else  {
                         config.eruptionWarningTime();
                         client.playSoundEffect(3522, 20);
-                        hasWarnedEruption = true;
+                    }
+                    hasWarnedEruption = true;
+                    if (config.flashWarnings()) {
+                        flash = true;
                     }
                 }
 
@@ -256,6 +269,10 @@ public class SpoonVMPlugin extends Plugin {
                         rocks.set(i, vmObj);
                     }
                 }
+                lowHP = (client.getBoostedSkillLevel(Skill.HITPOINTS) <= config.lowHpThreshold());
+                if (config.flashLowHp() && lowHP) {
+                    flash = true;
+                }
             }
         }
     }
@@ -272,6 +289,9 @@ public class SpoonVMPlugin extends Plugin {
                     }else {
                         client.playSoundEffect(3522, 20);
                     }
+                    if (config.flashWarnings()) {
+                        flash = true;
+                    }
                 }
                 platforms.add(new SpoonVMObjects(event.getGameObject(), 11));
             }
@@ -286,7 +306,6 @@ public class SpoonVMPlugin extends Plugin {
     public void onGameObjectDespawned(GameObjectDespawned event) {
         if (isInVM()) {
             if (event.getGameObject().getId() == PLATFORM_STAGE_3_ID) {
-
                 platforms.remove(event.getGameObject());
             }else if (event.getGameObject().getId() == ROCK_EMPTY) {
                 rocks.remove(event.getGameObject());
@@ -307,6 +326,9 @@ public class SpoonVMPlugin extends Plugin {
                         notifier.notify(BOULDER_WARNING_MESSAGE);
                     } else {
                         client.playSoundEffect(3522, 20);
+                    }
+                    if (config.flashWarnings()) {
+                        flash = true;
                     }
             }
         }
