@@ -216,10 +216,18 @@ public interface SpoonNexConfig extends Config {
 	default Color tankHighlightColor(){ return Color.RED; }
 
 	@ConfigItem(
+			keyName = "personalTankHighlightColor",
+			name = "Personal Tank Color",
+			description = "Sets color of Personal Tank Highlight tile",
+			position = 6
+	)
+	default Color personalTankHighlightColor(){ return Color.RED; }
+
+	@ConfigItem(
 			keyName = "nexWheelchair",
 			name = "Null Wheelchair",
 			description = "Consumes clicks when Nex is invulnerable",
-			position = 6
+			position = 7
 	)
 	default boolean nexWheelchair(){ return false; }
 
@@ -227,7 +235,7 @@ public interface SpoonNexConfig extends Config {
 			keyName = "audio",
 			name = "RS3 Voice Audio",
 			description = "If only they put them in by default",
-			position = 7
+			position = 8
 	)
 	default boolean audio() { return false; }
 
@@ -236,7 +244,7 @@ public interface SpoonNexConfig extends Config {
 			keyName = "audioVolume",
 			name = "Audio Volume",
 			description = "Sets the volume for all audio clips",
-			position = 8
+			position = 9
 	)
 	default int audioVolume() { return 40; }
 
@@ -244,7 +252,7 @@ public interface SpoonNexConfig extends Config {
 			keyName = "playerCounter",
 			name = "Player Counter",
 			description = "Displays how many players are alive in the current instance",
-			position = 9
+			position = 10
 	)
 	default boolean playerCounter() { return false; }
 
@@ -252,7 +260,7 @@ public interface SpoonNexConfig extends Config {
 			keyName = "prayerHelper",
 			name = "Prayer Helper",
 			description = "Is it really that hard?",
-			position = 10
+			position = 11
 	)
 	default boolean prayerHelper() { return false; }
 
@@ -260,7 +268,7 @@ public interface SpoonNexConfig extends Config {
 			keyName = "SetInputName",
 			name = "Set Input Name",
 			description = "Set Input of nex instance name",
-			position = 11
+			position = 12
 	)
 	default String setInputName() {return "";}
 
@@ -268,7 +276,7 @@ public interface SpoonNexConfig extends Config {
 			keyName = "shouldSetInput",
 			name = "Should Set Input",
 			description = "Set Input of nex instance name",
-			position = 12
+			position = 13
 	)
 	default boolean getShouldSetInput() {return false;}
 
@@ -276,17 +284,37 @@ public interface SpoonNexConfig extends Config {
 			keyName = "showTenTile",
 			name = "Ten Tile Range",
 			description = "range of nex's sight",
-			position = 13
+			position = 14
 	)
 	default boolean showTenTile() {
 		return false;
 	}
 
 	@ConfigItem(
+			keyName = "followHelper",
+			name = "Follow Helper (BETA)",
+			description = "Left click follow and or hull overlay if you are the tank and the player's last tile was under Nex<br>Hasn't been tested yet",
+			position = 15
+	)
+	default FollowHelperMode followHelper() {
+		return FollowHelperMode.OFF;
+	}
+
+	@ConfigItem(
+			keyName = "hpToPhase",
+			name = "Phase HP",
+			description = "Displays how much HP is left till next phase",
+			position = 16
+	)
+	default HpToPhaseMode hpToPhase() {
+		return HpToPhaseMode.OFF;
+	}
+
+	@ConfigItem(
 			keyName = "olmPTSD",
 			name = "Olm PTSD",
 			description = "Makes Smoke phase a little more familiar",
-			position = 97
+			position = 96
 	)
 	default boolean olmPTSD(){ return false; }
 
@@ -294,9 +322,26 @@ public interface SpoonNexConfig extends Config {
 			keyName = "forWhy",
 			name = "Just fuck me up right good",
 			description = "For why?",
-			position = 98
+			position = 97
 	)
 	default boolean forWhy(){ return false; }
+
+	@ConfigItem(
+			keyName = "mkMoan",
+			name = "MK Moan",
+			description = "This is his fault. Blame him.",
+			position = 98
+	)
+	default boolean mkMoan(){ return false; }
+
+	@Range(min = 0, max = 100)
+	@ConfigItem(
+			keyName = "mkMoanVolume",
+			name = "MK Moan Volume",
+			description = "Sets the volume for MK Moan",
+			position = 99
+	)
+	default int mkMoanVolume() { return 40; }
 
 	enum MageHighlightMode {
 		OFF, ARROW, TILE, BOTH
@@ -328,5 +373,13 @@ public interface SpoonNexConfig extends Config {
 
 	enum PhaseNameTypeMode {
 		NUMBER, NAME
+	}
+
+	enum FollowHelperMode {
+		OFF, MES, OVERLAY, BOTH
+	}
+
+	enum HpToPhaseMode {
+		OFF, OVERLAY, PANEL, BOTH
 	}
 }

@@ -384,6 +384,15 @@ public interface SpoonGauntletConfig extends Config {
     )
     default boolean hideEnterBoss() {return false;}
 
+    @ConfigItem(
+            name = "Show Boss Prayer",
+            description = "Shows an infobox during prep with the protection prayer the boss is using first",
+            position = 14,
+            keyName = "showPrepBossPrayer",
+            section = prep
+    )
+    default boolean showPrepBossPrayer() {return false;}
+
     //------------------------------------------------------------//
     // Regular
     //------------------------------------------------------------//

@@ -146,12 +146,12 @@ class SpoonNexOverlay extends Overlay {
 					}
 				}
 
-				if (config.tankHighlight() && plugin.nex.npc.getInteracting() != null) {
-					Color color = config.forWhy() ? plugin.forWhyColors.get(5) : config.tankHighlightColor();
+				if (config.tankHighlight() && plugin.nex.npc.getInteracting() != null && client.getLocalPlayer() != null) {
+					Color color = config.forWhy() ? plugin.forWhyColors.get(5) : plugin.currentTank.equals(client.getLocalPlayer().getName()) ? config.personalTankHighlightColor() : config.tankHighlightColor();
 					LocalPoint lp = plugin.nex.npc.getInteracting().getLocalLocation();
 					if (lp != null) {
 						Polygon poly = Perspective.getCanvasTilePoly(client, lp);
-						renderPoly(graphics, color, poly,2, 255, 50);
+						renderPoly(graphics, color, poly, 2, 255, 50);
 					}
 				}
 
@@ -177,10 +177,7 @@ class SpoonNexOverlay extends Overlay {
 					WorldPoint bossLoc = plugin.nex.npc.getWorldLocation();
 					int raveIndex = 0;
 					for (int i = 0; i < 10; i++) {
-						//0 = South
-						//1 = West
-						//2 = North
-						//3 = East
+						//0 = South    1 = West    2 = North    3 = East
 						if (directionNum == 0) {
 							leftTop = new WorldPoint(bossLoc.getX(), bossLoc.getY() - 1 - i, client.getPlane());
 							middle = new WorldPoint(bossLoc.getX() + 1, bossLoc.getY() - 1 - i, client.getPlane());
@@ -224,6 +221,29 @@ class SpoonNexOverlay extends Overlay {
 				BufferedImage icon = ImageUtil.loadImageResource(SpoonNexPlugin.class, plugin.ratJamFrame + ".png");
 				if (icon != null) {
 					graphics.drawImage(icon, plugin.ratJamPoint.getX(), plugin.ratJamPoint.getY(), 25, 25, null);
+				}
+			}
+
+			if (config.followHelper() == SpoonNexConfig.FollowHelperMode.OVERLAY || config.followHelper() == SpoonNexConfig.FollowHelperMode.BOTH) {
+				for (FollowPlayer fp : plugin.followPlayers) {
+					if (fp.prevUnderNex) {
+						Shape shape = fp.player.getConvexHull();
+						if (shape != null) {
+							graphics.setColor(Color.RED);
+							graphics.setStroke(new BasicStroke(1));
+							graphics.draw(shape);
+						}
+					}
+				}
+			}
+
+			if (config.hpToPhase() == SpoonNexConfig.HpToPhaseMode.OVERLAY || config.hpToPhase() == SpoonNexConfig.HpToPhaseMode.BOTH && plugin.nex.phase < 5) {
+				String text = String.valueOf(plugin.hpToPhase);
+				Point textLoc = plugin.nex.npc.getCanvasTextLocation(graphics, text, plugin.nex.npc.getLogicalHeight() + 90);
+				if (textLoc != null) {
+					Point pointShadow = new Point(textLoc.getX() + 1, textLoc.getY() + 1);
+					OverlayUtil.renderTextLocation(graphics, pointShadow, text, Color.BLACK);
+					OverlayUtil.renderTextLocation(graphics, textLoc, text, config.forWhy() ? plugin.forWhyColors.get(7) : Color.RED);
 				}
 			}
 			graphics.setFont(oldFont);

@@ -16,6 +16,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
+import net.runelite.client.util.Text;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
@@ -58,6 +59,9 @@ public class SpoonNexPlugin extends Plugin {
 	private OverlayManager overlayManager;
 
 	@Inject
+	private SpoonNexHpToPhasePanel hpToPhaseOverlay;
+
+	@Inject
     private InfoBoxManager infoBoxManager;
 
 	@Inject
@@ -98,6 +102,14 @@ public class SpoonNexPlugin extends Plugin {
 
 	boolean pendingSet = false;
 
+	public String currentTank = "";
+	public ArrayList<FollowPlayer> followPlayers = new ArrayList<>();
+
+	public int hpToPhase = -1;
+
+	public NPC nexBanker = null;
+	public GameObject nexAltar = null;
+
 	@Provides
 	SpoonNexConfig provideConfig(ConfigManager configManager) {
 		return configManager.getConfig(SpoonNexConfig.class);
@@ -105,20 +117,28 @@ public class SpoonNexPlugin extends Plugin {
 
 	@Override
 	protected void startUp() {
+		followPlayers.clear();
+		nexBanker = null;
+		nexAltar = null;
 		reset();
 		overlayManager.add(overlay);
 		overlayManager.add(panelOverlay);
 		overlayManager.add(prayerOverlay);
 		overlayManager.add(phasePanel);
+		overlayManager.add(hpToPhaseOverlay);
 	}
 
 	@Override
 	protected void shutDown() {
+		followPlayers.clear();
+		nexBanker = null;
+		nexAltar = null;
 		reset();
 		overlayManager.remove(overlay);
 		overlayManager.remove(panelOverlay);
 		overlayManager.remove(prayerOverlay);
 		overlayManager.remove(phasePanel);
+		overlayManager.remove(hpToPhaseOverlay);
 		infoBoxManager.removeInfoBox(timerBox);
 	}
 
@@ -134,6 +154,8 @@ public class SpoonNexPlugin extends Plugin {
 		raveRunway.clear();
 		if(timerTicksLeft == 0)
 			infoBoxManager.removeInfoBox(timerBox);
+		currentTank = "";
+		hpToPhase = -1;
 	}
 
 	@Subscribe
@@ -163,6 +185,8 @@ public class SpoonNexPlugin extends Plugin {
 		if(nexIds.contains(event.getNpc().getId())) {
 			nex = new Nex(event.getNpc());
 			timerTicksLeft = 0;
+		} else if (event.getNpc().getId() == 11289) {
+			nexBanker = event.getNpc();
 		}
 	}
 
@@ -177,6 +201,22 @@ public class SpoonNexPlugin extends Plugin {
 	private void onNpcDespawned(NpcDespawned event) {
 		if (nex != null && nex.npc != null && nex.npc.getName() != null && event.getNpc().getName() != null && nex.npc.getName().equals(event.getNpc().getName())) {
 			reset();
+		} else if (event.getNpc().getId() == 11289) {
+			nexBanker = null;
+		}
+	}
+
+	@Subscribe
+	private void onPlayerSpawned(PlayerSpawned event) {
+		if(nexAltar != null || nexBanker != null) {
+			followPlayers.add(new FollowPlayer(event.getPlayer()));
+		}
+	}
+
+	@Subscribe
+	private void onPlayerDespawned(PlayerDespawned event) {
+		if(nexAltar != null || nexBanker != null) {
+			followPlayers.removeIf(fp -> fp.player.getName() != null && fp.player.getName().equals(event.getPlayer().getName()));
 		}
 	}
 
@@ -225,7 +265,7 @@ public class SpoonNexPlugin extends Plugin {
 
 	@Subscribe
 	private void onGameTick(GameTick tick) {
-		if (pendingSet && config.getShouldSetInput() && isInNexLobby()) {
+		if (pendingSet && config.getShouldSetInput() && nexBanker != null) {
 			pendingSet = false;
 			clientThread.invoke(() -> {
 				client.setVar(VarClientStr.INPUT_TEXT, config.setInputName());
@@ -234,6 +274,8 @@ public class SpoonNexPlugin extends Plugin {
 		}
 
 		if (nex != null) {
+			hpToPhase = client.getVarbitValue(6099) - (3400 - (680 * nex.phase));
+
 			if (nex.specialTicksLeft > 0) {
 				nex.specialTicksLeft--;
 				if (nex.specialTicksLeft == 0) {
@@ -274,6 +316,17 @@ public class SpoonNexPlugin extends Plugin {
 			for(int i=0; i<30; i++){
 				raveRunway.add(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
 			}
+
+			for (FollowPlayer fp : followPlayers) {
+				if (fp.currentLoc.getX() != fp.player.getWorldLocation().getX() || fp.currentLoc.getY() != fp.player.getWorldLocation().getY()) {
+					fp.prevLoc = fp.currentLoc;
+					fp.currentLoc = fp.player.getWorldLocation();
+
+					int xDiff = fp.prevLoc.getX() - nex.npc.getWorldLocation().getX();
+					int yDiff = fp.prevLoc.getY() - nex.npc.getWorldLocation().getY();
+					fp.prevUnderNex = ((2 >= xDiff && xDiff >= 0) && (2 >= yDiff && yDiff >= 0));
+				}
+			}
 		}
 
 		if(timerTicksLeft > 0) {
@@ -296,10 +349,31 @@ public class SpoonNexPlugin extends Plugin {
 
 	@Subscribe
 	public void onClientTick(ClientTick event) {
-		if (this.client.getGameState() == GameState.LOGGED_IN){
+		if (this.client.getGameState() == GameState.LOGGED_IN && nex != null && client.getLocalPlayer() != null && nexAltar != null && nexBanker == null){
 			ratJamFrame++;
 			if (ratJamFrame >= 35) {
 				ratJamFrame = 1;
+			}
+
+			if (config.followHelper() == SpoonNexConfig.FollowHelperMode.MES || config.followHelper() == SpoonNexConfig.FollowHelperMode.BOTH) {
+				MenuEntry[] menuEntries = client.getMenuEntries();
+				for (MenuEntry me : menuEntries) {
+					if (me.getOption().contains("Follow") && followPlayers.stream().anyMatch(fp -> fp.player.getName() != null && me.getTarget().contains(fp.player.getName()))) {
+						for (MenuEntry entry : menuEntries) {
+							if (entry.getOption().contains("Follow")) {
+								for (FollowPlayer fp : followPlayers) {
+									if(fp.player.getName() != null && entry.getTarget().contains(fp.player.getName())) {
+										entry.setDeprioritized(!fp.prevUnderNex);
+										break;
+									}
+								}
+							} else {
+								entry.setDeprioritized(true);
+							}
+						}
+						break;
+					}
+				}
 			}
 		}
 	}
@@ -308,6 +382,8 @@ public class SpoonNexPlugin extends Plugin {
 	private void onGameObjectSpawned(GameObjectSpawned event) {
 		if (event.getGameObject().getId() == 42944 || event.getGameObject().getId() == 42942) {
 			gameObjects.add(event.getGameObject());
+		} else if (event.getGameObject().getId() == 42965) {
+			nexAltar = event.getGameObject();
 		}
 	}
 
@@ -315,6 +391,8 @@ public class SpoonNexPlugin extends Plugin {
 	private void onGameObjectDespawned(GameObjectDespawned event) {
 		if (event.getGameObject().getId() == 42944 || event.getGameObject().getId() == 42942) {
 			gameObjects.remove(event.getGameObject());
+		} else if (event.getGameObject().getId() == 42965) {
+			nexAltar = null;
 		}
 	}
 
@@ -510,10 +588,6 @@ public class SpoonNexPlugin extends Plugin {
 				} catch (Exception var6) {
 					nexAudio = null;
 				}
-				if(nexAudio != null) {
-					nexAudio.setFramePosition(0);
-					nexAudio.start();
-				}
 			}
 		} else {
 			if (text.contains("Nex has marked you for a blood sacrifice! RUN!")) {
@@ -530,28 +604,34 @@ public class SpoonNexPlugin extends Plugin {
 		}
 	}
 
-	public boolean isInNexChamber() { // banker isn't visible if inside nex room
-		NPC Banker = new NPCQuery()
-				.idEquals(11289)
-				.result(client)
-				.nearestTo(client.getLocalPlayer());
-
-		GameObject Altar = new GameObjectQuery()
-				.idEquals(42965)
-				.result(client)
-				.nearestTo(client.getLocalPlayer());
-
-		return Altar != null && Banker == null;
+	@Subscribe
+	private void onInteractionChanged(InteractingChanged event) {
+		if(nex != null && nex.npc != null && event.getSource() != null && event.getSource() instanceof NPC && nex.npc == event.getSource() && event.getTarget() != null) {
+			currentTank = event.getTarget().getName();
+		}
 	}
 
-	public boolean isInNexLobby() {
-		NPC Banker = new NPCQuery()
-				.idEquals(11289)
-				.result(client)
-				.nearestTo(client.getLocalPlayer());
+	@Subscribe
+    public void onSoundEffectPlayed(SoundEffectPlayed event) {
+        if (event.getSoundId() == 1111 || event.getSoundId() == 1111) {
+			try {
+				AudioInputStream stream = AudioSystem.getAudioInputStream(new BufferedInputStream(SpoonNexPlugin.class.getResourceAsStream("mkMoan.wav")));
+				AudioFormat format = stream.getFormat();
+				DataLine.Info info = new DataLine.Info(Clip.class, format);
+				nexAudio = (Clip) AudioSystem.getLine(info);
+				nexAudio.open(stream);
+				FloatControl control = (FloatControl) nexAudio.getControl(FloatControl.Type.MASTER_GAIN);
+				if (control != null) {
+					control.setValue((float) (config.mkMoanVolume() / 2 - 45));
+				}
+				nexAudio.setFramePosition(0);
+				nexAudio.start();
+			} catch (Exception var6) {
+				nexAudio = null;
+			}
+		}
+    }
 
-		return Banker != null;
-	}
 	public String ticksToTime(int ticks) {
 		int min = ticks / 100;
 		int tmp = (ticks - min * 100) * 6;

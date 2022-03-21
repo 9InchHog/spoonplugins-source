@@ -101,6 +101,7 @@ public class SpoonGauntletPlugin extends Plugin {
     public boolean corrupted = false;
     public boolean gauntletStarted = false;
     public boolean hasRawFish = false;
+    public NPC hunllef = null;
 
     private boolean mirrorMode;
 
@@ -159,6 +160,7 @@ public class SpoonGauntletPlugin extends Plugin {
         corrupted = false;
         gauntletStarted = false;
         hasRawFish = false;
+        hunllef = null;
     }
 
     protected void shutDown() {
@@ -188,6 +190,7 @@ public class SpoonGauntletPlugin extends Plugin {
         clip = null;
         hunllefStomped = false;
         hasRawFish = false;
+        hunllef = null;
         if (timerVisible) {
             overlayManager.remove(timer);
             timerVisible = false;
@@ -351,6 +354,7 @@ public class SpoonGauntletPlugin extends Plugin {
         NPC npc = event.getNpc();
         if (GauntletUtils.isBoss(npc)) {
             resetCounters();
+            hunllef = npc;
         }
     }
 
@@ -829,6 +833,7 @@ public class SpoonGauntletPlugin extends Plugin {
                 lastFrames = 0;
                 gauntletStarted = false;
                 corrupted = false;
+                hunllef = null;
                 resourcesTracked = new ArrayList<>(Arrays.asList(new GauntletResource(23866, 0), new GauntletResource(23878, 0), new GauntletResource(23876, 0),
                         new GauntletResource(23877, 0), new GauntletResource(23871, 0), new GauntletResource(23874, 0), new GauntletResource(23875, 0)));
             }
