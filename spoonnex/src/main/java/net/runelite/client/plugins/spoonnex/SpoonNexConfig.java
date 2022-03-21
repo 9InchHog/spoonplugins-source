@@ -326,7 +326,7 @@ public interface SpoonNexConfig extends Config {
 	)
 	default boolean forWhy(){ return false; }
 
-	@ConfigItem(
+	/*@ConfigItem(
 			keyName = "mkMoan",
 			name = "MK Moan",
 			description = "This is his fault. Blame him.",
@@ -342,6 +342,7 @@ public interface SpoonNexConfig extends Config {
 			position = 99
 	)
 	default int mkMoanVolume() { return 40; }
+	*/
 
 	enum MageHighlightMode {
 		OFF, ARROW, TILE, BOTH

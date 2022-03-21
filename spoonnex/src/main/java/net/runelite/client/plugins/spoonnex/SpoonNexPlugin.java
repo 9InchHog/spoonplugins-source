@@ -611,7 +611,7 @@ public class SpoonNexPlugin extends Plugin {
 		}
 	}
 
-	@Subscribe
+	/*@Subscribe
     public void onSoundEffectPlayed(SoundEffectPlayed event) {
         if (event.getSoundId() == 1111 || event.getSoundId() == 1111) {
 			try {
@@ -631,6 +631,7 @@ public class SpoonNexPlugin extends Plugin {
 			}
 		}
     }
+	 */
 
 	public String ticksToTime(int ticks) {
 		int min = ticks / 100;
