@@ -933,7 +933,7 @@ public class SpoonEzSwapsPlugin extends Plugin {
 		}
 	}
 
-	private final ArrayList<Integer> GWD_MAP_REGIONS = new ArrayList<>(Arrays.asList(11603, 11347, 11346, 11601));
+	private final ArrayList<Integer> GWD_MAP_REGIONS = new ArrayList<>(Arrays.asList(11603, 11347, 11346, 11601, 11602));
 
 	public boolean isInGodWars() {
 		if (client.isInInstancedRegion() && client.getLocalPlayer() != null) {
