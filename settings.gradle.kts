@@ -28,7 +28,7 @@ rootProject.name = "Spoon Plugins"
 //------------------------------------------------------------//
 // Client Plugins
 //------------------------------------------------------------//
-    ///*
+    /*
 include(":alchemicalhydra")
 include(":animationcooldown")
 include(":aoe")
@@ -135,12 +135,12 @@ include(":yurinex")
 include(":yuritheatre")
 include(":zulrah")
 include(":zuktimer")
-    //*/
+    */
 
 //------------------------------------------------------------//
 // Public Plugins
 //------------------------------------------------------------//
-    /*
+    ///*
 include(":alchemicalhydra")
 include(":aoe")
 include(":ariatob")
@@ -186,6 +186,7 @@ include(":spoonboosts")
 include(":spoondemonicgorilla")
 include(":spoonezswaps")
 include(":spoongauntlet")
+include(":spoongotr")
 include(":spoongrounditems")
 include(":spoongroundmarkers")
 include(":spoonitemcharges")
@@ -218,7 +219,7 @@ include(":vanguards")
 include(":vmswimshamer")
 include(":yurinex")
 include(":yuritheatre")
-    */
+    //*/
 
 for (project in rootProject.children) {
     project.apply {
