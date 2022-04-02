@@ -17,6 +17,7 @@ import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
@@ -95,6 +96,10 @@ public class SpoonGOTRPlugin extends Plugin {
 			Map.entry(43708, 565)//Blood
 	);
 
+	public int rngGuardianNum = 0;
+	public Color raveGuardianColor = Color.RED;
+	public ArrayList<Color> guardianColors = new ArrayList<>();
+
 	@Provides
 	SpoonGOTRConfig provideConfig(ConfigManager configManager) {
 		return configManager.getConfig(SpoonGOTRConfig.class);
@@ -136,6 +141,9 @@ public class SpoonGOTRPlugin extends Plugin {
 		cataGuardian = null;
 		elePoints = "";
 		cataPoints = "";
+		rngGuardianNum = 0;
+		raveGuardianColor = Color.RED;
+		guardianColors.clear();
 	}
 
 	@Subscribe
@@ -187,10 +195,21 @@ public class SpoonGOTRPlugin extends Plugin {
 			}
 		}
 
+		int rng = new Random().nextInt(12);
+		rngGuardianNum = rng != rngGuardianNum ? rng : rng == 11 ? rng - 6 : rng + 1;
+		raveGuardianColor = Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F);
+		guardianColors.clear();
+		for (int i=0; i<guardians.size()*12+1; i++) {
+			guardianColors.add(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
+		}
+
 		if (gameStart) {
 			ticksSincePortal++;
 			if (client.getWidget(48889885) != null)
 				guardianWidgetText = Objects.requireNonNull(client.getWidget(48889885)).getText();
+			if (config.guardiansOfTheRave() == SpoonGOTRConfig.RaveMode.RAVEST || config.guardiansOfTheRave() == SpoonGOTRConfig.RaveMode.HELP) {
+				client.setHintArrow(guardians.get(rngGuardianNum).getWorldLocation());
+			}
 		} else {
 			if (timeTillNextGame >= 0)
 				timeTillNextGame++;
@@ -206,29 +225,32 @@ public class SpoonGOTRPlugin extends Plugin {
 
 	@Subscribe
 	private void onChatMessage(ChatMessage event) {
-		if (event.getMessage().contains("A portal to the huge guardian fragment mine has opened to the")) {
-			portalTicks = 45;
-			ticksSincePortal = 0;
-			portalsSpawned++;
-		} else if (event.getMessage().contains("The Great Guardian successfully closed the rift!") || event.getMessage().contains("The Great Guardian was defeated!")) {
-			gameStart = false;
-			showPoints = true;
-			cataPoints = "";
-			elePoints = "";
-			timeTillNextGame = 0;
-			portalsSpawned = 0;
-			infoBoxManager.removeInfoBox(timerBox);
-			startTick = -1;
-		} else if (event.getMessage().contains("Elemental attunement level:") && event.getMessage().contains("Catalytic attunement level:")) {
-			String msg = Text.removeTags(event.getMessage());
-			elePoints = msg.substring(msg.indexOf(": ") + 2, msg.indexOf(". Catalytic"));
-			cataPoints = msg.substring(msg.indexOf("Catalytic attunement level: ") + 28, msg.lastIndexOf("."));
-		} else if (event.getMessage().contains("The rift will become active in 30 seconds.")) {
-			timeTillNextGame = 54;
-		} else if (event.getMessage().contains("The rift will become active in 10 seconds.")) {
-			timeTillNextGame = 87;
-		} else if (event.getMessage().contains("The rift will become active in 5 seconds.")) {
-			timeTillNextGame = 96;
+		if(event.getType() == ChatMessageType.GAMEMESSAGE){
+			if (event.getMessage().contains("A portal to the huge guardian fragment mine has opened to the")) {
+				portalTicks = 45;
+				ticksSincePortal = 0;
+				portalsSpawned++;
+			} else if (event.getMessage().contains("The Great Guardian successfully closed the rift!") || event.getMessage().contains("The Great Guardian was defeated!")) {
+				gameStart = false;
+				showPoints = true;
+				cataPoints = "";
+				elePoints = "";
+				timeTillNextGame = 0;
+				portalsSpawned = 0;
+				infoBoxManager.removeInfoBox(timerBox);
+				startTick = -1;
+				client.clearHintArrow();
+			} else if (event.getMessage().contains("Elemental attunement level:") && event.getMessage().contains("Catalytic attunement level:")) {
+				String msg = Text.removeTags(event.getMessage());
+				elePoints = msg.substring(msg.indexOf(": ") + 2, msg.indexOf(". Catalytic"));
+				cataPoints = msg.substring(msg.indexOf("Catalytic attunement level: ") + 28, msg.lastIndexOf("."));
+			} else if (event.getMessage().contains("The rift will become active in 30 seconds.")) {
+				timeTillNextGame = 54;
+			} else if (event.getMessage().contains("The rift will become active in 10 seconds.")) {
+				timeTillNextGame = 87;
+			} else if (event.getMessage().contains("The rift will become active in 5 seconds.")) {
+				timeTillNextGame = 96;
+			}
 		}
 	}
 
@@ -242,6 +264,7 @@ public class SpoonGOTRPlugin extends Plugin {
 			cataGuardian = null;
 			showPoints = false;
 			timeTillNextGame = -1;
+			client.clearHintArrow();
 		}
 	}
 

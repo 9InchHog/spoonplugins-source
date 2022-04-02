@@ -173,8 +173,20 @@ public interface SpoonGOTRConfig extends Config {
 	@ConfigItem(
 			keyName = "essencePileOverlay",
 			name = "Essence Pile Overlay",
-			description = "Highlights the essence piles when there are less than 10 spawned",
+			description = "Highlights the essence piles when there are less than the cap spawned",
 			position = 13
 	)
 	default boolean essencePileOverlay(){ return false; }
+
+	@ConfigItem(
+			keyName = "guardiansOfTheRave",
+			name = "Guardians of the Rave",
+			description = "",
+			position = 99
+	)
+	default RaveMode guardiansOfTheRave(){ return RaveMode.OFF; }
+
+	enum RaveMode {
+		OFF, RAVE, RAVEST, HELP
+	}
 }

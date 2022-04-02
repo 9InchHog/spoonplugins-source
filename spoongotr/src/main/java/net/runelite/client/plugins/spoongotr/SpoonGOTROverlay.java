@@ -39,19 +39,8 @@ class SpoonGOTROverlay extends Overlay {
 				for (GameObject obj : plugin.guardians) {
 					Animation animation = ((DynamicObject) obj.getRenderable()).getAnimation();
 					if (animation != null && animation.getId() == 9363 && obj.getClickbox() != null) {
-						Color outline;
-						Color fill;
-						if (obj.getId() >= 43701 && obj.getId() <= 43704) {
-							outline = new Color(config.eleOverlayColor().getRed(), config.eleOverlayColor().getGreen(), config.eleOverlayColor().getBlue(), 255);
-							fill = config.eleOverlayColor();
-						} else {
-							outline = new Color(config.cataOverlayColor().getRed(), config.cataOverlayColor().getGreen(), config.cataOverlayColor().getBlue(), 255);
-							fill = config.cataOverlayColor();
-						}
-						graphics.setColor(outline);
-						graphics.draw(obj.getClickbox());
-						graphics.setColor(fill);
-						graphics.fill(obj.getClickbox());
+						Color color = obj.getId() >= 43701 && obj.getId() <= 43704 ? config.eleOverlayColor() : config.cataOverlayColor();
+						drawClickbox(graphics, color, obj.getClickbox());
 						if (config.showGuardianRune())
 							OverlayUtil.renderImageLocation(client, graphics, obj.getLocalLocation(), itemManager.getImage(plugin.runeIdMap.get(obj.getId())), 140);
 					}
@@ -59,10 +48,7 @@ class SpoonGOTROverlay extends Overlay {
 			}
 
 			if (config.hugePortal() && plugin.hugePortal != null && plugin.portalTicks > 0 && plugin.hugePortal.getClickbox() != null) {
-				graphics.setColor(new Color(config.hugePortalColor().getRed(), config.hugePortalColor().getGreen(), config.hugePortalColor().getBlue(), 255));
-				graphics.draw(plugin.hugePortal.getClickbox());
-				graphics.setColor(config.hugePortalColor());
-				graphics.fill(plugin.hugePortal.getClickbox());
+				drawClickbox(graphics, config.hugePortalColor(), plugin.hugePortal.getClickbox());
 
 				Font oldFont = graphics.getFont();
 				graphics.setFont(new Font("Arial", Font.BOLD, 12));
@@ -77,10 +63,7 @@ class SpoonGOTROverlay extends Overlay {
 			}
 
 			if (config.bigGuyOverlay() && plugin.bigGuy != null && plugin.hasGuardianStone && plugin.bigGuy.getConvexHull() != null) {
-				graphics.setColor(new Color(config.bigGuyColor().getRed(), config.bigGuyColor().getGreen(), config.bigGuyColor().getBlue(), 255));
-				graphics.draw(plugin.bigGuy.getConvexHull());
-				graphics.setColor(config.bigGuyColor());
-				graphics.fill(plugin.bigGuy.getConvexHull());
+				drawClickbox(graphics, config.bigGuyColor(), plugin.bigGuy.getConvexHull());
 			}
 
 			if (config.essencePileOverlay() && plugin.eleGuardian != null && plugin.cataGuardian != null && plugin.hasCell
@@ -88,22 +71,73 @@ class SpoonGOTROverlay extends Overlay {
 				int spawnedGuards = Integer.parseInt(plugin.guardianWidgetText.split("/")[0]);
 				int guardCap = Integer.parseInt(plugin.guardianWidgetText.split("/")[1]);
 				if (spawnedGuards < guardCap) {
-					graphics.setColor(new Color(config.essencePileColor().getRed(), config.essencePileColor().getGreen(), config.essencePileColor().getBlue(), 255));
-					graphics.draw(plugin.eleGuardian.getClickbox());
-					graphics.draw(plugin.cataGuardian.getClickbox());
-					graphics.setColor(config.essencePileColor());
-					graphics.fill(plugin.eleGuardian.getClickbox());
-					graphics.fill(plugin.cataGuardian.getClickbox());
+					drawClickbox(graphics, config.essencePileColor(), plugin.eleGuardian.getClickbox());
+					drawClickbox(graphics, config.essencePileColor(), plugin.cataGuardian.getClickbox());
+				}
+			}
+
+			if (config.guardiansOfTheRave() != SpoonGOTRConfig.RaveMode.OFF && plugin.guardians.size() > 0) {
+				if(plugin.bigGuy != null && plugin.bigGuy.getComposition() != null) {
+					drawRaveFloor(graphics, plugin.bigGuy.getWorldLocation(), plugin.bigGuy.getComposition().getSize(), 0);
+				}
+
+				if (config.guardiansOfTheRave() != SpoonGOTRConfig.RaveMode.RAVE) {
+					GameObject guardian = plugin.guardians.get(plugin.rngGuardianNum);
+					Shape shape = guardian.getConvexHull();
+					if (shape != null) {
+						graphics.setColor(plugin.raveGuardianColor);
+						graphics.fill(shape);
+					}
+
+					drawRaveFloor(graphics, plugin.unchargedCellTable.getWorldLocation(), 2, 0);
+					drawRaveFloor(graphics, plugin.eleGuardian.getWorldLocation(), 2, 0);
+					drawRaveFloor(graphics, plugin.cataGuardian.getWorldLocation(), 2, 0);
+				}
+
+				if (config.guardiansOfTheRave() == SpoonGOTRConfig.RaveMode.HELP) {
+					int index = 0;
+					for (GameObject obj : plugin.guardians) {
+						drawRaveFloor(graphics, obj.getWorldLocation(), 2, index);
+						index += 11;
+					}
 				}
 			}
 		}
 
 		if (config.unchargedTableOverlay() && plugin.unchargedCellTable != null && !plugin.hasUnchargedCells && plugin.unchargedCellTable.getClickbox() != null) {
-			graphics.setColor(new Color(config.unchargedTableColor().getRed(), config.unchargedTableColor().getGreen(), config.unchargedTableColor().getBlue(), 255));
-			graphics.draw(plugin.unchargedCellTable.getClickbox());
-			graphics.setColor(config.unchargedTableColor());
-			graphics.fill(plugin.unchargedCellTable.getClickbox());
+			drawClickbox(graphics, config.unchargedTableColor(), plugin.unchargedCellTable.getClickbox());
 		}
 		return null;
+	}
+
+	private void drawClickbox(Graphics2D graphics, Color color, Shape shape) {
+		graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 255));
+		graphics.draw(shape);
+		graphics.setColor(color);
+		graphics.fill(shape);
+	}
+
+	private void drawRaveFloor(Graphics2D graphics, WorldPoint wp, int size, int colorIndexStart) {
+		int index = colorIndexStart;
+		for (int y=-1; y<size+1; y++) {
+			int increment = y == -1 || y == size ? 1 : size + 1;
+			for (int x=-1; x<size+1; x += increment) {
+				WorldPoint w = new WorldPoint(wp.getX() + x, wp.getY() + y, client.getPlane());
+				LocalPoint lp = LocalPoint.fromWorld(client, w);
+				if (lp != null) {
+					Polygon poly = Perspective.getCanvasTilePoly(client, lp);
+					if (poly != null) {
+						Color color = plugin.guardianColors.get(index);
+						graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 100));
+						graphics.setStroke(new BasicStroke(2));
+						graphics.draw(poly);
+						graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 100));
+						graphics.fill(poly);
+					}
+				}
+				index++;
+			}
+			index++;
+		}
 	}
 }
