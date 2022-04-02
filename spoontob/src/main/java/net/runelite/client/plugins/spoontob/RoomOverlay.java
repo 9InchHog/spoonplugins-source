@@ -145,6 +145,14 @@ public abstract class RoomOverlay extends Overlay {
         }
     }
 
+    protected void renderNpcPoly(Graphics2D graphics, Color color, Polygon polygon, double width, int alpha) {
+        if (polygon != null) {
+            graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha));
+            graphics.setStroke(new BasicStroke((float)width));
+            graphics.draw(polygon);
+        }
+    }
+
     /**
      * Returns a polygon representing an area.
      *

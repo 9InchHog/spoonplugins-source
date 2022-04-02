@@ -31,11 +31,12 @@ public class SpoonGOTRTimerPanel extends OverlayPanel {
         this.panelComponent.getChildren().clear();
 		if (plugin.gameStart && config.portalTimer()) {
 		    int ticksTillPortal = plugin.portalsSpawned > 0 ? 225 - plugin.ticksSincePortal : 256 - plugin.ticksSincePortal;
-			this.panelComponent.getChildren().add(LineComponent.builder()
-                    .left("Next Portal:")
-					.right(String.valueOf(ticksTillPortal))
-					.build());
-
+            if (ticksTillPortal >= -20) {
+                this.panelComponent.getChildren().add(LineComponent.builder()
+                        .left("Next Portal:")
+                        .right(String.valueOf(ticksTillPortal))
+                        .build());
+            }
             if (plugin.portalTicks > 0) {
                 this.panelComponent.getChildren().add(LineComponent.builder()
                     .left("Active Portal:")

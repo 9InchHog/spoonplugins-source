@@ -1,10 +1,23 @@
 package net.runelite.client.plugins.socket.plugins.deathindicators;
 
 import com.google.inject.Provides;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import javax.inject.Inject;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import net.runelite.api.events.*;
+import net.runelite.api.Hitsplat.HitsplatType;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.events.HitsplatApplied;
+import net.runelite.api.events.NpcDespawned;
+import net.runelite.api.events.NpcSpawned;
+import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.kit.KitType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -20,43 +33,31 @@ import net.runelite.client.plugins.socket.org.json.JSONArray;
 import net.runelite.client.plugins.socket.org.json.JSONObject;
 import net.runelite.client.plugins.socket.packet.SocketBroadcastPacket;
 import net.runelite.client.plugins.socket.packet.SocketReceivePacket;
-import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
-
-import javax.inject.Inject;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.*;
-
-import static net.runelite.api.ScriptID.XPDROPS_SETDROPSIZE;
-import static net.runelite.api.widgets.WidgetInfo.TO_CHILD;
-import static net.runelite.api.widgets.WidgetInfo.TO_GROUP;
-
 
 @Slf4j
 @Extension
 @PluginDescriptor(
         name = "Socket - Death Indicators",
-        description = "Shows you NPCs that have been killed",
-        tags = {"Socket, death, kill"}
+        description = "Removes Nylos that have been killed",
+        tags = {"Socket, death, kill", "nylo"},
+        enabledByDefault = false
 )
 @PluginDependency(SocketPlugin.class)
-public class DeathIndicatorsPlugin extends Plugin {
-    @Inject
-    private Client client;
-    @Inject
-    private EventBus eventBus;
-    @Inject
-    private ConfigManager configManager;
-    @Inject
-    private OverlayManager overlayManager;
+public class DeathIndicatorsPlugin extends Plugin
+{
     @Inject
     private DeathIndicatorsConfig config;
     @Inject
     private DeathIndicatorsOverlay overlay;
-
+    @Inject
+    private Client client;
+    @Inject
+    private OverlayManager overlayManager;
     private ArrayList<NyloQ> nylos;
+    @Inject
+    private EventBus eventBus;
     private boolean inNylo = false;
 
     @Getter
@@ -65,34 +66,39 @@ public class DeathIndicatorsPlugin extends Plugin {
     private NyloQ maidenNPC;
 
     private ArrayList<Integer> hiddenIndices;
-    private int partySize = -1;
-
-    private boolean mirrorMode;
+    private int partySize;
 
     @Inject
-    private PluginManager pluginManager;
+    PluginManager pluginManager;
     private ArrayList<Method> reflectedMethods;
     private ArrayList<Plugin> reflectedPlugins;
 
     @Provides
-    DeathIndicatorsConfig getConfig(ConfigManager configManager) {
+    DeathIndicatorsConfig getConfig(ConfigManager configManager)
+    {
         return configManager.getConfig(DeathIndicatorsConfig.class);
     }
 
     @Override
-    protected void startUp() {
+    protected void startUp()
+    {
         deadNylos = new ArrayList<>();
         nylos = new ArrayList<>();
         hiddenIndices = new ArrayList<>();
         overlayManager.add(overlay);
         reflectedMethods = new ArrayList<>();
         reflectedPlugins = new ArrayList<>();
-        for (Plugin p : pluginManager.getPlugins()) {
+
+        for (Plugin p : pluginManager.getPlugins())
+        {
             Method m;
 
-            try {
+            try
+            {
                 m = p.getClass().getDeclaredMethod("SocketDeathIntegration", Integer.TYPE);
-            } catch (NoSuchMethodException var5) {
+            }
+            catch (NoSuchMethodException var5)
+            {
                 continue;
             }
 
@@ -102,122 +108,96 @@ public class DeathIndicatorsPlugin extends Plugin {
     }
 
     @Override
-    protected void shutDown() {
+    protected void shutDown()
+    {
         deadNylos = null;
         nylos = null;
         hiddenIndices = null;
-        partySize = -1;
         overlayManager.remove(overlay);
     }
 
     @Subscribe
     public void onNpcSpawned(NpcSpawned event)
     {
-        int smSmallHP = -1;
-        int smBigHP = -1;
-        int bigHP = -1;
-        int smallHP = -1;
-        int maidenHP = -1;
-        if(partySize == 1)
+        if (partySize != -1)
         {
-            bigHP = 16;
-            smallHP = 8;
-            maidenHP = 2625;
-            smSmallHP = 2;
-            smBigHP = 3;
-        }
-        else if(partySize == 2)
-        {
-            bigHP = 16;
-            smallHP = 8;
-            maidenHP = 2625;
-            smSmallHP = 4;
-            smBigHP = 6;
-        }
-        else if(partySize == 3)
-        {
-            bigHP = 16;
-            smallHP = 8;
-            maidenHP = 2625;
-            smSmallHP = 6;
-            smBigHP = 9;
-        }
-        else if(partySize == 4)
-        {
-            bigHP = 19;
-            smallHP = 9;
-            maidenHP = 3062;
-            smSmallHP = 8;
-            smBigHP = 12;
-        }
-        else if(partySize == 5)
-        {
-            bigHP = 22;
-            smallHP = 11;
-            maidenHP = 3500;
-            smSmallHP = 10;
-            smBigHP = 15;
-        }
-        int id = event.getNpc().getId();
-        switch (id)
-        {
-            case NpcID.NYLOCAS_ISCHYROS_8342:
-            case NpcID.NYLOCAS_ISCHYROS_10791: //melee
-            case NpcID.NYLOCAS_TOXOBOLOS_8343:
-            case NpcID.NYLOCAS_TOXOBOLOS_10792: //range
-            case NpcID.NYLOCAS_HAGIOS:
-            case NpcID.NYLOCAS_HAGIOS_10793: //mage
-                nylos.add(new NyloQ(event.getNpc(), 0, smallHP));
-                break;
-            case NpcID.NYLOCAS_ISCHYROS_10774: //Story mode smalls
-            case NpcID.NYLOCAS_TOXOBOLOS_10775:
-            case NpcID.NYLOCAS_HAGIOS_10776:
-                nylos.add(new NyloQ(event.getNpc(), 0, smSmallHP));
-                break;
-            case NpcID.NYLOCAS_ISCHYROS_10777: //Story mode bigs
-            case NpcID.NYLOCAS_TOXOBOLOS_10778:
-            case NpcID.NYLOCAS_HAGIOS_10779:
-                nylos.add(new NyloQ(event.getNpc(), 0, smBigHP));
-                break;
-            case NpcID.NYLOCAS_ISCHYROS_8345:
-            case NpcID.NYLOCAS_ISCHYROS_10794: //melee
-            case NpcID.NYLOCAS_TOXOBOLOS_8346:
-            case NpcID.NYLOCAS_TOXOBOLOS_10795: //range
-            case NpcID.NYLOCAS_HAGIOS_8347:
-            case NpcID.NYLOCAS_HAGIOS_10796: //mage
-            case NpcID.NYLOCAS_ISCHYROS_8351:
-            case NpcID.NYLOCAS_ISCHYROS_10783:
-            case NpcID.NYLOCAS_ISCHYROS_10800: //melee aggro
-            case NpcID.NYLOCAS_TOXOBOLOS_8352:
-            case NpcID.NYLOCAS_TOXOBOLOS_10784:
-            case NpcID.NYLOCAS_TOXOBOLOS_10801: //range aggro
-            case NpcID.NYLOCAS_HAGIOS_8353:
-            case NpcID.NYLOCAS_HAGIOS_10785:
-            case NpcID.NYLOCAS_HAGIOS_10802: //mage aggro
-                nylos.add(new NyloQ(event.getNpc(), 0, bigHP));
-                break;
-            case NpcID.THE_MAIDEN_OF_SUGADINTI:
-            case NpcID.THE_MAIDEN_OF_SUGADINTI_10822:
-                NyloQ maidenTemp = new NyloQ(event.getNpc(), 0, maidenHP);
-                nylos.add(maidenTemp);
-                maidenNPC = maidenTemp;
-        }
+            int bigHP = -1;
+            int smallHP = -1;
+            int maidenHP = -1;
+            if (partySize < 4)
+            {
+                bigHP = 16;
+                smallHP = 8;
+                maidenHP = 2625;
+            }
+            else if (partySize == 4)
+            {
+                bigHP = 19;
+                smallHP = 9;
+                maidenHP = 3062;
+            }
+            else if (partySize == 5)
+            {
+                bigHP = 22;
+                smallHP = 11;
+                maidenHP = 3500;
+            }
 
+            int id = event.getNpc().getId();
+            switch (id)
+            {
+                case 8342:
+                case 8343:
+                case 8344:
+                case 10791:
+                case 10792:
+                case 10793:
+                case 10797:
+                case 10798:
+                case 10799:
+                    nylos.add(new NyloQ(event.getNpc(), 0, smallHP));
+                    break;
+                case 8345:
+                case 8346:
+                case 8347:
+                case 8351:
+                case 8352:
+                case 8353:
+                case 10794:
+                case 10795:
+                case 10796:
+                case 10800:
+                case 10801:
+                case 10802:
+                    nylos.add(new NyloQ(event.getNpc(), 0, bigHP));
+                    break;
+                case NpcID.THE_MAIDEN_OF_SUGADINTI:
+                case NpcID.THE_MAIDEN_OF_SUGADINTI_10822:
+                    NyloQ maidenTemp = new NyloQ(event.getNpc(), 0, maidenHP);
+                    nylos.add(maidenTemp);
+                    maidenNPC = maidenTemp;
+                    break;
+            }
+
+        }
     }
 
-
     @Subscribe
-    public void onNpcDespawned(NpcDespawned event) {
-        if (nylos.size() != 0) {
+    public void onNpcDespawned(NpcDespawned event)
+    {
+        if (nylos.size() != 0)
+        {
             nylos.removeIf((q) -> q.npc.equals(event.getNpc()));
         }
 
-        if (deadNylos.size() != 0) {
+        if (deadNylos.size() != 0)
+        {
             deadNylos.removeIf((q) -> q.equals(event.getNpc()));
         }
 
         int id = event.getNpc().getId();
-        switch (id) {
+        switch (id)
+        {
             case NpcID.THE_MAIDEN_OF_SUGADINTI: //normal mode
             case NpcID.THE_MAIDEN_OF_SUGADINTI_8361:
             case NpcID.THE_MAIDEN_OF_SUGADINTI_8362:
@@ -249,19 +229,24 @@ public class DeathIndicatorsPlugin extends Plugin {
                     e.printStackTrace();
                 }
             }
+
         }
     }
 
-    private boolean inRegion(int... regions) {
-        if (client.getMapRegions() != null) {
+    private boolean inRegion(int... regions)
+    {
+        if (client.getMapRegions() != null)
+        {
             int[] mapRegions = client.getMapRegions();
 
             return Arrays.stream(mapRegions).anyMatch(i -> Arrays.stream(regions).anyMatch(j -> i == j));
         }
+
         return false;
     }
 
-    private void postHit(int index, int dmg) {
+    private void postHit(int index, int dmg)
+    {
         JSONArray data = new JSONArray();
         JSONObject message = new JSONObject();
         message.put("index", index);
@@ -292,7 +277,7 @@ public class DeathIndicatorsPlugin extends Plugin {
                     q = nyloQIterator.next();
                 } while (!hitsplatApplied.getActor().equals(q.npc));
 
-                if (hitsplatApplied.getHitsplat().getHitsplatType().equals(Hitsplat.HitsplatType.HEAL))
+                if (hitsplatApplied.getHitsplat().getHitsplatType().equals(HitsplatType.HEAL))
                 {
                     q.hp += hitsplatApplied.getHitsplat().getAmount();
                 }
@@ -325,12 +310,6 @@ public class DeathIndicatorsPlugin extends Plugin {
                     {
                         q.phase = 3;
                     }
-
-					/*if (config.maidenHPBar() && percent > 0.1D && percent < 1.0D)
-					{
-						client.setVarbitValue(client.getVarps(), 6448, (int) (percent * 1000));
-					}
-					 */
                 }
             }
         }
@@ -396,13 +375,18 @@ public class DeathIndicatorsPlugin extends Plugin {
                             {
                                 setHiddenNpc(q.npc, true);
                                 q.hidden = true;
-                                if (reflectedPlugins.size() == reflectedMethods.size()) {
-                                    for(int i = 0; i < reflectedPlugins.size(); ++i) {
-                                        try {
+                                if (reflectedPlugins.size() == reflectedMethods.size())
+                                {
+                                    for (int i = 0; i < reflectedPlugins.size(); ++i)
+                                    {
+                                        try
+                                        {
                                             Method tm = reflectedMethods.get(i);
                                             tm.setAccessible(true);
                                             tm.invoke(reflectedPlugins.get(i), q.npc.getIndex());
-                                        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | ExceptionInInitializerError | NullPointerException var11) {
+                                        }
+                                        catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | ExceptionInInitializerError | NullPointerException var11)
+                                        {
                                             log.debug("Failed on plugin: " + reflectedPlugins.get(i).getName());
                                         }
                                     }
@@ -419,13 +403,19 @@ public class DeathIndicatorsPlugin extends Plugin {
         }
     }
 
-    private void setHiddenNpc(NPC npc, boolean hidden) {
+    private void setHiddenNpc(NPC npc, boolean hidden)
+    {
+
         List<Integer> newHiddenNpcIndicesList = client.getHiddenNpcIndices();
-        if (hidden) {
+        if (hidden)
+        {
             newHiddenNpcIndicesList.add(npc.getIndex());
             hiddenIndices.add(npc.getIndex());
-        } else {
-            if (newHiddenNpcIndicesList.contains(npc.getIndex())) {
+        }
+        else
+        {
+            if (newHiddenNpcIndicesList.contains(npc.getIndex()))
+            {
                 newHiddenNpcIndicesList.remove((Integer) npc.getIndex());
             }
         }
@@ -446,7 +436,6 @@ public class DeathIndicatorsPlugin extends Plugin {
 
         }
     }
-
 
     private void processXpDrop(int widgetId) throws InterruptedException
     {
@@ -567,19 +556,19 @@ public class DeathIndicatorsPlugin extends Plugin {
     }
 
     /**
-     * should cleanse the XP drop to remove the damage number in parens if the player uses that plugin
+     * should cleanse the XP drop to remove the damage number in parens if the player uses that pluin
      * @param text the xp drop widget text
      * @return the base xp drop
      */
     private String cleanseXpDrop(String text)
     {
-        if(text.contains("<"))
+        if (text.contains("<"))
         {
-            if(text.contains("<img=11>"))
+            if (text.contains("<img=11>"))
             {
                 text = text.substring(9);
             }
-            if(text.contains("<"))
+            if (text.contains("<"))
             {
                 text = text.substring(0, text.indexOf("<"));
             }
@@ -590,7 +579,7 @@ public class DeathIndicatorsPlugin extends Plugin {
     @Subscribe
     public void onGameTick(GameTick event)
     {
-        if (inRegion(13122))
+        if (inRegion(13122, 12613))
         {
             inNylo = true;
             partySize = 0;
@@ -635,15 +624,4 @@ public class DeathIndicatorsPlugin extends Plugin {
             }
         }
     }
-
-    /*@Subscribe
-    private void onClientTick(ClientTick event)
-    {
-        if (client.isMirrored() && !mirrorMode) {
-            overlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(overlay);
-            overlayManager.add(overlay);
-            mirrorMode = true;
-        }
-    }*/
 }

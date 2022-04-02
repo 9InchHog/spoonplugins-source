@@ -31,9 +31,9 @@ public class BloatOverlay extends RoomOverlay {
         if(bloat.isBloatActive()) {
             if (config.bloatIndicator() != SpoonTobConfig.BloatIndicatorMode.OFF) {
                 if (config.bloatIndicator() == SpoonTobConfig.BloatIndicatorMode.TILE) {
-                    renderNpcOverlay(graphics, bloat.getBloatNPC(), bloat.getBloatStateColor(), 3, 150, 0);
+                    renderNpcPoly(graphics, bloat.getBloatStateColor(), bloat.getBloatTilePoly(), 3, bloat.getBloatStateColor().getAlpha());
                 } else if (config.bloatIndicator() == SpoonTobConfig.BloatIndicatorMode.TRUE_LOCATION) {
-                    renderNpcTLOverlay(graphics, bloat.getBloatNPC(), bloat.getBloatStateColor(), 3, 150, 0);
+                    renderNpcTLOverlay(graphics, bloat.getBloatNPC(), bloat.getBloatStateColor(), 3, bloat.getBloatStateColor().getAlpha(), 0);
                 }
             }
 
@@ -67,7 +67,7 @@ public class BloatOverlay extends RoomOverlay {
             if (bloat.bloatVar == 1) {
                 if (config.bloatUpTimer() && bloat != null) {
                     Point canvasPoint = bloat.getBloatNPC().getCanvasTextLocation(graphics, String.valueOf(bloat.getBloatUpTimer()), 60);
-                    if (bloat.getBloatState() != 1) {
+                    if (bloat.getBloatState() != 1 && bloat.getBloatState() != 4) {
                         String str = String.valueOf(33 - bloat.getBloatDownCount());
                         if (bloat.getBloatDownCount() >= 26) {
                             if (config.fontStyle()) {

@@ -62,11 +62,6 @@ public class Bloat extends Room {
     public int handTicks = 4;
     public boolean handsFalling = false;
 
-    private Angle bloatOrientation = null;
-    private LocalPoint bloatPrevLoc = null;
-    private LocalPoint bloatPrevLoc2 = null;
-    private String bloatDirection = "";
-
     private static Clip clip;
 
     private boolean mirrorMode;
@@ -102,10 +97,6 @@ public class Bloat extends Room {
         bloatDown = null;
         handTicks = 4;
         handsFalling = false;
-        bloatOrientation = null;
-        bloatPrevLoc = null;
-        bloatPrevLoc2 = null;
-        bloatDirection = "";
     }
 
     @Subscribe
@@ -126,6 +117,17 @@ public class Bloat extends Room {
             bloatNPC = null;
             bloatUpTimer = 0;
         }
+    }
+
+    @Subscribe
+    public void onAnimationChanged(AnimationChanged event)
+    {
+        if (client.getGameState() != GameState.LOGGED_IN || event.getActor() != bloatNPC)
+        {
+            return;
+        }
+
+        bloatUpTimer = 0;
     }
 
     @Subscribe
@@ -267,151 +269,147 @@ public class Bloat extends Room {
                     handsFalling = false;
                 }
             }
+            bloatDownCount++;
+            bloatUpTimer++;
 
-            ++bloatDownCount;
-            bloathands.values().removeIf((v) -> v <= 0);
+            bloathands.values().removeIf(v -> v <= 0);
             bloathands.replaceAll((k, v) -> v - 1);
 
-            if(bloatActive && bloatNPC != null && config.bloatReverseNotifier() != SpoonTobConfig.bloatTurnMode.OFF){
-                LocalPoint lp = LocalPoint.fromWorld(client, bloatNPC.getWorldLocation());
-                if (bloatPrevLoc != null) {
-                    boolean changed = false;
-                    if (lp.getX() > bloatPrevLoc.getX()) {
-                        if (bloatDirection.equals("W")) {
-                            changed = true;
-                        }
-                        bloatDirection = "E";
-                    } else if (lp.getX() < bloatPrevLoc.getX()) {
-                        if (bloatDirection.equals("E")) {
-                            changed = true;
-                        }
-                        bloatDirection = "W";
-                    } else if (lp.getY() > bloatPrevLoc.getY()) {
-                        if (bloatDirection.equals("S")) {
-                            changed = true;
-                        }
-                        bloatDirection = "N";
-                    } else if (lp.getY() < bloatPrevLoc.getY()) {
-                        if (bloatDirection.equals("N")) {
-                            changed = true;
-                        }
-                        bloatDirection = "S";
-                    }
-
-                    if (changed) {
-                        if (config.bloatReverseNotifier() == SpoonTobConfig.bloatTurnMode.SOUND) {
-                            client.playSoundEffect(98, config.reverseVolume());
-                        } else {
-                            clip.setFramePosition(0);
-                            clip.start();
-                        }
-                    }
-                }
-                bloatPrevLoc = lp;
-            }
-
-            if (bloatNPC.getAnimation() == -1) {
+            if (bloatNPC.getAnimation() == -1) // 1 = UP, 2 = DOWN, 3 = WARN, 4 = PAST THRESHOLD;
+            {
                 bloatDownCount = 0;
-                ++bloatUpTimer;
-                if (bloatNPC.getHealthScale() == 0) {
+                if (bloatNPC.getHealthScale() == 0)
+                {
                     bloatState = 2;
-                    bloatDown = null;
-                } else {
+                }
+                else if (bloatUpTimer >= 38)
+                {
+                    bloatState = 4;
+                }
+                else
+                {
                     bloatState = 1;
                 }
-            } else if (25 < bloatDownCount && bloatDownCount < 35) {
-                bloatState = 3;
-                WorldPoint sw = bloatNPC.getWorldLocation();
-                Direction dir = (new Angle(bloatNPC.getOrientation())).getNearestDirection();
-                Supplier<BloatChunk> chunk = () -> {
-                    LocalPoint lp = LocalPoint.fromWorld(client, sw);
-                    if (lp != null && client.isInInstancedRegion()) {
-                        int zone = client.getInstanceTemplateChunks()[0][lp.getSceneX() >> 3][lp.getSceneY() >> 3];
-                        return BloatChunk.getOccupiedChunk(zone);
-                    } else {
-                        return BloatChunk.UNKNOWN;
+            }
+            else
+            {
+                if (bloatUpTimer >= 38)
+                {
+                    bloatState = 4;
+                }
+                else if (25 < bloatDownCount && bloatDownCount < 35)
+                {
+                    bloatState = 3;
+                }
+                else if (bloatDownCount < 26)
+                {
+                    bloatState = 2;
+                }
+                else if (bloatNPC.getModelHeight() == 568)
+                {
+                    bloatState = 2;
+                }
+                else
+                {
+                    if (bloatUpTimer >= 38)
+                    {
+                        bloatState = 4;
                     }
-                };
-                bloatDown = new BloatDown(client, sw, dir, chunk.get());
-            } else if (bloatDownCount < 26) {
-                bloatUpTimer = 0;
-                bloatState = 2;
-                WorldPoint sw = bloatNPC.getWorldLocation();
-                Direction dir = (new Angle(bloatNPC.getOrientation())).getNearestDirection();
-                Supplier<BloatChunk> chunk = () -> {
-                    LocalPoint lp = LocalPoint.fromWorld(client, sw);
-                    if (lp != null && client.isInInstancedRegion()) {
-                        int zone = client.getInstanceTemplateChunks()[0][lp.getSceneX() >> 3][lp.getSceneY() >> 3];
-                        return BloatChunk.getOccupiedChunk(zone);
-                    } else {
-                        return BloatChunk.UNKNOWN;
+                    else
+                    {
+                        bloatState = 1;
                     }
-                };
-                bloatDown = new BloatDown(client, sw, dir, chunk.get());
-            } else if (bloatNPC.getModelHeight() == 568) {
-                bloatUpTimer = 0;
-                bloatState = 2;
-                WorldPoint sw = bloatNPC.getWorldLocation();
-                Direction dir = (new Angle(bloatNPC.getOrientation())).getNearestDirection();
-                Supplier<BloatChunk> chunk = () -> {
-                    LocalPoint lp = LocalPoint.fromWorld(client, sw);
-                    if (lp != null && client.isInInstancedRegion()) {
-                        int zone = client.getInstanceTemplateChunks()[0][lp.getSceneX() >> 3][lp.getSceneY() >> 3];
-                        return BloatChunk.getOccupiedChunk(zone);
-                    } else {
-                        return BloatChunk.UNKNOWN;
-                    }
-                };
-                bloatDown = new BloatDown(client, sw, dir, chunk.get());
-            } else {
-                bloatState = 1;
+                }
+            }
+
+            if (bloatNPC != null)
+            {
+                if (bloatNPC.getAnimation() == -1 && bloatDown != null)
+                {
+                    //log.debug("Nulling the old 'Bloat Down'");
+                    bloatDown = null;
+                }
+                else if (bloatNPC.getAnimation() != -1 && bloatDown == null && !bloatNPC.isDead())
+                {
+                    //log.debug("Building a new 'Bloat Down'");
+                    WorldPoint sw = bloatNPC.getWorldLocation();
+                    Direction dir = (new Angle(bloatNPC.getOrientation())).getNearestDirection();
+                    Supplier<BloatChunk> chunk = () -> {
+                        LocalPoint lp = LocalPoint.fromWorld(client, sw);
+                        if (lp != null && client.isInInstancedRegion())
+                        {
+                            int zone = client.getInstanceTemplateChunks()[0][lp.getSceneX() >> 3][lp.getSceneY() >> 3];
+                            return BloatChunk.getOccupiedChunk(zone);
+                        }
+                        else
+                        {
+                            return BloatChunk.UNKNOWN;
+                        }
+                    };
+                    bloatDown = new BloatDown(client, sw, dir, chunk.get());
+                }
             }
         }
     }
 
-    Polygon getBloatTilePoly() {
-        if (bloatNPC == null) {
+    Polygon getBloatTilePoly()
+    {
+        if (bloatNPC == null)
+        {
             return null;
-        } else {
-            int size = 1;
-            NPCComposition composition = bloatNPC.getTransformedComposition();
-            if (composition != null) {
-                size = composition.getSize();
-            }
-
-            LocalPoint lp = null;
-            switch(bloatState) {
-                case 1:
-                    lp = bloatNPC.getLocalLocation();
-                    if (lp == null) {
-                        return null;
-                    }
-
-                    return RoomOverlay.getCanvasTileAreaPoly(client, lp, size, true);
-                case 2:
-                case 3:
-                    lp = LocalPoint.fromWorld(client, bloatNPC.getWorldLocation());
-                    if (lp == null) {
-                        return null;
-                    }
-
-                    return RoomOverlay.getCanvasTileAreaPoly(client, lp, size, false);
-                default:
-                    return null;
-            }
         }
+
+        int size = 1;
+        NPCComposition composition = bloatNPC.getTransformedComposition();
+        if (composition != null)
+        {
+            size = composition.getSize();
+        }
+
+        LocalPoint lp;
+
+        switch (bloatState)
+        {
+            case 1:
+            case 4:
+                lp = bloatNPC.getLocalLocation();
+
+                if (lp == null)
+                {
+                    return null;
+                }
+
+                return RoomOverlay.getCanvasTileAreaPoly(client, lp, size, true);
+            case 2:
+            case 3:
+                lp = LocalPoint.fromWorld(client, bloatNPC.getWorldLocation());
+
+                if (lp == null)
+                {
+                    return null;
+                }
+
+                return RoomOverlay.getCanvasTileAreaPoly(client, lp, size, false);
+        }
+
+        return null;
     }
 
-    Color getBloatStateColor() {
-        Color col = new Color(223, 109, 255);
-        switch(bloatState) {
+    Color getBloatStateColor()
+    {
+        Color col = config.bloatIndicatorColorUP();
+        switch (bloatState)
+        {
             case 2:
-                col = Color.GREEN;
+                col = config.bloatIndicatorColorDOWN();
                 break;
             case 3:
-                col = Color.YELLOW;
+                col = config.bloatIndicatorColorWARN();
+                break;
+            case 4:
+                col = config.bloatIndicatorColorTHRESH();
+                break;
         }
-
         return col;
     }
 
