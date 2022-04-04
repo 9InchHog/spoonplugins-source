@@ -63,6 +63,8 @@ public class Bloat extends Room {
     public boolean handsFalling = false;
 
     private static Clip clip;
+    private LocalPoint bloatPrevLoc = null;
+    private String bloatDirection = "";
 
     private boolean mirrorMode;
 
@@ -97,6 +99,8 @@ public class Bloat extends Room {
         bloatDown = null;
         handTicks = 4;
         handsFalling = false;
+        bloatPrevLoc = null;
+        bloatDirection = "";
     }
 
     @Subscribe
@@ -348,6 +352,44 @@ public class Bloat extends Room {
                     };
                     bloatDown = new BloatDown(client, sw, dir, chunk.get());
                 }
+            }
+
+            if(bloatActive && bloatNPC != null && config.bloatReverseNotifier() != SpoonTobConfig.bloatTurnMode.OFF){
+                LocalPoint lp = LocalPoint.fromWorld(client, bloatNPC.getWorldLocation());
+                if (bloatPrevLoc != null && lp != null) {
+                    boolean changed = false;
+                    if (lp.getX() > bloatPrevLoc.getX()) {
+                        if (bloatDirection.equals("W")) {
+                            changed = true;
+                        }
+                        bloatDirection = "E";
+                    } else if (lp.getX() < bloatPrevLoc.getX()) {
+                        if (bloatDirection.equals("E")) {
+                            changed = true;
+                        }
+                        bloatDirection = "W";
+                    } else if (lp.getY() > bloatPrevLoc.getY()) {
+                        if (bloatDirection.equals("S")) {
+                            changed = true;
+                        }
+                        bloatDirection = "N";
+                    } else if (lp.getY() < bloatPrevLoc.getY()) {
+                        if (bloatDirection.equals("N")) {
+                            changed = true;
+                        }
+                        bloatDirection = "S";
+                    }
+
+                    if (changed) {
+                        if (config.bloatReverseNotifier() == SpoonTobConfig.bloatTurnMode.SOUND) {
+                            client.playSoundEffect(98, config.reverseVolume());
+                        } else {
+                            clip.setFramePosition(0);
+                            clip.start();
+                        }
+                    }
+                }
+                bloatPrevLoc = lp;
             }
         }
     }

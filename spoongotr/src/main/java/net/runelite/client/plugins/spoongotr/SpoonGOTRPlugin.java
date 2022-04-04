@@ -171,12 +171,14 @@ public class SpoonGOTRPlugin extends Plugin {
 				portalTicks = 45;
 				ticksSincePortal = 0;
 			}
+			client.setHintArrow(event.getGameObject().getWorldLocation());
 		} else if ((event.getGameObject().getId() >= 34760 && event.getGameObject().getId() <= 34770) || event.getGameObject().getId() == 43479) {
 			guardians.clear();
 			hugePortal = null;
 			unchargedCellTable = null;
 			eleGuardian = null;
 			cataGuardian = null;
+			client.clearHintArrow();
 		} else if (event.getGameObject().getId() == 43732) {
 			unchargedCellTable = event.getGameObject();
 		} else if (event.getGameObject().getId() == 43722) {
@@ -192,6 +194,7 @@ public class SpoonGOTRPlugin extends Plugin {
 			portalTicks--;
 			if(portalTicks <= 0) {
 				hugePortal = null;
+				client.clearHintArrow();
 			}
 		}
 
@@ -207,7 +210,7 @@ public class SpoonGOTRPlugin extends Plugin {
 			ticksSincePortal++;
 			if (client.getWidget(48889885) != null)
 				guardianWidgetText = Objects.requireNonNull(client.getWidget(48889885)).getText();
-			if (config.guardiansOfTheRave() == SpoonGOTRConfig.RaveMode.RAVEST || config.guardiansOfTheRave() == SpoonGOTRConfig.RaveMode.HELP) {
+			if (hugePortal == null && (config.guardiansOfTheRave() == SpoonGOTRConfig.RaveMode.RAVEST || config.guardiansOfTheRave() == SpoonGOTRConfig.RaveMode.HELP)) {
 				client.setHintArrow(guardians.get(rngGuardianNum).getWorldLocation());
 			}
 		} else {
@@ -217,7 +220,7 @@ public class SpoonGOTRPlugin extends Plugin {
 
 		int ticksTillPortal = portalsSpawned > 0 ? 225 - ticksSincePortal : 256 - ticksSincePortal;
 		if (ticksTillPortal <= 0 && portalTicks == 0 && hugePortal == null
-				&& client.getWidget(48889883) != null && !Objects.requireNonNull(client.getWidget(48889883)).getText().equals("")) {
+				&& client.getWidget(48889884) != null && !Objects.requireNonNull(client.getWidget(48889884)).getText().equals("")) {
 			portalTicks = 45;
 			ticksSincePortal = 0;
 		}

@@ -1,11 +1,8 @@
 package net.runelite.client.plugins.spoongotr;
 
 import net.runelite.api.Client;
-import net.runelite.api.Varbits;
-import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.components.LineComponent;
 
 import javax.inject.Inject;

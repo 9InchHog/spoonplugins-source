@@ -6,13 +6,10 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.overlay.*;
-import net.runelite.client.util.ImageUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.util.Random;
 
 @Singleton
 class SpoonGOTROverlay extends Overlay {
@@ -60,6 +57,22 @@ class SpoonGOTROverlay extends Overlay {
 					OverlayUtil.renderTextLocation(graphics, textLoc, text, Color.WHITE);
 				}
 				graphics.setFont(oldFont);
+
+				if (config.guardiansOfTheRave() != SpoonGOTRConfig.RaveMode.OFF) {
+					WorldPoint wp = plugin.hugePortal.getWorldLocation();
+					int index = 0;
+					for (int y=-1; y>=-10; y--) {
+						int startX = y >= -5 ? y + 1 : -2;
+						int endX = y >= -5 ? Math.abs(y) : 3;
+
+						for (int x=startX; x<endX; x++) {
+							WorldPoint w = new WorldPoint(wp.getX() + x, wp.getY() - y, client.getPlane());
+							drawRaveArrowTile(graphics, plugin.guardianColors.get(index), w);
+							index++;
+						}
+						index++;
+					}
+				}
 			}
 
 			if (config.bigGuyOverlay() && plugin.bigGuy != null && plugin.hasGuardianStone && plugin.bigGuy.getConvexHull() != null) {
@@ -138,6 +151,20 @@ class SpoonGOTROverlay extends Overlay {
 				index++;
 			}
 			index++;
+		}
+	}
+
+	private void drawRaveArrowTile(Graphics2D graphics, Color color, WorldPoint wp) {
+		LocalPoint lp = LocalPoint.fromWorld(client, wp);
+		if (lp != null) {
+			Polygon poly = Perspective.getCanvasTilePoly(client, lp);
+			if (poly != null) {
+				graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 100));
+				graphics.setStroke(new BasicStroke(2));
+				graphics.draw(poly);
+				graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 100));
+				graphics.fill(poly);
+			}
 		}
 	}
 }
