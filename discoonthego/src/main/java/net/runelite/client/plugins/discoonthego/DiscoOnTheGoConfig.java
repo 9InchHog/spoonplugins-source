@@ -9,7 +9,7 @@ public interface DiscoOnTheGoConfig extends Config {
     @ConfigItem(keyName = "disco", name = "Disco Floor", description = "Bust a move")
     default boolean disco() { return true; }
 
-    @Range(min = 1, max = 30)
+    @Range(min = 1, max = 50)
     @ConfigItem(keyName = "discoSize", name = "Disco Radius", description = "Adjusts the size of the disco floor (tiles out from your player)")
     default int discoSize() { return 4; }
 
