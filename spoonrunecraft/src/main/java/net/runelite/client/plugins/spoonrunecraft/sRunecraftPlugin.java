@@ -233,6 +233,7 @@ public class sRunecraftPlugin extends Plugin {
 			pouchNames.add("medium pouch");
 			pouchNames.add("large pouch");
 			pouchNames.add("giant pouch");
+			pouchNames.add("colossal pouch");
 			if (pouchNames.contains(target)) {
 				ArrayList<String> options = new ArrayList<>();
 				options.add("fill");
@@ -398,7 +399,7 @@ public class sRunecraftPlugin extends Plugin {
 		return this.darkMage;
 	}
 
-	private static final List<Integer> DEGRADED_POUCHES = (List<Integer>)ImmutableList.of(Integer.valueOf(5511), Integer.valueOf(5513), Integer.valueOf(5515));
+	private static final List<Integer> DEGRADED_POUCHES = (List<Integer>)ImmutableList.of(Integer.valueOf(5511), Integer.valueOf(5513), Integer.valueOf(5515), Integer.valueOf(26786));
 
 	private boolean hotKeyPressed;
 
