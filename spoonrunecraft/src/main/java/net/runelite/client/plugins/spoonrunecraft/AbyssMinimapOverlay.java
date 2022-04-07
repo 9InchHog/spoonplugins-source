@@ -41,31 +41,50 @@ class AbyssMinimapOverlay extends Overlay {
 		this.itemManager = itemManager;
 	}
 
-	public Dimension render(Graphics2D graphics) {
-		if (!this.config.showRifts())
+	@Override
+	public Dimension render(Graphics2D graphics)
+	{
+		if (!config.showRifts())
+		{
 			return null;
-		for (DecorativeObject object : this.plugin.getAbyssObjects()) {
-			AbyssRifts rift = AbyssRifts.getRift(object.getId());
-			if (rift == null)
-				continue;
-			BufferedImage image = getImage(rift);
-			Point miniMapImage = Perspective.getMiniMapImageLocation(this.client, object.getLocalLocation(), image);
-			if (miniMapImage != null)
-				graphics.drawImage(image, miniMapImage.getX(), miniMapImage.getY(), (ImageObserver)null);
 		}
+
+		for (DecorativeObject object : plugin.getAbyssObjects())
+		{
+			AbyssRifts rift = AbyssRifts.getRift(object.getId());
+			if (rift == null || !rift.getConfigEnabled().test(config))
+			{
+				continue;
+			}
+
+			BufferedImage image = getImage(rift);
+			Point miniMapImage = Perspective.getMiniMapImageLocation(client, object.getLocalLocation(), image);
+
+			if (miniMapImage != null)
+			{
+				graphics.drawImage(image, miniMapImage.getX(), miniMapImage.getY(), null);
+			}
+		}
+
 		return null;
 	}
 
-	private BufferedImage getImage(AbyssRifts rift) {
-		BufferedImage image = this.abyssIcons.get(rift);
+	private BufferedImage getImage(AbyssRifts rift)
+	{
+		BufferedImage image = abyssIcons.get(rift);
 		if (image != null)
+		{
 			return image;
-		AsyncBufferedImage asyncBufferedImage = this.itemManager.getImage(rift.getItemId());
-		BufferedImage resizedImage = new BufferedImage(IMAGE_SIZE.width, IMAGE_SIZE.height, 2);
+		}
+
+		// Since item image is too big, we must resize it first.
+		image = itemManager.getImage(rift.getItemId());
+		BufferedImage resizedImage = new BufferedImage(IMAGE_SIZE.width, IMAGE_SIZE.height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = resizedImage.createGraphics();
-		g.drawImage((Image)asyncBufferedImage, 0, 0, IMAGE_SIZE.width, IMAGE_SIZE.height, null);
+		g.drawImage(image, 0, 0, IMAGE_SIZE.width, IMAGE_SIZE.height, null);
 		g.dispose();
-		this.abyssIcons.put(rift, resizedImage);
+
+		abyssIcons.put(rift, resizedImage);
 		return resizedImage;
 	}
 }
