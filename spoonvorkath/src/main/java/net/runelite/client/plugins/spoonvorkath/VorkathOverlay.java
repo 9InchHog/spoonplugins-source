@@ -1,6 +1,7 @@
 package net.runelite.client.plugins.spoonvorkath;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
@@ -8,10 +9,7 @@ import net.runelite.api.NPCComposition;
 import net.runelite.api.Perspective;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
-import net.runelite.client.ui.overlay.Overlay;
-import net.runelite.client.ui.overlay.OverlayLayer;
-import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayPriority;
+import net.runelite.client.ui.overlay.*;
 
 public class VorkathOverlay extends Overlay {
     private final Client client;
@@ -31,10 +29,8 @@ public class VorkathOverlay extends Overlay {
     }
 
     public Dimension render(Graphics2D graphics) {
-        if (!this.plugin.isVorkathInstance())
-            return null;
-        if (this.plugin.getVorkathNpc() != null)
-            if (this.plugin.getVorkathNpc().getId() == 8061 && this.plugin.getAttacksLeft() >= 0) {
+        if (this.plugin.isVorkathInstance()) {
+            if (this.plugin.getVorkathNpc() != null && this.plugin.getVorkathNpc().getId() == 8061 && this.plugin.getAttacksLeft() >= 0) {
                 if (this.config.phaseAttackCounter()) {
                     String specialAttackCounter = (this.plugin.getAttacksLeft() > 0) ? Integer.toString(this.plugin.getAttacksLeft()) : "NOW!";
                     Color specialAttackColor = Color.WHITE;
@@ -63,6 +59,11 @@ public class VorkathOverlay extends Overlay {
                     renderNpcOverlay(graphics, npc, this.config.zombifiedSpawnColor(), 1, 150, 50);
                 }
             }
+
+            if (config.vorkathDimmer() > 0) {
+                dimmerOverlay(graphics, new Color(0, 0, 0, config.vorkathDimmer()), client.getCanvas().getBounds());
+            }
+        }
         return null;
     }
 
@@ -99,5 +100,10 @@ public class VorkathOverlay extends Overlay {
                 graphics.fill(tilePoly);
             }
         }
+    }
+
+    private void dimmerOverlay (Graphics2D graphics, Color color, Shape shape) {
+        graphics.setColor(color);
+        graphics.fill(shape);
     }
 }

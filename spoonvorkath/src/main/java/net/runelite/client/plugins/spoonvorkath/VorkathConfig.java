@@ -4,6 +4,7 @@ import java.awt.Color;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Range;
 
 @ConfigGroup("spoonvorkath")
 public interface VorkathConfig extends Config {
@@ -43,5 +44,17 @@ public interface VorkathConfig extends Config {
     default boolean afkNotifier()
     {
         return false;
+    }
+
+    @Range(min = 0, max = 255)
+    @ConfigItem(
+            position = 5,
+            keyName = "vorkathDimmer",
+            name = "Vorkath Dimmer",
+            description = "Saves your eyes while hard grinding. Does nothing if 0"
+    )
+    default int vorkathDimmer()
+    {
+        return 0;
     }
 }

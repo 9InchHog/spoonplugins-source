@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 
 @Extension
 @PluginDescriptor(
@@ -110,13 +111,7 @@ public class VorkathPlugin extends Plugin {
 
     @Subscribe
     private void onGameTick(GameTick event) {
-        int[] loadedRegions = this.client.getMapRegions();
-        for (int region : loadedRegions) {
-            if (region == 9023)
-                this.vorkathInstance = true;
-        }
-        if (!this.vorkathInstance)
-            return;
+        vorkathInstance = Arrays.stream(client.getMapRegions()).anyMatch(region -> region == 9023);
     }
 
     @Subscribe

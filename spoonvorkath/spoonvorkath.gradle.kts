@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.4"
+version = "1.0.5"
 
 project.extra["PluginName"] = "Spoon Vorkath"
 project.extra["PluginDescription"] = "Helpful plugin for vorkath. Made by Tyler"
