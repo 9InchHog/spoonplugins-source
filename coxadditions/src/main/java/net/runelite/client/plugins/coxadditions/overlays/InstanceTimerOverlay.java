@@ -28,7 +28,7 @@ public class InstanceTimerOverlay extends OverlayPanel {
 
     public Dimension render(Graphics2D graphics) {
         this.panelComponent.getChildren().clear();
-        if(this.config.instanceTimer() == CoxAdditionsConfig.instanceTimerMode.INFOBOX  && this.plugin.isInstanceTimerRunning && this.client.getVar(Varbits.IN_RAID) == 1) {
+        if(this.config.instanceTimer() == CoxAdditionsConfig.instanceTimerMode.INFOBOX  && this.plugin.isInstanceTimerRunning && this.client.getVarbitValue(Varbits.IN_RAID) == 1) {
             this.panelComponent.setPreferredSize(new Dimension(graphics.getFontMetrics().stringWidth("Tick:   ") + 15, 0));
             this.panelComponent.getChildren().add(LineComponent.builder()
                     .left("Tick: ")

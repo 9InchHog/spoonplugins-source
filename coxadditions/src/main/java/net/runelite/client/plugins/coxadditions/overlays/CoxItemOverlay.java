@@ -35,7 +35,7 @@ public class CoxItemOverlay extends WidgetItemOverlay {
     }
 
     public void renderItemOverlay(Graphics2D graphics, int itemId, WidgetItem itemWidget) {
-        if(this.client.getVar(Varbits.IN_RAID) == 1) {
+        if(this.client.getVarbitValue(Varbits.IN_RAID) == 1) {
             if(config.highlightChest() != CoxAdditionsConfig.HighlightChestMode.OFF) {
                 if (!this.config.highlightChestItems().equals("") && plugin.chestHighlightIdList.size() > 0) {
                     if (plugin.chestHighlightIdList.contains(itemId)) {

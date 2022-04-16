@@ -116,7 +116,7 @@ public class SpoonSceneReloader extends Plugin implements KeyListener {
     @Subscribe
     public void onGameTick(GameTick event)
     {
-        boolean isInRaid = client.getVar(Varbits.IN_RAID) == 1;
+        boolean isInRaid = client.getVarbitValue(Varbits.IN_RAID) == 1;
         boolean inRaidLobby = (client.getLocalPlayer().getWorldLocation().getRegionID() == RAIDS_LOBBY_REGION);
         boolean inParty = client.getVar(VarPlayer.IN_RAID_PARTY) != -1;
         boolean raidsOnly = isInRaid | inRaidLobby | inParty;
@@ -168,6 +168,6 @@ public class SpoonSceneReloader extends Plugin implements KeyListener {
 
     @Subscribe
     public void onVarbitChanged(VarbitChanged event) {
-        inRaid = client.getVar(Varbits.IN_RAID) == 1;
+        inRaid = client.getVarbitValue(Varbits.IN_RAID) == 1;
     }
 }

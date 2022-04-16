@@ -184,7 +184,7 @@ public class RaidScouterExtPlugin extends Plugin {
     {
         this.clientThread.invokeLater(this::checkRaidPresence);
 
-        inRaidChambers = client.getVar(Varbits.IN_RAID) == 1;
+        inRaidChambers = client.getVarbitValue(Varbits.IN_RAID) == 1;
         if(!inRaidChambers){
             reset();
         }
@@ -442,9 +442,9 @@ public class RaidScouterExtPlugin extends Plugin {
             return;
         }
 
-        int tempRaidState = client.getVar(Varbits.RAID_STATE);
+        int tempRaidState = client.getVarbitValue(Varbits.RAID_STATE);
         int tempPartyID = client.getVar(VarPlayer.IN_RAID_PARTY);
-        boolean tempInRaid = client.getVar(Varbits.IN_RAID) == 1;
+        boolean tempInRaid = client.getVarbitValue(Varbits.IN_RAID) == 1;
 
         // if the player's party state has changed
         if (tempPartyID != raidPartyID)
@@ -477,9 +477,9 @@ public class RaidScouterExtPlugin extends Plugin {
                 raidTime = timeToSeconds(getTime());
 
                 if (config.ptsHr()) {
-                    int totalPoints = client.getVar(Varbits.TOTAL_POINTS);
-                    int personalPoints = client.getVar(Varbits.PERSONAL_POINTS);
-                    int partySize = client.getVar(Varbits.RAID_PARTY_SIZE);
+                    int totalPoints = client.getVarbitValue(Varbits.TOTAL_POINTS);
+                    int personalPoints = client.getVarbitValue(Varbits.PERSONAL_POINTS);
+                    int partySize = client.getVarbitValue(Varbits.RAID_PARTY_SIZE);
 
                     double percentage = personalPoints / (totalPoints / 100.0);
 

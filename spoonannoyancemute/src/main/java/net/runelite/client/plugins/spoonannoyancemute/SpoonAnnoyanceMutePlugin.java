@@ -113,7 +113,7 @@ public class SpoonAnnoyanceMutePlugin extends Plugin {
                 event.consume();
             }
         } else if (source == null) {
-            if (shouldMute(id) && (id != SoundEffectID.PET_WALKING_THUMP || client.getVar(Varbits.IN_RAID) != 1)) {
+            if (shouldMute(id) && (id != SoundEffectID.PET_WALKING_THUMP || client.getVarbitValue(Varbits.IN_RAID) != 1)) {
                 event.consume();
             }
             if(config.debug()) {

@@ -44,7 +44,7 @@ public class SpoonNexPrayerBox extends Overlay {
             if (plugin.nex.phase == 2) {
                 prayComponent.setImage(spriteManager.getSprite(128, 0));
                 prayer = Prayer.PROTECT_FROM_MISSILES;
-            } else if (plugin.nex.phase == 5 && plugin.nex.npc != null && plugin.nex.npc.getInteracting().getName() != null && client.getLocalPlayer() != null
+            } else if (plugin.nex.phase == 5 && plugin.nex.npc != null && plugin.nex.npc.getInteracting() != null && plugin.nex.npc.getInteracting().getName() != null && client.getLocalPlayer() != null
                     && plugin.nex.npc.getInteracting().getName().equals(client.getLocalPlayer().getName()) && plugin.nex.npc.getLocalLocation().distanceTo(client.getLocalPlayer().getLocalLocation()) <= 1) {
                 prayComponent.setImage(spriteManager.getSprite(129, 0));
                 prayer = Prayer.PROTECT_FROM_MELEE;

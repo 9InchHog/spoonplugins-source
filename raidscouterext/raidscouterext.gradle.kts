@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.1"
+version = "1.0.2"
 
 project.extra["PluginName"] = "Raid Scouter Extended"
 project.extra["PluginDescription"] = "Additional features for Cox scouting"

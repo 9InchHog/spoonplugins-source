@@ -71,7 +71,7 @@ public class AoeOverlay extends Overlay {
 		if(this.client.getLocalPlayer() != null) {
 			WorldPoint lp = client.getLocalPlayer().getWorldLocation();
 
-			if (client.getVar(Varbits.IN_RAID) == 1) {
+			if (client.getVarbitValue(Varbits.IN_RAID) == 1) {
 				plugin.getLightningTrail().forEach(o -> {
 					if (config.raveHighlights() != AoeConfig.raveMode.OFF) {
 						if (config.raveHighlights() == AoeConfig.raveMode.RAVE) {
@@ -143,7 +143,7 @@ public class AoeOverlay extends Overlay {
 				}
 
 				if (proj.getProjectile().getId() == ProjectileID.ICE_DEMON_ICE_BARRAGE_AOE || proj.getProjectile().getId() == ProjectileID.TEKTON_METEOR_AOE) {
-					if (client.getVar(Varbits.IN_RAID) == 0) {
+					if (client.getVarbitValue(Varbits.IN_RAID) == 0) {
 						return;
 					}
 				}

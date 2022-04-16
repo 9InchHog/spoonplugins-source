@@ -24,7 +24,7 @@ public class OlmPhasePanel extends OverlayPanel {
 
     public Dimension render(Graphics2D graphics) {
         this.panelComponent.getChildren().clear();
-        if(config.olmPhasePanel() && this.client.getVar(Varbits.IN_RAID) == 1 && !plugin.olmPhase.equals("")) {
+        if(config.olmPhasePanel() && this.client.getVarbitValue(Varbits.IN_RAID) == 1 && !plugin.olmPhase.equals("")) {
             Color color = plugin.olmPhase.equals("Acid") ? Color.GREEN : plugin.olmPhase.equals("Flame") ? Color.RED : Color.MAGENTA;
             this.panelComponent.setPreferredSize(new Dimension(graphics.getFontMetrics().stringWidth(plugin.olmPhase) + 3, 0));
             this.panelComponent.getChildren().add(TitleComponent.builder()

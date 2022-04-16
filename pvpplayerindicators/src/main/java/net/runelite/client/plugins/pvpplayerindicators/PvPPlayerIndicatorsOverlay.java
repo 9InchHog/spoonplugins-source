@@ -211,6 +211,6 @@ public class PvPPlayerIndicatorsOverlay extends Overlay
 	}
 
 	private boolean checkWildy() {
-		return (this.client.getVar(Varbits.IN_WILDERNESS) == 1 || WorldType.isPvpWorld(this.client.getWorldType()));
+		return (this.client.getVarbitValue(Varbits.IN_WILDERNESS) == 1 || WorldType.isPvpWorld(this.client.getWorldType()));
 	}
 }

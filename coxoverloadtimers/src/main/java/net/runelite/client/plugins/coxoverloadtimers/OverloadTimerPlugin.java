@@ -95,6 +95,6 @@ public class OverloadTimerPlugin extends Plugin {
     }
 
     private int getRaidVarbitValue() {
-        return this.client.getVar(Varbits.IN_RAID);
+        return this.client.getVarbitValue(Varbits.IN_RAID);
     }
 }

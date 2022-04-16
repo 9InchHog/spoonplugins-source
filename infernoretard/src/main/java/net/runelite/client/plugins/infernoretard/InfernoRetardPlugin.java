@@ -82,7 +82,7 @@ public class InfernoRetardPlugin extends Plugin {
     public void onClientTick(ClientTick event) {
         if (isInInferno()) {
             int magicLvl = client.getBoostedSkillLevel(Skill.MAGIC);
-            int autoCast = client.getVar(Varbits.AUTO_CAST_SPELL);
+            int autoCast = client.getVarbitValue(Varbits.AUTO_CAST_SPELL);
             int castThreshold = 1;
             switch (autoCast) {
                 case 46: //Ice barrage

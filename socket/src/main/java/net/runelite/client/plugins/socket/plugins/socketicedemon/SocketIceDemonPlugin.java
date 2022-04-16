@@ -135,7 +135,7 @@ public class SocketIceDemonPlugin extends Plugin {
 
     @Subscribe
     public void onGameTick(GameTick e) {
-        if (this.client.getVar(Varbits.IN_RAID) == 0) {
+        if (this.client.getVarbitValue(Varbits.IN_RAID) == 0) {
             if (this.roomtype != -1)
                 try {
                     shutDown();
@@ -189,7 +189,7 @@ public class SocketIceDemonPlugin extends Plugin {
 
     @Subscribe
     public void onGameObjectSpawned(GameObjectSpawned e) {
-		if(client.getVar(Varbits.IN_RAID) == 1){
+		if(client.getVarbitValue(Varbits.IN_RAID) == 1){
 			if(e.getGameObject().getId() == 29748){
 				litBraziers++;
 				if(litBraziers > 4){
@@ -216,7 +216,7 @@ public class SocketIceDemonPlugin extends Plugin {
 
     @Subscribe
     public void onGameObjectDespawned(GameObjectDespawned e) {
-		if(client.getVar(Varbits.IN_RAID) == 1){
+		if(client.getVarbitValue(Varbits.IN_RAID) == 1){
 			if(e.getGameObject().getId() == 29748){
 				litBraziers--;
 				if(litBraziers < 0){
@@ -232,7 +232,7 @@ public class SocketIceDemonPlugin extends Plugin {
 
     @Subscribe
     public void onGraphicsObjectCreated(GraphicsObjectCreated event) {
-		if(client.getVar(Varbits.IN_RAID) == 1){
+		if(client.getVarbitValue(Varbits.IN_RAID) == 1){
 			if(event.getGraphicsObject().getId() == 188){
 				iceDemonActive = true;
 				iceDemonActivateTicks = 10;
@@ -242,7 +242,7 @@ public class SocketIceDemonPlugin extends Plugin {
 
 	@Subscribe
     private void onNpcSpawned(NpcSpawned event) {
-		if(client.getVar(Varbits.IN_RAID) == 1){
+		if(client.getVarbitValue(Varbits.IN_RAID) == 1){
 			if(event.getNpc().getId() == 7584){
 				iceDemon = event.getNpc();
 			}
@@ -251,7 +251,7 @@ public class SocketIceDemonPlugin extends Plugin {
 	
 	@Subscribe
     private void onNpcDespawned(NpcDespawned event) {
-		if(client.getVar(Varbits.IN_RAID) == 1){
+		if(client.getVarbitValue(Varbits.IN_RAID) == 1){
 			if(event.getNpc().getId() == 7584){
 				iceDemon = null;
 			}
@@ -260,7 +260,7 @@ public class SocketIceDemonPlugin extends Plugin {
 	
 	@Subscribe
     public void onAnimationChanged(AnimationChanged e) {
-		if(client.getVar(Varbits.IN_RAID) == 1){
+		if(client.getVarbitValue(Varbits.IN_RAID) == 1){
 			if(e.getActor().getName() != null && this.client.getLocalPlayer() != null) {
 				if (e.getActor().getName().equals(this.client.getLocalPlayer().getName())) {
 					if (chopAnimationList.contains(e.getActor().getAnimation())) {
@@ -280,7 +280,7 @@ public class SocketIceDemonPlugin extends Plugin {
 	
     @Subscribe
     public void onItemContainerChanged(ItemContainerChanged e) {
-		if(client.getVar(Varbits.IN_RAID) == 1){
+		if(client.getVarbitValue(Varbits.IN_RAID) == 1){
 			if (e.getContainerId() == 93) {
 				int currentKindling = e.getItemContainer().count(20799);
 				if(cuttingTree){
@@ -396,7 +396,7 @@ public class SocketIceDemonPlugin extends Plugin {
 
     @Subscribe
     public void onSocketReceivePacket(SocketReceivePacket event) {
-		if(client.getVar(Varbits.IN_RAID) == 1){
+		if(client.getVarbitValue(Varbits.IN_RAID) == 1){
 			try {
 				JSONObject payload = event.getPayload();
 				if (payload.has("socketicecut")) {
@@ -450,7 +450,7 @@ public class SocketIceDemonPlugin extends Plugin {
 
     @Subscribe
     public void onVarbitChanged(VarbitChanged event) {
-        boolean tempInRaid = client.getVar(Varbits.IN_RAID) == 1;
+        boolean tempInRaid = client.getVarbitValue(Varbits.IN_RAID) == 1;
 
         // if the player's raid state has changed
         if (!tempInRaid) {

@@ -199,7 +199,7 @@ public class CorpBoostPlugin extends Plugin
     @Subscribe
     public void onGameStateChanged(GameStateChanged gameStateChanged)
     {
-        if (gameStateChanged.getGameState() != GameState.LOGGED_IN)
+        if (gameStateChanged.getGameState() != GameState.LOGGED_IN || client.getLocalPlayer() == null)
         {
             return;
         }
@@ -216,7 +216,7 @@ public class CorpBoostPlugin extends Plugin
         customerPoints.clear();
         for (WorldPoint customerSpot : CustomerSpot.getCustomerSpots())
         {
-            if (client.getLocalPlayer().getWorldLocation().equals(customerPoints)){
+            if (customerPoints.contains(client.getLocalPlayer().getWorldLocation())){
                 customerPoints.clear();
             }else if (WorldPoint.isInScene(client, customerSpot.getX(), customerSpot.getY())) {
                 customerPoints.add(customerSpot);
@@ -262,7 +262,7 @@ public class CorpBoostPlugin extends Plugin
         stunDwhPoints.clear();
         for (WorldPoint stunDwhSpot : StunDwhSpots.getStunDwhSpots())
         {
-            if (client.getLocalPlayer().getWorldLocation().equals(stunDwhPoints)){
+            if (stunDwhPoints.contains(client.getLocalPlayer().getWorldLocation())){
                 stunDwhPoints.clear();
             } else if (WorldPoint.isInScene(client, stunDwhSpot.getX(), stunDwhSpot.getY())) {
                 stunDwhPoints.add(stunDwhSpot);
@@ -272,7 +272,7 @@ public class CorpBoostPlugin extends Plugin
         xferDwhPoints.clear();
         for (WorldPoint xferDwhSpot : XferDwhSpots.getXferDwhSpots())
         {
-            if (client.getLocalPlayer().getWorldLocation().equals(xferDwhPoints)){
+            if (xferDwhPoints.contains(client.getLocalPlayer().getWorldLocation())){
                 xferDwhPoints.clear();
             }else if (WorldPoint.isInScene(client, xferDwhSpot.getX(), xferDwhSpot.getY())) {
                 xferDwhPoints.add(xferDwhSpot);
@@ -286,7 +286,7 @@ public class CorpBoostPlugin extends Plugin
         GameObject gameObject = event.getGameObject();
 
         Player localPlayer = client.getLocalPlayer();
-        if (gameObject.getId() == CANNON_BASE && !cannonPlaced)
+        if (gameObject.getId() == CANNON_BASE && !cannonPlaced && localPlayer != null)
         {
             if (localPlayer.getWorldLocation().distanceTo(gameObject.getWorldLocation()) <= 2
                     && localPlayer.getAnimation() == AnimationID.BURYING_BONES)

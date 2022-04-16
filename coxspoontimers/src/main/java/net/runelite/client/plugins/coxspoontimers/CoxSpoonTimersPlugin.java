@@ -345,7 +345,7 @@ public class CoxSpoonTimersPlugin extends Plugin {
 
     @Subscribe
     private void onVarbitChanged(VarbitChanged event) {
-        if (client.getVar(Varbits.IN_RAID) != 1) {
+        if (client.getVarbitValue(Varbits.IN_RAID) != 1) {
             reset();
         }
     }

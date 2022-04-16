@@ -116,7 +116,7 @@ public class AnimationCooldownPlugin extends Plugin {
 
     @Subscribe
     private void onVarbitChanged(VarbitChanged event) {
-        inRaid = this.client.getVar(Varbits.IN_RAID) == 1;
+        inRaid = this.client.getVarbitValue(Varbits.IN_RAID) == 1;
     }
 
     public boolean enforceRegion() {

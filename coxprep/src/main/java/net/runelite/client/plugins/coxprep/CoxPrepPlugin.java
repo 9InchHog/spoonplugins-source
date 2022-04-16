@@ -143,7 +143,7 @@ public class CoxPrepPlugin extends Plugin{
 
     @Subscribe
     public void onGameTick(GameTick e) {
-        if (this.client.getVar(Varbits.IN_RAID) == 0) {
+        if (this.client.getVarbitValue(Varbits.IN_RAID) == 0) {
             if (this.roomtype != -1)
                 try {
                     shutDown();
@@ -195,7 +195,7 @@ public class CoxPrepPlugin extends Plugin{
 
     @Subscribe
     public void onItemContainerChanged(ItemContainerChanged e) {
-        if(client.getVar(Varbits.IN_RAID) == 1) {
+        if(client.getVarbitValue(Varbits.IN_RAID) == 1) {
             int nox = e.getItemContainer().count(20901) + e.getItemContainer().count(20902);
             int golpar = e.getItemContainer().count(20904) + e.getItemContainer().count(20905);
             int buchus = e.getItemContainer().count(20907) + e.getItemContainer().count(20908);
@@ -263,7 +263,7 @@ public class CoxPrepPlugin extends Plugin{
 
     @Subscribe
     public void onVarbitChanged(VarbitChanged event) {
-        boolean tempInRaid = client.getVar(Varbits.IN_RAID) == 1;
+        boolean tempInRaid = client.getVarbitValue(Varbits.IN_RAID) == 1;
 
         // if the player's raid state has changed
         if (!tempInRaid) {

@@ -28,7 +28,7 @@ public class MeatTreeCycleOverlay extends OverlayPanel {
 
     public Dimension render(Graphics2D graphics) {
         this.panelComponent.getChildren().clear();
-        if(config.meatTreeChopCycle() == CoxAdditionsConfig.meatTreeChopCycleMode.INFOBOX && this.client.getVar(Varbits.IN_RAID) == 1 && plugin.startedChopping && plugin.meatTreeAlive) {
+        if(config.meatTreeChopCycle() == CoxAdditionsConfig.meatTreeChopCycleMode.INFOBOX && this.client.getVarbitValue(Varbits.IN_RAID) == 1 && plugin.startedChopping && plugin.meatTreeAlive) {
             this.panelComponent.setPreferredSize(new Dimension(graphics.getFontMetrics().stringWidth("Tick:   ") + 15, 0));
             this.panelComponent.getChildren().add(LineComponent.builder()
                     .left("Tick: ")

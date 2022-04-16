@@ -383,7 +383,7 @@ public class Xarpus extends Room {
 
     @Subscribe
     public void onVarbitChanged(VarbitChanged event) {
-        if ((client.getVar(Varbits.MULTICOMBAT_AREA) == 1 || client.getVarbitValue(client.getVarps(), 6447) == 2) && !xarpusStarted && isInstanceTimerRunning) {
+        if ((client.getVarbitValue(Varbits.MULTICOMBAT_AREA) == 1 || client.getVarbitValue(client.getVarps(), 6447) == 2) && !xarpusStarted && isInstanceTimerRunning) {
             isInstanceTimerRunning = false;
             xarpusStarted = true;
         }

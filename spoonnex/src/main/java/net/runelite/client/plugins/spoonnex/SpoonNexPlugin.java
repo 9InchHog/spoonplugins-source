@@ -29,10 +29,10 @@ import java.util.*;
 
 @Extension
 @PluginDescriptor(
-	name = "<html><font color=#25c550>[S] Nex",
-	description = "Nihilism intensifies",
-	tags = {"Nex", "gwd", "Spoon", "Torva", "Happy birthday rusher", "Ancient"},
-	enabledByDefault = false
+		name = "<html><font color=#25c550>[S] Nex",
+		description = "Nihilism intensifies",
+		tags = {"Nex", "gwd", "Spoon", "Torva", "Happy birthday rusher", "Ancient"},
+		enabledByDefault = false
 )
 @Slf4j
 @Singleton
@@ -62,10 +62,10 @@ public class SpoonNexPlugin extends Plugin {
 	private SpoonNexHpToPhasePanel hpToPhaseOverlay;
 
 	@Inject
-    private InfoBoxManager infoBoxManager;
+	private InfoBoxManager infoBoxManager;
 
 	@Inject
-    private ItemManager itemManager;
+	private ItemManager itemManager;
 
 	@Inject
 	private ClientThread clientThread;
@@ -163,17 +163,17 @@ public class SpoonNexPlugin extends Plugin {
 		if (event.getGroup().equals("SpoonNex")) {
 			if(event.getKey().equals("noEscapeVolume")) {
 				if (clip != null) {
-                    FloatControl control = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-                    if (control != null) {
-                        control.setValue((float) (this.config.audioVolume() / 2 - 45));
-                    }
-                }
+					FloatControl control = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+					if (control != null) {
+						control.setValue((float) (this.config.audioVolume() / 2 - 45));
+					}
+				}
 			} else if(event.getKey().equals("killTimer")) {
 				if (config.killTimer() == SpoonNexConfig.KillTimerMode.INFOBOX && nex != null && startTick > -1) {
-                    BufferedImage image = itemManager.getImage(26348);
+					BufferedImage image = itemManager.getImage(26348);
 					timerBox = new SpoonNexTimerBox(image, config, this, client);
 					infoBoxManager.addInfoBox(timerBox);
-                } else {
+				} else {
 					infoBoxManager.removeInfoBox(timerBox);
 				}
 			}
@@ -231,7 +231,7 @@ public class SpoonNexPlugin extends Plugin {
 	@Subscribe
 	private void onAnimationChanged(AnimationChanged event) {
 		if (event.getActor() instanceof NPC && event.getActor().getName() != null && event.getActor().getName().equals("Nex")) {
-			 if (event.getActor().getAnimation() == 9189 || event.getActor().getAnimation() == 9188 || event.getActor().getAnimation() == 9180) {
+			if (event.getActor().getAnimation() == 9189 || event.getActor().getAnimation() == 9188 || event.getActor().getAnimation() == 9180) {
 				nex.attacksTilSpecial--;
 				if (nex.phase == 5 && nex.attacksTilSpecial == 0) {
 					nex.attacksTilSpecial = 4;
@@ -318,10 +318,11 @@ public class SpoonNexPlugin extends Plugin {
 			}
 
 			for (FollowPlayer fp : followPlayers) {
-				if (fp.currentLoc.getX() != fp.player.getWorldLocation().getX() || fp.currentLoc.getY() != fp.player.getWorldLocation().getY()) {
-					fp.prevLoc = fp.currentLoc;
-					fp.currentLoc = fp.player.getWorldLocation();
-
+				if (nex.npc.getWorldLocation() != null) {
+					if (fp.currentLoc.getX() != fp.player.getWorldLocation().getX() || fp.currentLoc.getY() != fp.player.getWorldLocation().getY()) {
+						fp.prevLoc = fp.currentLoc;
+						fp.currentLoc = fp.player.getWorldLocation();
+					}
 					int xDiff = fp.prevLoc.getX() - nex.npc.getWorldLocation().getX();
 					int yDiff = fp.prevLoc.getY() - nex.npc.getWorldLocation().getY();
 					fp.prevUnderNex = ((2 >= xDiff && xDiff >= 0) && (2 >= yDiff && yDiff >= 0));
@@ -356,20 +357,10 @@ public class SpoonNexPlugin extends Plugin {
 			}
 
 			if (config.followHelper() == SpoonNexConfig.FollowHelperMode.MES || config.followHelper() == SpoonNexConfig.FollowHelperMode.BOTH) {
-				MenuEntry[] menuEntries = client.getMenuEntries();
-				for (MenuEntry me : menuEntries) {
-					if (me.getOption().contains("Follow") && followPlayers.stream().anyMatch(fp -> fp.player.getName() != null && me.getTarget().contains(fp.player.getName()))) {
-						for (MenuEntry entry : menuEntries) {
-							if (entry.getOption().contains("Follow")) {
-								for (FollowPlayer fp : followPlayers) {
-									if(fp.player.getName() != null && entry.getTarget().contains(fp.player.getName())) {
-										entry.setDeprioritized(!fp.prevUnderNex);
-										break;
-									}
-								}
-							} else {
-								entry.setDeprioritized(true);
-							}
+				for (MenuEntry me : client.getMenuEntries()) {
+					if (me.getOption().contains("Follow") && followPlayers.stream().anyMatch(fp -> fp.player.getName() != null && me.getTarget().contains(fp.player.getName()) && fp.prevUnderNex)) {
+						for (MenuEntry entry : client.getMenuEntries()) {
+							entry.setDeprioritized(!entry.getOption().contains("Follow") || followPlayers.stream().noneMatch(fp -> fp.player.getName() != null && entry.getTarget().contains(fp.player.getName()) && fp.prevUnderNex));
 						}
 						break;
 					}
@@ -612,8 +603,10 @@ public class SpoonNexPlugin extends Plugin {
 	}
 
 	/*@Subscribe
-    public void onSoundEffectPlayed(SoundEffectPlayed event) {
-        if (event.getSoundId() == 1111 || event.getSoundId() == 1111) {
+	public void onSoundEffectPlayed(SoundEffectPlayed event) {
+		System.out.println("Source: " + event.getSource());
+		System.out.println("ID: " + event.getSoundId());
+		if (event.getSoundId() == 1111) {
 			try {
 				AudioInputStream stream = AudioSystem.getAudioInputStream(new BufferedInputStream(SpoonNexPlugin.class.getResourceAsStream("mkMoan.wav")));
 				AudioFormat format = stream.getFormat();
@@ -630,8 +623,7 @@ public class SpoonNexPlugin extends Plugin {
 				nexAudio = null;
 			}
 		}
-    }
-	 */
+	}*/
 
 	public String ticksToTime(int ticks) {
 		int min = ticks / 100;

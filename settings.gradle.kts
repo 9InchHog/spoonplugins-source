@@ -32,7 +32,6 @@ rootProject.name = "Spoon Plugins"
 include(":alchemicalhydra")
 include(":animationcooldown")
 include(":aoe")
-include(":ariatob")
 include(":autohop")
 include(":azscreenmarkers")
 include(":bingo")
@@ -145,7 +144,6 @@ include(":zuktimer")
     /*
 include(":alchemicalhydra")
 include(":aoe")
-include(":ariatob")
 include(":bingo")
 include(":blackjack")
 include(":bobigsplits")
@@ -223,6 +221,7 @@ include(":vanguards")
 include(":vmswimshamer")
 include(":yurinex")
 include(":yuritheatre")
+include(":zuktimer")
     */
 
 for (project in rootProject.children) {

@@ -21,7 +21,7 @@ public class PvPUtil {
 
     public static boolean isAttackable(Client client, Player player) {
         int wildernessLevel = 0;
-        if (client.getVar(Varbits.IN_WILDERNESS) != 1 && !WorldType.isPvpWorld(client.getWorldType()))
+        if (client.getVarbitValue(Varbits.IN_WILDERNESS) != 1 && !WorldType.isPvpWorld(client.getWorldType()))
             return false;
         if (WorldType.isPvpWorld(client.getWorldType())) {
             if (client.getWidget(WidgetInfo.PVP_WORLD_SAFE_ZONE) != null) {
@@ -29,7 +29,7 @@ public class PvPUtil {
                 if (!x.isHidden() || !x.isSelfHidden())
                     return false;
             }
-            if (client.getVar(Varbits.IN_WILDERNESS) != 1)
+            if (client.getVarbitValue(Varbits.IN_WILDERNESS) != 1)
                 return (Math.abs(client.getLocalPlayer().getCombatLevel() - player.getCombatLevel()) <= 15);
             wildernessLevel = 15;
         }

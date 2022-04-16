@@ -436,7 +436,7 @@ public class SpoonItemChargePlugin extends Plugin
 	@Subscribe
 	private void onVarbitChanged(VarbitChanged event)
 	{
-		int explorerRingCharge = client.getVar(Varbits.EXPLORER_RING_ALCHS);
+		int explorerRingCharge = client.getVarbitValue(Varbits.EXPLORER_RING_ALCHS);
 		if (lastExplorerRingCharge != explorerRingCharge)
 		{
 			lastExplorerRingCharge = explorerRingCharge;

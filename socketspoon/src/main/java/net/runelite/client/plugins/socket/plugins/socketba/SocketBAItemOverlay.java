@@ -29,7 +29,7 @@ public class SocketBAItemOverlay extends WidgetItemOverlay {
     }
 
     public void renderItemOverlay(Graphics2D graphics, int itemId, WidgetItem itemWidget) {
-        if(this.client.getVar(Varbits.IN_GAME_BA) == 1) {
+        if(this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1) {
             if(config.correctItemHighlight() != SocketBAConfig.correctItemHighlightMode.OFF) {
                 boolean highlight = false;
                 if (plugin.role.equals("Defender")) {

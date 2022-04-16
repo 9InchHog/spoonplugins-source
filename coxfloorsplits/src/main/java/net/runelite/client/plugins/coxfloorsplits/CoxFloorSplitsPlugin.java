@@ -95,7 +95,7 @@ public class CoxFloorSplitsPlugin extends Plugin
     @Subscribe
     public void onVarbitChanged(VarbitChanged event)
     {
-        inRaidChambers = client.getVar(Varbits.IN_RAID) == 1;
+        inRaidChambers = client.getVarbitValue(Varbits.IN_RAID) == 1;
         if(!inRaidChambers){
             reset();
         }
@@ -172,7 +172,7 @@ public class CoxFloorSplitsPlugin extends Plugin
     private void onGameStateChanged(GameStateChanged event)
     {
         // lazy way to reset
-        if (event.getGameState() == GameState.LOGGED_IN && client.getLocalPlayer() != null && client.getVar(Varbits.IN_RAID) != 1)
+        if (event.getGameState() == GameState.LOGGED_IN && client.getLocalPlayer() != null && client.getVarbitValue(Varbits.IN_RAID) != 1)
         {
             reset();
         }
@@ -185,7 +185,7 @@ public class CoxFloorSplitsPlugin extends Plugin
             return;
         }
 
-        inRaidChambers = client.getVar(Varbits.IN_RAID) == 1;
+        inRaidChambers = client.getVarbitValue(Varbits.IN_RAID) == 1;
 
         if (!inRaidChambers)
         {

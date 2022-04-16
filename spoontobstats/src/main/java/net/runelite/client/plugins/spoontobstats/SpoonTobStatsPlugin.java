@@ -242,7 +242,7 @@ public class SpoonTobStatsPlugin extends Plugin {
         if (client.getLocalPlayer() == null) {
             return;
         }
-        int tobVar = client.getVar(Varbits.THEATRE_OF_BLOOD);
+        int tobVar = client.getVarbitValue(Varbits.THEATRE_OF_BLOOD);
         tobInside = tobVar == 2 || tobVar == 3;
 
         /*boolean ingame_setting = client.getVarbitValue(11866) == 1;

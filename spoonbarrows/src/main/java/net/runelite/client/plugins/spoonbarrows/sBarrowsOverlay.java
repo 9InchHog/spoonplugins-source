@@ -91,7 +91,7 @@ class sBarrowsOverlay extends Overlay {
 				graphics.setColor(Color.black);
 				graphics.drawString(brotherLetter, miniMapLocation.getX() + 1, miniMapLocation.getY() + 1);
 
-				if (client.getVar(brother.getKilledVarbit()) > 0)
+				if (client.getVarbitValue(brother.getKilledVarbit()) > 0)
 				{
 					graphics.setColor(config.deadBrotherLocColor());
 				}

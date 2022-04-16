@@ -40,7 +40,7 @@ public class CoxAdditionsOverlay extends Overlay {
 
 	@Override
 	public Dimension render(Graphics2D graphics) {
-		if(this.client.getVar(Varbits.IN_RAID) == 1) {
+		if(this.client.getVarbitValue(Varbits.IN_RAID) == 1) {
 			if (config.olmCrippleTimer() && plugin.handCripple && plugin.meleeHand != null) {
 				NPC olmHand = plugin.meleeHand;
 				String textOverlay = Integer.toString(plugin.crippleTimer);

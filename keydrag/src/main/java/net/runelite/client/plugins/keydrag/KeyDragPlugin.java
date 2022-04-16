@@ -163,7 +163,7 @@ public class KeyDragPlugin extends Plugin implements KeyListener {
 
     @Subscribe
     private void onItemContainerChanged(ItemContainerChanged event) {
-        if (this.client.getVar(Varbits.IN_RAID) == 1) {
+        if (this.client.getVarbitValue(Varbits.IN_RAID) == 1) {
             if (event.getContainerId() == 583) {
                 if (toggleDrag) {
                     setBankDragDelay(this.config.dragDelay());

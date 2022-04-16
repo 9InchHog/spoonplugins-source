@@ -40,7 +40,7 @@ public class sBarrowsBrotherSlainOverlay extends OverlayPanel {
 
 		for (sBarrowsBrothers brother : sBarrowsBrothers.values())
 		{
-			final boolean brotherSlain = client.getVar(brother.getKilledVarbit()) > 0;
+			final boolean brotherSlain = client.getVarbitValue(brother.getKilledVarbit()) > 0;
 			String slain = brotherSlain ? "\u2713" : "\u2717";
 			panelComponent.getChildren().add(LineComponent.builder()
 					.left(brother.getName())
@@ -79,12 +79,12 @@ public class sBarrowsBrotherSlainOverlay extends OverlayPanel {
 	private int rewardPotential()
 	{
 		// this is from [proc,barrows_overlay_reward]
-		int brothers = client.getVar(Varbits.BARROWS_KILLED_AHRIM)
-				+ client.getVar(Varbits.BARROWS_KILLED_DHAROK)
-				+ client.getVar(Varbits.BARROWS_KILLED_GUTHAN)
-				+ client.getVar(Varbits.BARROWS_KILLED_KARIL)
-				+ client.getVar(Varbits.BARROWS_KILLED_TORAG)
-				+ client.getVar(Varbits.BARROWS_KILLED_VERAC);
-		return client.getVar(Varbits.BARROWS_REWARD_POTENTIAL) + brothers * 2;
+		int brothers = client.getVarbitValue(Varbits.BARROWS_KILLED_AHRIM)
+				+ client.getVarbitValue(Varbits.BARROWS_KILLED_DHAROK)
+				+ client.getVarbitValue(Varbits.BARROWS_KILLED_GUTHAN)
+				+ client.getVarbitValue(Varbits.BARROWS_KILLED_KARIL)
+				+ client.getVarbitValue(Varbits.BARROWS_KILLED_TORAG)
+				+ client.getVarbitValue(Varbits.BARROWS_KILLED_VERAC);
+		return client.getVarbitValue(Varbits.BARROWS_REWARD_POTENTIAL) + brothers * 2;
 	}
 }

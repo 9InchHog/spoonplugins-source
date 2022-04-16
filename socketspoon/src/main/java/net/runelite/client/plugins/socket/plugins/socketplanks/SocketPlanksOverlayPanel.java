@@ -23,7 +23,7 @@ public class SocketPlanksOverlayPanel extends OverlayPanel {
     }
 
     public Dimension render(Graphics2D graphics) {
-        if (config.splitTimer() && this.client.getVar(Varbits.IN_RAID) == 1 && plugin.planksDropped && plugin.splitTimerDelay > 0) {
+        if (config.splitTimer() && this.client.getVarbitValue(Varbits.IN_RAID) == 1 && plugin.planksDropped && plugin.splitTimerDelay > 0) {
             this.panelComponent.getChildren().clear();
             int seconds = (int) Math.floor(client.getVarbitValue(6386) * .6);
 

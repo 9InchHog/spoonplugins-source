@@ -40,7 +40,7 @@ public class ShortcutOverlay extends Overlay {
     }
 
     public Dimension render(Graphics2D graphics) {
-        if(this.client.getVar(Varbits.IN_RAID) == 1) {
+        if(this.client.getVarbitValue(Varbits.IN_RAID) == 1) {
             for (TileObject shortcut : this.plugin.getShortcut()) {
                 if (shortcut.getPlane() == this.client.getPlane()) {
                     Shape poly;

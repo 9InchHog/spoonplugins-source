@@ -284,7 +284,7 @@ public class AutoHopPlugin extends Plugin
     private void onGameTick(GameTick event)
     {
         if (config.autoCloseChatbox() && (
-                client.getVar(Varbits.IN_WILDERNESS) == 1 || net.runelite.api.WorldType.isPvpWorld(client.getWorldType()))) {
+                client.getVarbitValue(Varbits.IN_WILDERNESS) == 1 || net.runelite.api.WorldType.isPvpWorld(client.getWorldType()))) {
             Widget x = client.getWidget(162, 56);
             Widget y = client.getWidget(162, 53);
             if (y != null && !y.isHidden() && !y.isSelfHidden() && (

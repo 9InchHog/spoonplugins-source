@@ -130,7 +130,7 @@ class sOpponentInfoOverlay extends OverlayPanel
             }
             Actor opponentsOpponent = opponent.getInteracting();
             if (opponent instanceof NPC && opponentsOpponent != null && (opponentsOpponent != this.client
-                    .getLocalPlayer() || this.client.getVar(Varbits.MULTICOMBAT_AREA) == 1)) {
+                    .getLocalPlayer() || this.client.getVarbitValue(Varbits.MULTICOMBAT_AREA) == 1)) {
                 this.opponentsOpponentName = Text.removeTags(opponentsOpponent.getName());
             } else {
                 this.opponentsOpponentName = null;
@@ -240,7 +240,7 @@ class sOpponentInfoOverlay extends OverlayPanel
      */
     private boolean hasHpHud(Actor opponent)
     {
-        boolean settingEnabled = client.getVar(Varbits.BOSS_HEALTH_OVERLAY) == 0;
+        boolean settingEnabled = client.getVarbitValue(Varbits.BOSS_HEALTH_OVERLAY) == 0;
         if (settingEnabled && opponent instanceof NPC)
         {
             int opponentId = client.getVar(VarPlayer.HP_HUD_NPC_ID);

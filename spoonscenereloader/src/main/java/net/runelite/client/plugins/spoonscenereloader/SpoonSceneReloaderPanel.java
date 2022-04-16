@@ -54,7 +54,7 @@ public class SpoonSceneReloaderPanel extends PluginPanel {
             clientThread.invoke(() ->
             {
                 if (client.getGameState() == GameState.LOGGED_IN) {
-                    boolean isInRaid = client.getVar(Varbits.IN_RAID) == 1;
+                    boolean isInRaid = client.getVarbitValue(Varbits.IN_RAID) == 1;
                     if (config.raidsOnly()) {
                         if (isInRaid) {
                             client.setGameState(GameState.CONNECTION_LOST);

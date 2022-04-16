@@ -44,7 +44,7 @@ public class CorpCannonOverlay extends Overlay {
     public Dimension render(Graphics2D graphics) {
         List<WorldPoint> spotPoints = plugin.getCannonSpotPoints();
 
-        if (hidden || spotPoints.isEmpty() || !config.customer() || plugin.isCannonPlaced()) {
+        if (hidden || spotPoints.isEmpty() || !config.customer() || plugin.isCannonPlaced() || client.getLocalPlayer() == null) {
             return null;
         }
 

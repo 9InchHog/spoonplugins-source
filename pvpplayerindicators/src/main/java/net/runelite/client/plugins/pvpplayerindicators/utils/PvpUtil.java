@@ -81,7 +81,7 @@ public class PvpUtil {
         {
             wildernessLevel += 15;
         }
-        if (client.getVar(Varbits.IN_WILDERNESS) == 1)
+        if (client.getVarbitValue(Varbits.IN_WILDERNESS) == 1)
         {
             wildernessLevel += getWildernessLevelFrom(client.getLocalPlayer().getWorldLocation());
         }

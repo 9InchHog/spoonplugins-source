@@ -8,7 +8,7 @@ import net.runelite.api.coords.WorldPoint;
 @RequiredArgsConstructor
 @Getter
 public enum sBarrowsBrothers {
-	AHRIM("Ahrim", new WorldPoint(3566, 3289, 0), Varbits.BARROWS_KILLED_AHRIM),
+	AHRIM("Ahrim", new WorldPoint(3566, 3289, 0),  Varbits.BARROWS_KILLED_AHRIM),
 	DHAROK("Dharok", new WorldPoint(3575, 3298, 0), Varbits.BARROWS_KILLED_DHAROK),
 	GUTHAN("Guthan", new WorldPoint(3577, 3283, 0), Varbits.BARROWS_KILLED_GUTHAN),
 	KARIL("Karil", new WorldPoint(3566, 3275, 0), Varbits.BARROWS_KILLED_KARIL),
@@ -17,5 +17,5 @@ public enum sBarrowsBrothers {
 
 	private final String name;
 	private final WorldPoint location;
-	private final Varbits killedVarbit;
+	private final int killedVarbit;
 }

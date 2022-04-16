@@ -354,9 +354,9 @@ public class SocketDefencePlugin extends Plugin {
                 String weapon = data.getString("weapon");
                 int hit = data.getInt("hit");
 
-                if(((bossName.equals("Tekton") || bossName.contains("Great Olm")) && client.getVar(Varbits.IN_RAID) != 1) ||
+                if(((bossName.equals("Tekton") || bossName.contains("Great Olm")) && client.getVarbitValue(Varbits.IN_RAID) != 1) ||
                         ((bossName.contains("The Maiden of Sugadinti") || bossName.contains("Pestilent Bloat") || bossName.contains("Nylocas Vasilias")
-                                || bossName.contains("Sotetseg") || bossName.contains("Xarpus")) && client.getVar(Varbits.THEATRE_OF_BLOOD) != 2)){
+                                || bossName.contains("Sotetseg") || bossName.contains("Xarpus")) && client.getVarbitValue(Varbits.THEATRE_OF_BLOOD) != 2)){
                     return;
                 }
                 if (boss.equals("") || bossDef == -1 || !boss.equals(bossName)) {
@@ -432,7 +432,7 @@ public class SocketDefencePlugin extends Plugin {
 
                 if (weapon.equals("dwh")) {
                     if(hit == 0){
-                        if(client.getVar(Varbits.IN_RAID) == 1 && boss.equals("Tekton")) {
+                        if(client.getVarbitValue(Varbits.IN_RAID) == 1 && boss.equals("Tekton")) {
                             bossDef -= bossDef * .05;
                         }
                     }else {
@@ -440,7 +440,7 @@ public class SocketDefencePlugin extends Plugin {
                     }
                 }else if (weapon.equals("bgs")) {
                     if (hit == 0){
-                        if (client.getVar(Varbits.IN_RAID) == 1 && boss.equals("Tekton")) {
+                        if (client.getVarbitValue(Varbits.IN_RAID) == 1 && boss.equals("Tekton")) {
                             bossDef -= 10;
                         }
                     } else {
@@ -502,7 +502,7 @@ public class SocketDefencePlugin extends Plugin {
 
     @Subscribe
     private void onVarbitChanged(VarbitChanged event) {
-        if ((client.getVar(Varbits.IN_RAID) != 1 && (boss.equals("Tekton") || boss.equals("Great Olm (Left claw)")))
+        if ((client.getVarbitValue(Varbits.IN_RAID) != 1 && (boss.equals("Tekton") || boss.equals("Great Olm (Left claw)")))
                 || (boss.equals("The Maiden of Sugadinti") && !isInMaiden()) || (boss.equals("Pestilent Bloat") && !isInBloat())
                 || (boss.equals("Nylocas Vasilias") && !isInNylo()) || (boss.equals("Sotetseg") && !isInOverWorld() && !isInUnderWorld())
                 || (boss.equals("Xarpus") && !isInXarpus())) {

@@ -179,7 +179,7 @@ public class TobSoundsPlugin extends Plugin {
         if (!config.tobDeath()) return;
 
         if (event.getActor() instanceof Player) {
-            if (client.getVar(Varbits.THEATRE_OF_BLOOD)==2){ // 1=In Party, 2=Inside/Spectator, 3=Dead Spectating
+            if (client.getVarbitValue(Varbits.THEATRE_OF_BLOOD)==2){ // 1=In Party, 2=Inside/Spectator, 3=Dead Spectating
                 try {
                     AudioInputStream stream = AudioSystem.getAudioInputStream(new BufferedInputStream(TobSoundsPlugin.class.getResourceAsStream("horsey.wav")));
                     AudioFormat format = stream.getFormat();

@@ -160,7 +160,7 @@ public class SocketThievingPlugin extends Plugin {
 
     @Subscribe
     public void onGameTick(GameTick e) {
-        if (this.client.getVar(Varbits.IN_RAID) == 0) {
+        if (this.client.getVarbitValue(Varbits.IN_RAID) == 0) {
             if (this.roomtype != -1)
                 try {
                     shutDown();
@@ -465,7 +465,7 @@ public class SocketThievingPlugin extends Plugin {
 
     @Subscribe
     public void onVarbitChanged(VarbitChanged event) {
-        boolean tempInRaid = client.getVar(Varbits.IN_RAID) == 1;
+        boolean tempInRaid = client.getVarbitValue(Varbits.IN_RAID) == 1;
 
         // if the player's raid state has changed
         if (!tempInRaid) {

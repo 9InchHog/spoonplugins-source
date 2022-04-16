@@ -132,7 +132,7 @@ public class PhoenixNecklacePlugin extends Plugin {
             int id = this.client.getLocalPlayer().getWorldLocation().getRegionID();
 
             if (config.showWild()){
-                if (this.client.getVar(Varbits.IN_WILDERNESS) == 1 ){
+                if (this.client.getVarbitValue(Varbits.IN_WILDERNESS) == 1 ){
                     return true;
                 }
             }

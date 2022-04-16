@@ -81,7 +81,7 @@ public class SocketVangPotsPlugin extends Plugin {
 
     @Subscribe
     public void onNpcLootReceived(NpcLootReceived event) {
-        if(event.getNpc().getName() != null && event.getNpc().getName().equalsIgnoreCase("vanguard") && client.getVar(Varbits.IN_RAID) == 1 && client.getLocalPlayer() != null){
+        if(event.getNpc().getName() != null && event.getNpc().getName().equalsIgnoreCase("vanguard") && client.getVarbitValue(Varbits.IN_RAID) == 1 && client.getLocalPlayer() != null){
             for(ItemStack item : event.getItems()){
                 if(item.getId() == ItemID.OVERLOAD_4_20996){
                     overloadsDropped++;
@@ -128,14 +128,14 @@ public class SocketVangPotsPlugin extends Plugin {
 
     @Subscribe
     private void onVarbitChanged(VarbitChanged event) {
-        if (client.getVar(Varbits.IN_RAID) != 1) {
+        if (client.getVarbitValue(Varbits.IN_RAID) != 1) {
             reset();
         }
     }
 
     @Subscribe
     public void onGameTick(GameTick e) {
-        if (client.getVar(Varbits.IN_RAID) == 0) {
+        if (client.getVarbitValue(Varbits.IN_RAID) == 0) {
             // player has left the raid
             if (roomtype != -1)
                 try {

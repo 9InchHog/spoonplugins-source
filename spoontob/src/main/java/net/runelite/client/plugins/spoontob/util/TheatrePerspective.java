@@ -137,7 +137,7 @@ public class TheatrePerspective {
         if (dist < distance) {
             Widget minimapDrawWidget;
             if (client.isResized()) {
-                if (client.getVar(Varbits.SIDE_PANELS) == 1) {
+                if (client.getVarbitValue(Varbits.SIDE_PANELS) == 1) {
                     minimapDrawWidget = client.getWidget(WidgetInfo.RESIZABLE_MINIMAP_DRAW_AREA);
                 } else {
                     minimapDrawWidget = client.getWidget(WidgetInfo.RESIZABLE_MINIMAP_STONES_DRAW_AREA);

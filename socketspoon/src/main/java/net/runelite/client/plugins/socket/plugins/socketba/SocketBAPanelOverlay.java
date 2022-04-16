@@ -25,7 +25,7 @@ public class SocketBAPanelOverlay extends OverlayPanel {
 
     public Dimension render(Graphics2D graphics) {
         this.panelComponent.getChildren().clear();
-		if (config.roleInfobox()  && !plugin.roleDone && this.client.getVar(Varbits.IN_GAME_BA) == 1) {
+		if (config.roleInfobox()  && !plugin.roleDone && this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1) {
 			String displayCall = "";
 			Color color = Color.WHITE;
 			switch (plugin.role) {

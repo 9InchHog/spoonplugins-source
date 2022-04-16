@@ -301,7 +301,7 @@ public class SpoonEzSwapsPlugin extends Plugin {
 
 	@Subscribe
 	public void onAnimationChanged(AnimationChanged event) {
-		if (event.getActor() instanceof Player && config.vetionBoosting() && event.getActor().getAnimation() == 1162 && client.getVar(Varbits.IN_WILDERNESS) == 1){
+		if (event.getActor() instanceof Player && config.vetionBoosting() && event.getActor().getAnimation() == 1162 && client.getVarbitValue(Varbits.IN_WILDERNESS) == 1){
 			vetionHarmAttackedTick = client.getTickCount();
 		}
 	}
@@ -725,7 +725,7 @@ public class SpoonEzSwapsPlugin extends Plugin {
 					}
 					break;
 			}
-		} else if (config.hideCastRaids() && (client.getVar(Varbits.IN_RAID) == 1 || client.getVar(Varbits.THEATRE_OF_BLOOD) == 2)
+		} else if (config.hideCastRaids() && (client.getVarbitValue(Varbits.IN_RAID) == 1 || client.getVarbitValue(Varbits.THEATRE_OF_BLOOD) == 2)
 				&& (!client.getSpellSelected() || hideCastIgnoredSpells.contains(Text.standardize(client.getSelectedSpellName()))
 				|| entry.getType().getId() != MenuAction.SPELL_CAST_ON_PLAYER.getId())) {
 			return true;
@@ -739,51 +739,49 @@ public class SpoonEzSwapsPlugin extends Plugin {
 					return true;
 				}
 			}
-		} else if (config.hideAttackBandos() || config.hideAttackBandosMinions() || config.hideAttackSara() || config.hideAttackKree()
-				|| config.hideAttackSaraMinions() || config.hideAttackZammy() || config.hideAttackZammyMinions() || config.hideAttackArmaMinions()) {
-			if (isInGodWars()) {
-				boolean bossAlive = false;
-				boolean minionsAlive = false;
-				for (NPC npc : client.getNpcs()) {
-					if (npc != null && npc.getName() != null && npc.getHealthRatio() != 0) {
-						String npcName = Text.standardize(npc.getName());
-						if ((npcName.contains(BANDOS_BOSS) || npcName.contains(SARA_BOSS) || npcName.contains(ZAMMY_BOSS) || npcName.contains(ARMA_BOSS))
-								&& npc.getComposition().getSize() > 1) {
-							bossAlive = true;
-						}
-						if (BANDOS_MINIONS.contains(npcName) || SARA_MINIONS.contains(npcName) || ZAMMY_MINIONS.contains(npcName) || ARMA_MINIONS.contains(npcName)) {
-							minionsAlive = true;
-						}
+		} else if (isInGodWars() && (config.hideAttackBandos() || config.hideAttackBandosMinions() || config.hideAttackSara() || config.hideAttackKree()
+				|| config.hideAttackSaraMinions() || config.hideAttackZammy() || config.hideAttackZammyMinions() || config.hideAttackArmaMinions())) {
+			boolean bossAlive = false;
+			boolean minionsAlive = false;
+			for (NPC npc : client.getNpcs()) {
+				if (npc != null && npc.getName() != null && npc.getHealthRatio() != 0) {
+					String npcName = Text.standardize(npc.getName());
+					if ((npcName.contains(BANDOS_BOSS) || npcName.contains(SARA_BOSS) || npcName.contains(ZAMMY_BOSS) || npcName.contains(ARMA_BOSS))
+							&& npc.getComposition().getSize() > 1) {
+						bossAlive = true;
+					}
+					if (BANDOS_MINIONS.contains(npcName) || SARA_MINIONS.contains(npcName) || ZAMMY_MINIONS.contains(npcName) || ARMA_MINIONS.contains(npcName)) {
+						minionsAlive = true;
 					}
 				}
-
-				target = target.replace("*", "");
-
-				if (config.hideAttackBandos() && minionsAlive && target.contains(BANDOS_BOSS)) {
-					return false;
-				} else if (config.hideAttackBandosMinions() && bossAlive && BANDOS_MINIONS.contains(target)) {
-					return false;
-				} else if (config.hideAttackSara() && minionsAlive && target.contains(SARA_BOSS)) {
-					return false;
-				} else if (config.hideAttackSaraMinions() && bossAlive && SARA_MINIONS.contains(target)) {
-					return false;
-				} else if (config.hideAttackZammy() && minionsAlive && target.contains(ZAMMY_BOSS)) {
-					return false;
-				} else if (config.hideAttackZammyMinions() && bossAlive && ZAMMY_MINIONS.contains(target)) {
-					return false;
-				} else if (config.hideAttackKree() && minionsAlive && target.contains(ARMA_BOSS) && entry.getType().getId() == MenuAction.NPC_SECOND_OPTION.getId()) {
-					entry.setDeprioritized(true);
-					return true;
-				} else if (config.hideAttackArmaMinions() && bossAlive && ARMA_MINIONS.contains(target) && entry.getType().getId() == MenuAction.NPC_SECOND_OPTION.getId()) {
-					entry.setDeprioritized(true);
-					return true;
-				}
 			}
-		} else if ((config.swapDustDevils() && (target.contains("dust devil") || target.contains("choke devil"))) || (config.swapNechs() && (target.contains("nechrya") || target.contains("death spawn")))
+
+			target = target.replace("*", "");
+
+			if (config.hideAttackBandos() && minionsAlive && target.contains(BANDOS_BOSS)) {
+				return false;
+			} else if (config.hideAttackBandosMinions() && bossAlive && BANDOS_MINIONS.contains(target)) {
+				return false;
+			} else if (config.hideAttackSara() && minionsAlive && target.contains(SARA_BOSS)) {
+				return false;
+			} else if (config.hideAttackSaraMinions() && bossAlive && SARA_MINIONS.contains(target)) {
+				return false;
+			} else if (config.hideAttackZammy() && minionsAlive && target.contains(ZAMMY_BOSS)) {
+				return false;
+			} else if (config.hideAttackZammyMinions() && bossAlive && ZAMMY_MINIONS.contains(target)) {
+				return false;
+			} else if (config.hideAttackKree() && minionsAlive && target.contains(ARMA_BOSS) && entry.getType().getId() == MenuAction.NPC_SECOND_OPTION.getId()) {
+				entry.setDeprioritized(true);
+				return true;
+			} else if (config.hideAttackArmaMinions() && bossAlive && ARMA_MINIONS.contains(target) && entry.getType().getId() == MenuAction.NPC_SECOND_OPTION.getId()) {
+				entry.setDeprioritized(true);
+				return true;
+			}
+		} else if (((config.swapDustDevils() && (target.contains("dust devil") || target.contains("choke devil"))) || (config.swapNechs() && (target.contains("nechrya") || target.contains("death spawn"))))
 				&& option.equals("attack") && weaponStyle == WeaponStyle.MAGIC) {
 			entry.setDeprioritized(true);
 			return true;
-		} else if (config.swapSmokeDevil() && client.getLocalPlayer() != null && target.contains("smoke devil") && !target.contains("thermonuclear") && !target.contains("pet") && weaponStyle == WeaponStyle.MAGIC) {
+		} else if (config.swapSmokeDevil() && client.getLocalPlayer() != null && target.contains("smoke devil") && !target.contains("thermonuclear") && !target.contains("pet")) {
 			if (client.getLocalPlayer().getWorldLocation().getRegionID() == 9619) {
 				for (NPC smokes : client.getNpcs()) {
 					if (smokes.getName() != null && Text.standardize(smokes.getName()).contains("thermonuclear") && smokes.getHealthRatio() != 0) {
@@ -791,11 +789,13 @@ public class SpoonEzSwapsPlugin extends Plugin {
 						return true;
 					}
 				}
+				entry.setDeprioritized(weaponStyle == WeaponStyle.MAGIC);
+				return true;
 			} else if (client.getLocalPlayer().getWorldLocation().getRegionID() == 9363) {
 				entry.setDeprioritized(true);
 				return true;
 			}
-		} else if (config.deprioVetion() && client.getVar(Varbits.IN_WILDERNESS) == 1 && target.contains("vet'ion") && entry.getType().getId() == MenuAction.NPC_SECOND_OPTION.getId()) {
+		} else if (config.deprioVetion() && client.getVarbitValue(Varbits.IN_WILDERNESS) == 1 && target.contains("vet'ion") && entry.getType().getId() == MenuAction.NPC_SECOND_OPTION.getId()) {
 			for (NPC npc : client.getNpcs()) {
 				if (npc != null && npc.getName() != null && npc.getHealthRatio() != 0) {
 					if (Text.standardize(npc.getName()).contains("skeleton hellhound")) {

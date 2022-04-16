@@ -28,7 +28,7 @@ public class SocketBAOverlay extends OverlayPanel {
 	}
 
 	public Dimension render(Graphics2D graphics) {
-		if(this.client.getVar(Varbits.IN_GAME_BA) == 1) {
+		if(this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1) {
 			if (config.highlightRoleNpcs()) {
 				for(NPC npc : this.client.getNpcs()) {
 					NPCComposition npcComposition = npc.getComposition();

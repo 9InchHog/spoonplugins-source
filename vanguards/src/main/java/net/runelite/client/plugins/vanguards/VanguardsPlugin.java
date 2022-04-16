@@ -127,6 +127,6 @@ public class VanguardsPlugin extends Plugin
     @Subscribe
     public void onVarbitChanged(VarbitChanged bit)
     {
-        inRaid = client.getVar(Varbits.IN_RAID) == 1;
+        inRaid = client.getVarbitValue(Varbits.IN_RAID) == 1;
     }
 }

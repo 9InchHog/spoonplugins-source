@@ -48,9 +48,9 @@ public class CoxFloorSplitsOverlay extends OverlayPanel
             return null;
         }
 
-        int totalPoints = client.getVar(Varbits.TOTAL_POINTS);
-        int personalPoints = client.getVar(Varbits.PERSONAL_POINTS);
-        int partySize = client.getVar(Varbits.RAID_PARTY_SIZE);
+        int totalPoints = client.getVarbitValue(Varbits.TOTAL_POINTS);
+        int personalPoints = client.getVarbitValue(Varbits.PERSONAL_POINTS);
+        int partySize = client.getVarbitValue(Varbits.RAID_PARTY_SIZE);
         FontMetrics metrics = graphics.getFontMetrics();
 
         panelComponent.getChildren().add(LineComponent.builder()

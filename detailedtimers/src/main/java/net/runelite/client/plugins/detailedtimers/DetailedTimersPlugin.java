@@ -850,7 +850,7 @@ public class DetailedTimersPlugin extends Plugin {
     }
 
     private void genericAnimationUpdate(AnimationChanged event) {
-        if (client.getVar(Varbits.THEATRE_OF_BLOOD) == 2) {
+        if (client.getVarbitValue(Varbits.THEATRE_OF_BLOOD) == 2) {
             Player p;
             if (event.getActor() instanceof Player) {
                 p = (Player) event.getActor();

@@ -111,7 +111,7 @@ public class SocketPlanksPlugin extends Plugin {
 
     @Subscribe
     public void onNpcLootReceived(NpcLootReceived event) {
-        if(event.getNpc().getName() != null && event.getNpc().getName().equals("Scavenger beast") && this.client.getVar(Varbits.IN_RAID) == 1){
+        if(event.getNpc().getName() != null && event.getNpc().getName().equals("Scavenger beast") && this.client.getVarbitValue(Varbits.IN_RAID) == 1){
             for(ItemStack item : event.getItems()){
                 if(item.getId() == ItemID.MALLIGNUM_ROOT_PLANK){
                     if(!planksDropped){
@@ -138,7 +138,7 @@ public class SocketPlanksPlugin extends Plugin {
 
     @Subscribe
     private void onItemContainerChanged(ItemContainerChanged event) {
-        if (this.client.getVar(Varbits.IN_RAID) == 1) {
+        if (this.client.getVarbitValue(Varbits.IN_RAID) == 1) {
             if (event.getContainerId() == 93) {
                 plankCount = event.getItemContainer().count(ItemID.MALLIGNUM_ROOT_PLANK);
                 if(plankCount > mostPlanks && plankCount >= 2 && !planksPickedUp){
@@ -168,7 +168,7 @@ public class SocketPlanksPlugin extends Plugin {
 
     @Subscribe
     public void onAnimationChanged(AnimationChanged event) {
-        if(this.client.getVar(Varbits.IN_RAID) == 1) {
+        if(this.client.getVarbitValue(Varbits.IN_RAID) == 1) {
             if (event.getActor().getName() != null && event.getActor().getName().equals(this.client.getLocalPlayer().getName()) &&
                     (event.getActor().getAnimation() == 3676 || event.getActor().getAnimation() == 7049)) {
                 if(!chestBuilt) {
@@ -261,7 +261,7 @@ public class SocketPlanksPlugin extends Plugin {
 
     @Subscribe
     private void onVarbitChanged(VarbitChanged event) {
-        if (client.getVar(Varbits.IN_RAID) != 1) {
+        if (client.getVarbitValue(Varbits.IN_RAID) != 1) {
             reset();
         }
     }

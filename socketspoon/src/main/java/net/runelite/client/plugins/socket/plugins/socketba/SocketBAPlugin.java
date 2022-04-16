@@ -139,7 +139,7 @@ public class SocketBAPlugin extends Plugin {
 
 	@Subscribe
 	private void onConfigChanged(ConfigChanged event) {
-		if(event.getGroup().equals("socketBa") && this.client.getVar(Varbits.IN_GAME_BA) == 1) {
+		if(event.getGroup().equals("socketBa") && this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1) {
 			Widget hpWidget = client.getWidget(WidgetInfo.BA_HEAL_TEAMMATES.getGroupId(), WidgetInfo.BA_HEAL_TEAMMATES.getChildId());
 			if(hpWidget != null && event.getKey().equals("hideHpOverlay")) {
 				hpWidget.setHidden(config.hideHpOverlay());
@@ -175,7 +175,7 @@ public class SocketBAPlugin extends Plugin {
 
 	@Subscribe
     private void onGameTick(GameTick event) {
-		if(this.client.getVar(Varbits.IN_GAME_BA) == 1) {
+		if(this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1) {
 			for (Map.Entry<GameObject, Color> entry : eggHoppers.entrySet()) {
 				entry.setValue(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
 			}
@@ -258,7 +258,7 @@ public class SocketBAPlugin extends Plugin {
 
 	@Subscribe
     private void onNpcSpawned(NpcSpawned event) {
-    	if(this.client.getVar(Varbits.IN_GAME_BA) == 1) {
+    	if(this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1) {
 			if (event.getNpc().getId() == 5775) {
 				queen = event.getNpc();
 			} else if (event.getNpc().getId() == 1655) {
@@ -269,7 +269,7 @@ public class SocketBAPlugin extends Plugin {
 
 	@Subscribe
     private void onNpcDespawned(NpcDespawned event) {
-    	if(this.client.getVar(Varbits.IN_GAME_BA) == 1) {
+    	if(this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1) {
 			if (event.getNpc().getId() == 5775) {
 				queen = null;
 			} else if (event.getNpc().getId() == 1655) {
@@ -280,7 +280,7 @@ public class SocketBAPlugin extends Plugin {
 
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event) {
-		if(this.client.getVar(Varbits.IN_GAME_BA) == 1 && event.getMenuOption().equalsIgnoreCase("wield")
+		if(this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1 && event.getMenuOption().equalsIgnoreCase("wield")
 				&& (event.getId() == 22227 || event.getId() == 22228 || event.getId() == 22229 || event.getId() == 22230)){
 			arrowEquiped = event.getId();
 		}
@@ -371,7 +371,7 @@ public class SocketBAPlugin extends Plugin {
 
     @Subscribe
     private void onChatMessage(ChatMessage event) {
-		if(event.getType() == ChatMessageType.GAMEMESSAGE && this.client.getVar(Varbits.IN_GAME_BA) == 1 && this.client.getLocalPlayer() != null){
+		if(event.getType() == ChatMessageType.GAMEMESSAGE && this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1 && this.client.getLocalPlayer() != null){
 			String msg = Text.removeTags(event.getMessage());
 			if((msg.toLowerCase().contains("all of the penance runners have been killed!") && role.equals("Defender"))
 					|| (msg.toLowerCase().contains("all of the penance healers have been killed!") && role.equals("Healer"))){
@@ -410,7 +410,7 @@ public class SocketBAPlugin extends Plugin {
 
 	@Subscribe
     public void onHitsplatApplied(HitsplatApplied event) {
-		if(this.client.getVar(Varbits.IN_GAME_BA) == 1 && this.client.getLocalPlayer() != null){
+		if(this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1 && this.client.getLocalPlayer() != null){
 			if (role.equals("Attacker") && event.getHitsplat().getAmount() == 0 && event.getActor() instanceof NPC && event.getHitsplat().isMine() && event.getActor().getName() != null
 					&& event.getActor().getName().contains("Penance ") && this.client.getLocalPlayer().getAnimation() != 7511) {
 				int rng = new Random().nextInt(3);
@@ -428,7 +428,7 @@ public class SocketBAPlugin extends Plugin {
 	@Subscribe
 	public void onVarbitChanged(VarbitChanged event) {
 		int currentAttackStyleVarbit = client.getVar(VarPlayer.ATTACK_STYLE);
-		int currentEquippedWeaponTypeVarbit = client.getVar(Varbits.EQUIPPED_WEAPON_TYPE);
+		int currentEquippedWeaponTypeVarbit = client.getVarbitValue(Varbits.EQUIPPED_WEAPON_TYPE);
 
 		if (attackStyleVarbit != currentAttackStyleVarbit || equippedWeaponTypeVarbit != currentEquippedWeaponTypeVarbit) {
 			attackStyleVarbit = currentAttackStyleVarbit;
@@ -452,7 +452,7 @@ public class SocketBAPlugin extends Plugin {
         if (this.client.getGameState() != GameState.LOGGED_IN || this.client.isMenuOpen())
             return;
 
-		if(this.client.getVar(Varbits.IN_GAME_BA) == 1) {
+		if(this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1) {
 			if(cannonWidthUp) {
 				cannonWidth += .02;
 				if(cannonWidth >= 20) {

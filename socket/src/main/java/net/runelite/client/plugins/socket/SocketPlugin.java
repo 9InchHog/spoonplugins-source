@@ -436,7 +436,7 @@ public class SocketPlugin extends Plugin {
             json$.put("sender", client.getLocalPlayer().getName());
             int[] mapRegions = (client.getMapRegions() == null) ? new int[0] : client.getMapRegions();
             json$.put("mapregion", Arrays.toString(mapRegions));
-            json$.put("raidbit", client.getVar(Varbits.IN_RAID));
+            json$.put("raidbit", client.getVarbitValue(Varbits.IN_RAID));
             data.put(json$);
             JSONObject send = new JSONObject();
             send.put("sLeech", data);

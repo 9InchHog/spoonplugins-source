@@ -161,7 +161,7 @@ public class RaidsPointsPlugin extends Plugin {
                 pointsPanel.update();
             }
         }
-        if (client.getVar(Varbits.IN_RAID) == 1 && event.getType() == ChatMessageType.FRIENDSCHATNOTIFICATION) {
+        if (client.getVarbitValue(Varbits.IN_RAID) == 1 && event.getType() == ChatMessageType.FRIENDSCHATNOTIFICATION) {
             String message = Text.removeTags(event.getMessage());
             if (message.startsWith("The raid has begun!"))
                 raidToAdd.start = new Date();
@@ -185,8 +185,8 @@ public class RaidsPointsPlugin extends Plugin {
     private void parseTime(Matcher matcher) {
         int seconds = timeStringToSeconds(matcher.group("duration"));
         raidToAdd.timeTaken = seconds;
-        raidToAdd.personal = client.getVar(Varbits.PERSONAL_POINTS);
-        raidToAdd.total = client.getVar(Varbits.TOTAL_POINTS);
+        raidToAdd.personal = client.getVarbitValue(Varbits.PERSONAL_POINTS);
+        raidToAdd.total = client.getVarbitValue(Varbits.TOTAL_POINTS);
         raidToAdd.hr = (int)(raidToAdd.personal / raidToAdd.timeTaken * 3600.0F);
         if (config.ptsPanel()) {
             log.info("RAID TIME: {}", seconds);
