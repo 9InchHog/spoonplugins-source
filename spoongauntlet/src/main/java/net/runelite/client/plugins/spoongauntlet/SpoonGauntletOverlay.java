@@ -99,14 +99,10 @@ public class SpoonGauntletOverlay extends Overlay {
                         LocalPoint point = npc.getLocalLocation();
                         if(this.config.overlayBoss() != SpoonGauntletConfig.bossOverlayMode.OFF){
                             Color color;
-                            if (this.plugin.playerCounter >1) {
-                                if (this.plugin.currentPhase == SpoonGauntletPlugin.BossAttackPhase.MAGIC) {
-                                    color = Color.CYAN;
-                                } else {
-                                    color = Color.GREEN;
-                                }
-                            } else {
+                            if (this.plugin.playerCounter == 1 && config.lastAttWarning()) {
                                 color = Color.ORANGE;
+                            } else {
+                                color = plugin.currentPhase == SpoonGauntletPlugin.BossAttackPhase.MAGIC ? Color.CYAN : Color.GREEN;
                             }
 
                             if (this.config.overlayBoss() == SpoonGauntletConfig.bossOverlayMode.HULL) {

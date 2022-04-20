@@ -243,6 +243,15 @@ public interface SpoonGauntletConfig extends Config {
     )
     default boolean attackCounterUp() { return false; }
 
+    @ConfigItem(
+            keyName = "lastAttWarning",
+            name = "Last Attack Warning",
+            description = "Changes the color of the boss overlay to orange when you have 1 attack left till the boss prayer changes",
+            position = 18,
+            section = boss
+    )
+    default boolean lastAttWarning() { return true; }
+
     //------------------------------------------------------------//
     // Prep
     //------------------------------------------------------------//

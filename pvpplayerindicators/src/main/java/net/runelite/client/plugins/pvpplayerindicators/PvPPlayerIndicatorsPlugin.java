@@ -178,7 +178,7 @@ public class PvPPlayerIndicatorsPlugin extends Plugin
 				type -= MENU_ACTION_DEPRIORITIZE_OFFSET;
 			}
 
-			if (type == MenuAction.WALK.getId() || type == MenuAction.SPELL_CAST_ON_PLAYER.getId()
+			if (type == MenuAction.WALK.getId() || type == WIDGET_TARGET_ON_PLAYER.getId()
 					|| type == MenuAction.ITEM_USE_ON_PLAYER.getId() || type == MenuAction.PLAYER_FIRST_OPTION.getId()
 					|| type == MenuAction.PLAYER_SECOND_OPTION.getId() || type == MenuAction.PLAYER_THIRD_OPTION.getId()
 					|| type == MenuAction.PLAYER_FOURTH_OPTION.getId() || type == MenuAction.PLAYER_FIFTH_OPTION.getId()

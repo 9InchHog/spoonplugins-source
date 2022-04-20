@@ -1016,7 +1016,7 @@ public class CoxAdditionsPlugin extends Plugin {
                 }
             }
 
-            if (config.removeCastCoX() && option.equals("cast") && entry.getType().getId() == MenuAction.SPELL_CAST_ON_PLAYER.getId()) {
+            if (config.removeCastCoX() && option.equals("cast") && entry.getType().getId() == MenuAction.WIDGET_TARGET_ON_PLAYER.getId()) {
                 String[] spells = {"ice barrage", "ice burst", "ice blitz", "ice rush", "entangle", "snare", "bind", "blood barrage", "blood burst", "blood rush",
                         "blood blitz", "fire surge", "fire wave"};
                 for (String spell : spells) {

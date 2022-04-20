@@ -100,6 +100,8 @@ public class SpoonGOTRPlugin extends Plugin {
 	public Color raveGuardianColor = Color.RED;
 	public ArrayList<Color> guardianColors = new ArrayList<>();
 
+	public ArrayList<Integer> altarRegions = new ArrayList<>(Arrays.asList(12875,10315,8523,9547,10827,11083,10571,10059,11339,9035,9803,8779,14484));
+
 	@Provides
 	SpoonGOTRConfig provideConfig(ConfigManager configManager) {
 		return configManager.getConfig(SpoonGOTRConfig.class);
@@ -259,15 +261,20 @@ public class SpoonGOTRPlugin extends Plugin {
 
 	@Subscribe
 	private void onGameStateChanged(GameStateChanged event) {
-		if (client.getLocalPlayer() != null && ((event.getGameState() != GameState.LOGGED_IN && event.getGameState() != GameState.LOADING) || Arrays.stream(client.getMapRegions()).noneMatch(region -> region == 14484))) {
-			guardians.clear();
-			hugePortal = null;
-			unchargedCellTable = null;
-			eleGuardian = null;
-			cataGuardian = null;
-			showPoints = false;
-			timeTillNextGame = -1;
-			client.clearHintArrow();
+		if (client.getLocalPlayer() != null) {
+			if (Arrays.stream(client.getMapRegions()).noneMatch(region -> altarRegions.contains(region))) {
+				reset();
+			} else if ((event.getGameState() != GameState.LOGGED_IN && event.getGameState() != GameState.LOADING)
+					|| Arrays.stream(client.getMapRegions()).noneMatch(region -> region == 14484)) {
+				guardians.clear();
+				hugePortal = null;
+				unchargedCellTable = null;
+				eleGuardian = null;
+				cataGuardian = null;
+				showPoints = false;
+				timeTillNextGame = -1;
+				client.clearHintArrow();
+			}
 		}
 	}
 
@@ -313,7 +320,7 @@ public class SpoonGOTRPlugin extends Plugin {
 			ItemContainer ic = client.getItemContainer(InventoryID.INVENTORY);
 			if (ic != null) {
 				hasCell = ic.count(26883) > 0 || ic.count(26884) > 0 || ic.count(26885) > 0 || ic.count(26886) > 0;
-				hasGuardianStone = ic.count(26880) > 0 || ic.count(26881) > 0;
+				hasGuardianStone = ic.count(26880) > 0 || ic.count(26881) > 0 || ic.count(26941) > 0;
 				hasUnchargedCells = ic.count(26882) > 0;
 			}
 		}

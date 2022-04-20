@@ -1011,7 +1011,7 @@ public class Nylocas extends Room {
         if (nyloActive) {
             String target = entry.getTarget();
 
-            if (config.nyloRecolorMenu() && (entry.getType() == MenuAction.NPC_SECOND_OPTION.getId() || entry.getType() == MenuAction.SPELL_CAST_ON_NPC.getId())) {
+            if (config.nyloRecolorMenu() && (entry.getType() == MenuAction.NPC_SECOND_OPTION.getId() || entry.getType() == MenuAction.WIDGET_TARGET_ON_NPC.getId())) {
                 MenuEntry[] entries = client.getMenuEntries();
                 MenuEntry toEdit = entries[entries.length - 1];
 
