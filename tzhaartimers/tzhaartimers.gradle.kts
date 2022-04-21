@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.2"
+version = "1.0.3"
 
 project.extra["PluginName"] = "Tzhaar Timers"
 project.extra["PluginDescription"] = "Displays elapsed time and wave splits in the Fight Caves and Inferno"

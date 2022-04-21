@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.3"
+version = "1.0.4"
 
 project.extra["PluginName"] = "De0 Scene Reloader"
 project.extra["PluginDescription"] = "De0's Scene Reloader with the option to set a hotkey and only enable in Cox"
