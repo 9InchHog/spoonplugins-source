@@ -5,14 +5,24 @@ import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.Keybind;
 
-@ConfigGroup("keydrag")
+@ConfigGroup(KeyDragPlugin.CONFIG_GROUP)
 public interface KeyDragConfig extends Config {
-    @ConfigItem(keyName = "dragDelay", name = "Drag Delay", description = "Configures the inventory drag delay in client ticks (20ms)", position = 1)
+    @ConfigItem(
+            keyName = "dragDelay",
+            name = "Drag Delay",
+            description = "Configures the inventory drag delay in client ticks (20ms)",
+            position = 1
+    )
     default int dragDelay() {
         return 30;
     }
 
-    @ConfigItem(keyName = "hotkey", name = "On/Off Toggle", description = "Toggles anti drag on or off", position = 2)
+    @ConfigItem(
+            keyName = "hotkey",
+            name = "On/Off Toggle",
+            description = "Toggles anti drag on or off",
+            position = 2
+    )
     default Keybind hotkey() {
         return Keybind.NOT_SET;
     }
