@@ -477,7 +477,7 @@ public class SpoonGauntletPlugin extends Plugin {
         if (GauntletUtils.inBoss(client)) {
             String s = event.getMenuTarget().toLowerCase();
             if (s.contains("wield")) {
-                weaponID = event.getId();
+                weaponID = event.getItemId();
             }
         }
     }

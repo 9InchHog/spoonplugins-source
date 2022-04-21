@@ -143,7 +143,7 @@ public class InfernoRetardPlugin extends Plugin {
         if (isInInferno()) {
             String target = Text.removeTags(event.getMenuTarget(), true);
             if (event.getMenuAction() == MenuAction.ITEM_SECOND_OPTION) {
-                WeaponStyle newStyle = WeaponMap.StyleMap.get(event.getId());
+                WeaponStyle newStyle = WeaponMap.StyleMap.get(event.getItemId());
                 if (newStyle != null) {
                     skipTickCheck = true;
                     weaponStyle = newStyle;

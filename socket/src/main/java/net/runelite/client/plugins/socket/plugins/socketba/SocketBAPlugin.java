@@ -281,8 +281,8 @@ public class SocketBAPlugin extends Plugin {
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event) {
 		if(this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1 && event.getMenuOption().equalsIgnoreCase("wield")
-				&& (event.getId() == 22227 || event.getId() == 22228 || event.getId() == 22229 || event.getId() == 22230)){
-			arrowEquiped = event.getId();
+				&& (event.getItemId() == 22227 || event.getItemId() == 22228 || event.getItemId() == 22229 || event.getItemId() == 22230)){
+			arrowEquiped = event.getItemId();
 		}
 	}
 

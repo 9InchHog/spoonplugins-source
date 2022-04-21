@@ -1144,8 +1144,8 @@ public class CoxAdditionsPlugin extends Plugin {
     @Subscribe
     public void onMenuOptionClicked(MenuOptionClicked event) {
         if (event.getMenuOption().equalsIgnoreCase("hold") || event.getMenuOption().equalsIgnoreCase("equip") || event.getMenuOption().equalsIgnoreCase("wield")){
-            if (!offHandId.contains(event.getId())) {
-                weaponId = event.getId();
+            if (!offHandId.contains(event.getItemId())) {
+                weaponId = event.getItemId();
             }
         }
     }

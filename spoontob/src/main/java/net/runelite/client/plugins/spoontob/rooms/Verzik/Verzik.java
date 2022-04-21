@@ -554,7 +554,7 @@ public class Verzik extends Room {
         PlayerComposition playerComp = player != null ? player.getPlayerComposition() : null;
 
         if (event.getMenuAction() == MenuAction.ITEM_SECOND_OPTION) {
-            PoisonStyle newStyle = PoisonWeaponMap.PoisonType.get(event.getId());
+            PoisonStyle newStyle = PoisonWeaponMap.PoisonType.get(event.getItemId());
             if (newStyle != null) {
                 skipTickCheck = true;
                 poisonStyle = newStyle;
