@@ -82,7 +82,8 @@ public class DEasyScapePlugin extends Plugin {
     public void onMenuEntryAdded(MenuEntryAdded e) {
         int type = e.getType();
         int id = e.getIdentifier();
-        if ((config.removeExamine() && type >= 1002 && type <= 1005) || (
+        String option = e.getOption();
+        if (config.removeExamine() && option.equalsIgnoreCase("examine") || (
                 config.removeInvItems() && type >= 33 && type <= 38 && is_inv_item_blocked(id)) || (
                 config.removeGroundItems() && type >= 18 && type <= 22 && is_ground_item_blocked(id)) || (
                 config.removeNpcs() && type >= 7 && type <= 13 && type != 8 && is_npc_op_blocked(id, type)) || (
