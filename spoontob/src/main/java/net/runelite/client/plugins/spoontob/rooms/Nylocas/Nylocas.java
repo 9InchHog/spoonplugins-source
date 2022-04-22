@@ -974,13 +974,13 @@ public class Nylocas extends Room {
 
     @Subscribe
     public void onMenuOptionClicked(MenuOptionClicked event) {
-        WeaponStyle newStyle = WeaponMap.StyleMap.get(event.getItemId());
-        if (newStyle != null) {
-            skipTickCheck = true;
-            weaponStyle = newStyle;
-        }
-
-        if ((config.wheelchairNylo() == SpoonTobConfig.wheelchairMode.BOSS || config.wheelchairNylo() == SpoonTobConfig.wheelchairMode.BOTH)
+        if (event.getMenuOption().equalsIgnoreCase("wield")) {
+            WeaponStyle newStyle = WeaponMap.StyleMap.get(event.getItemId());
+            if (newStyle != null) {
+                skipTickCheck = true;
+                weaponStyle = newStyle;
+            }
+        } else if ((config.wheelchairNylo() == SpoonTobConfig.wheelchairMode.BOSS || config.wheelchairNylo() == SpoonTobConfig.wheelchairMode.BOTH)
                 && nylocasBoss != null && event.getMenuTarget().contains(BOSS_NYLO) && event.getMenuOption().equalsIgnoreCase("attack") && weaponStyle != null) {
             switch (weaponStyle) {
                 case TRIDENTS:
@@ -1010,8 +1010,9 @@ public class Nylocas extends Room {
     public void onMenuEntryAdded(MenuEntryAdded entry) {
         if (nyloActive) {
             String target = entry.getTarget();
+            String option = entry.getOption();
 
-            if (config.nyloRecolorMenu() && (entry.getOption().equalsIgnoreCase("attack") || entry.getType() == MenuAction.WIDGET_TARGET_ON_NPC.getId())) {
+            if (config.nyloRecolorMenu() && (option.equalsIgnoreCase("attack") || entry.getType() == MenuAction.WIDGET_TARGET_ON_NPC.getId())) {
                 MenuEntry[] entries = client.getMenuEntries();
                 MenuEntry toEdit = entries[entries.length - 1];
 
@@ -1057,7 +1058,7 @@ public class Nylocas extends Room {
             }
 
             if ((config.wheelchairNylo() == SpoonTobConfig.wheelchairMode.WAVES || config.wheelchairNylo() == SpoonTobConfig.wheelchairMode.BOTH)
-                    && entry.getOption().equalsIgnoreCase("attack") && weaponStyle != null) {
+                    && option.equalsIgnoreCase("attack") && weaponStyle != null) {
                 switch (weaponStyle) {
                     case TRIDENTS:
                         if (target.contains(MELEE_NYLO) || target.contains(RANGE_NYLO)) {
@@ -1094,7 +1095,7 @@ public class Nylocas extends Room {
             }
 
             if ((config.wheelchairNylo() == SpoonTobConfig.wheelchairMode.BOSS || config.wheelchairNylo() == SpoonTobConfig.wheelchairMode.BOTH)
-                    && nyloMiniboss != null && target.contains(DEMIBOSS_NYLO) && entry.getOption().equalsIgnoreCase("attack") && weaponStyle != null) {
+                    && nyloMiniboss != null && target.contains(DEMIBOSS_NYLO) && option.equalsIgnoreCase("attack") && weaponStyle != null) {
                 switch (weaponStyle) {
                     case TRIDENTS:
                     case MAGIC:

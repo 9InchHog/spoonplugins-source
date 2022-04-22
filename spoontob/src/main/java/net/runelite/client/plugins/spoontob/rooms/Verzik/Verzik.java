@@ -553,7 +553,7 @@ public class Verzik extends Room {
         Player player = client.getLocalPlayer();
         PlayerComposition playerComp = player != null ? player.getPlayerComposition() : null;
 
-        if (event.getMenuAction() == MenuAction.ITEM_SECOND_OPTION) {
+        if (event.getMenuOption().equalsIgnoreCase("wield")) {
             PoisonStyle newStyle = PoisonWeaponMap.PoisonType.get(event.getItemId());
             if (newStyle != null) {
                 skipTickCheck = true;
