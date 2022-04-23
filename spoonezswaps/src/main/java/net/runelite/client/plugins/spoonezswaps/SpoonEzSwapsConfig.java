@@ -243,10 +243,20 @@ public interface SpoonEzSwapsConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "swapEmptyPouch",
+			name = "Essence Pouch",
+			description = "Swap 'Fill' with 'Empty' on rune essence pouches.<br>Only activates near altars.",
+			position = 11,
+			section = skillingSection
+	)
+	default boolean swapEmptyPouch() {return false;}
+
+
+	@ConfigItem(
 			keyName = "customDrop",
 			name = "Left Click Drop",
 			description = "Anything in the list will be dropped on left click",
-			position = 11,
+			position = 12,
 			section = skillingSection
 	)
 	default String customDrop()
@@ -655,18 +665,6 @@ public interface SpoonEzSwapsConfig extends Config
 	{
 		return false;
 	}
-
-	/*@ConfigItem(
-			keyName = "hideCancel",
-			name = "Hide 'Cancel'",
-			description = "Hides the 'Cancel' option from the right click menu.",
-			position = 4,
-			section = miscSection
-	)
-	default boolean hideCancel()
-	{
-		return false;
-	}*/
 
 	@ConfigItem(
 			keyName = "hideDestroy",
