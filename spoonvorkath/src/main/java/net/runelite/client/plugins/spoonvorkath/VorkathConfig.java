@@ -57,4 +57,15 @@ public interface VorkathConfig extends Config {
     {
         return 0;
     }
+
+    @ConfigItem(
+            position = 6,
+            keyName = "leftClickCast",
+            name = "Left Click Cast Crumble Undead",
+            description = "Left click cast crumble undead on the spawn without having to select the spell."
+    )
+    default boolean leftClickCast()
+    {
+        return false;
+    }
 }

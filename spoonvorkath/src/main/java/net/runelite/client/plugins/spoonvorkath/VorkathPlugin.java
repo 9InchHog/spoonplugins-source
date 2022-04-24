@@ -2,9 +2,12 @@ package net.runelite.client.plugins.spoonvorkath;
 
 import com.google.inject.Provides;
 import net.runelite.api.Client;
+import net.runelite.api.MenuAction;
 import net.runelite.api.NPC;
 import net.runelite.api.Projectile;
 import net.runelite.api.events.*;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -112,6 +115,21 @@ public class VorkathPlugin extends Plugin {
     @Subscribe
     private void onGameTick(GameTick event) {
         vorkathInstance = Arrays.stream(client.getMapRegions()).anyMatch(region -> region == 9023);
+    }
+
+    @Subscribe
+    public void onMenuOptionClicked(MenuOptionClicked event)
+    {
+        if (config.leftClickCast()
+                && event.getMenuTarget().contains("Zombified Spawn")
+                && vorkathInstance)
+        {
+            Widget widget = client.getWidget(WidgetInfo.SPELL_CRUMBLE_UNDEAD);
+            client.setSelectedSpellName("<col=00ff00>" + "Crumble Undead" + "</col>");
+            client.setSelectedSpellWidget(widget.getId());
+            client.setSelectedSpellChildIndex(-1);
+            event.setMenuAction(MenuAction.WIDGET_TARGET_ON_NPC);
+        }
     }
 
     @Subscribe
