@@ -1378,9 +1378,19 @@ public class CoxAdditionsPlugin extends Plugin {
     }
 
     private void swap(ArrayListMultimap<String, Integer> optionIndexes, MenuEntry[] entries, int index1, int index2) {
-        MenuEntry entry = entries[index1];
-        entries[index1] = entries[index2];
-        entries[index2] = entry;
+        MenuEntry entry1 = entries[index1],
+                entry2 = entries[index2];
+        entries[index1] = entry2;
+        entries[index2] = entry1;
+        if (entry1.isItemOp() && entry1.getType() == MenuAction.CC_OP_LOW_PRIORITY)
+        {
+            entry1.setType(MenuAction.CC_OP);
+        }
+        if (entry2.isItemOp() && entry2.getType() == MenuAction.CC_OP_LOW_PRIORITY)
+        {
+            entry2.setType(MenuAction.CC_OP);
+        }
+
         client.setMenuEntries(entries);
         optionIndexes.clear();
         int idx = 0;
