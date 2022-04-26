@@ -32,13 +32,17 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.PlayerSpawned;
+import net.runelite.api.events.ScriptPostFired;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ChatIconManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.playerindicators.PlayerIndicatorsPlugin;
 import net.runelite.client.plugins.pvpplayerindicators.utils.PvpUtil;
-import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ColorUtil;
 import org.pf4j.Extension;
@@ -58,6 +62,8 @@ import static net.runelite.api.MenuAction.*;
 )
 public class PvPPlayerIndicatorsPlugin extends Plugin
 {
+	private static final String TRADING_WITH_TEXT = "Trading with: ";
+
 	@Inject
 	private OverlayManager overlayManager;
 
@@ -90,6 +96,9 @@ public class PvPPlayerIndicatorsPlugin extends Plugin
 
 	@Inject
 	private ChatIconManager chatIconManager;
+
+	@Inject
+	private ClientThread clientThread;
 
 	private boolean mirrorMode;
 
@@ -294,10 +303,48 @@ public class PvPPlayerIndicatorsPlugin extends Plugin
 		return newTarget;
 	}
 
+	@Subscribe
+	public void onScriptPostFired(ScriptPostFired event)
+	{
+		if (event.getScriptId() == ScriptID.TRADE_MAIN_INIT)
+		{
+			clientThread.invokeLater(() ->
+			{
+				Widget tradeTitle = client.getWidget(WidgetInfo.TRADE_WINDOW_HEADER);
+				String header = tradeTitle.getText();
+				String playerName = header.substring(TRADING_WITH_TEXT.length());
+
+				Player targetPlayer = findPlayer(playerName);
+				if (targetPlayer == null)
+				{
+					return;
+				}
+
+				Decorations playerColor = getDecorations(targetPlayer);
+				if (playerColor != null)
+				{
+					tradeTitle.setText(TRADING_WITH_TEXT + ColorUtil.wrapWithColorTag(playerName, playerColor.color));
+				}
+			});
+		}
+	}
+
+	private Player findPlayer(String name)
+	{
+		for (Player player : client.getPlayers())
+		{
+			if (player.getName().equals(name))
+			{
+				return player;
+			}
+		}
+		return null;
+	}
+
 	@Value
 	private static class Decorations
 	{
-		private final int image;
-		private final Color color;
+		int image;
+		Color color;
 	}
 }
