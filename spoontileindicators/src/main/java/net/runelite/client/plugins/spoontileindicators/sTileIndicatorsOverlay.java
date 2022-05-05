@@ -1,8 +1,6 @@
 package net.runelite.client.plugins.spoontileindicators;
 
-import net.runelite.api.Client;
-import net.runelite.api.Perspective;
-import net.runelite.api.Player;
+import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
@@ -11,6 +9,7 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.util.ImageUtil;
+import net.runelite.client.util.RaveUtils;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -22,14 +21,17 @@ public class sTileIndicatorsOverlay extends Overlay {
 
 	private final sTileIndicatorsConfig config;
 
+	private final RaveUtils raveUtils;
+
 	private final BufferedImage ARROW_ICON;
 	private LocalPoint lastDestination;
 	private int gameCycle;
 
 	@Inject
-	private sTileIndicatorsOverlay(Client client, sTileIndicatorsConfig config) {
+	private sTileIndicatorsOverlay(Client client, sTileIndicatorsConfig config, RaveUtils raveUtils) {
 		this.client = client;
 		this.config = config;
+		this.raveUtils = raveUtils;
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		setPriority(OverlayPriority.HIGHEST);
@@ -68,19 +70,17 @@ public class sTileIndicatorsOverlay extends Overlay {
 			if (config.highlightDestinationStyle() == sTileIndicatorsConfig.TileStyle.DEFAULT) {
 				renderTile(graphics, this.client.getLocalDestinationLocation(), this.config.highlightDestinationColor(), config.destinationTileBorderWidth(),
 						config.destinationTileOpacity(), config.highlightDestinationColor().getAlpha(), fillColor);
-			} else if (config.highlightDestinationStyle() == sTileIndicatorsConfig.TileStyle.RS3) {
-				renderRS3Tile(graphics, client.getLocalDestinationLocation(), config.highlightDestinationColor(), true);
-			} else {
-				renderRS3Tile(graphics, client.getLocalDestinationLocation(), config.highlightDestinationColor(), false);
-			}
+			} else renderRS3Tile(graphics, client.getLocalDestinationLocation(), config.highlightDestinationColor(), config.highlightDestinationStyle() == sTileIndicatorsConfig.TileStyle.RS3);
 		}
 		if (this.config.highlightCurrentTile()) {
 			WorldPoint playerPos = this.client.getLocalPlayer().getWorldLocation();
-			if (playerPos == null)
+			if (playerPos == null) {
 				return null;
+			}
 			LocalPoint playerPosLocal = LocalPoint.fromWorld(this.client, playerPos);
-			if (playerPosLocal == null)
+			if (playerPosLocal == null) {
 				return null;
+			}
 			if (config.trueTileFillColor()) {
 				fillColor = config.highlightCurrentColor();
 			} else {
@@ -106,19 +106,30 @@ public class sTileIndicatorsOverlay extends Overlay {
 				}
 			}
 		}
+		if (config.overlaysBelowPlayer() && client.isGpu()) {
+			removeActor(graphics, client.getLocalPlayer());
+		}
 		return null;
 	}
 
 	private void renderTile(Graphics2D graphics, LocalPoint dest, Color color, final double borderWidth, int opacity, int outlineAlpha, Color fillColor) {
-		if (dest == null)
+		if (dest == null) {
 			return;
+		}
 		Polygon poly = Perspective.getCanvasTilePoly(this.client, dest);
-		if (poly == null)
+		if (poly == null) {
 			return;
+		}
 		if (this.config.antiAlias()) {
 			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		} else
-		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+		} else {
+			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+		}
+		if (config.rave()) {
+			color = raveUtils.getColor(dest.hashCode(), true);
+			Color raveFillColor = raveUtils.getColor(dest.hashCode(), true);
+			fillColor = new Color(raveFillColor.getRed(), raveFillColor.getGreen(), raveFillColor.getBlue(), fillColor.getAlpha());
+		}
 		if (borderWidth == 0) {
 			outlineAlpha = 0;
 		}
@@ -129,7 +140,7 @@ public class sTileIndicatorsOverlay extends Overlay {
 		graphics.fill(poly);
 	}
 
-	private void renderRS3Tile(final Graphics2D graphics, final LocalPoint dest, final Color color, boolean drawArrow)
+	private void renderRS3Tile(final Graphics2D graphics, final LocalPoint dest, Color color, boolean drawArrow)
 	{
 		if (dest == null)
 		{
@@ -140,6 +151,10 @@ public class sTileIndicatorsOverlay extends Overlay {
 		final Polygon poly = getCanvasTargetTileAreaPoly(client, dest, size, client.getPlane(), 10);
 		final Polygon shadow = getCanvasTargetTileAreaPoly(client, dest, size, client.getPlane(), 0);
 		Point canvasLoc = Perspective.getCanvasImageLocation(client, dest, ARROW_ICON, 150 + (int) (20 * Math.sin(client.getGameCycle() / 10.0)));
+
+		if (config.rave()) {
+			color = raveUtils.getColor(dest.hashCode(), true);
+		}
 
 		if (poly != null)
 		{
@@ -195,5 +210,93 @@ public class sTileIndicatorsOverlay extends Overlay {
 		}
 
 		return poly;
+	}
+
+	private void removeActor(final Graphics2D graphics, final Actor actor) {
+		final int clipX1 = client.getViewportXOffset();
+		final int clipY1 = client.getViewportYOffset();
+		final int clipX2 = client.getViewportWidth() + clipX1;
+		final int clipY2 = client.getViewportHeight() + clipY1;
+		Object origAA = graphics.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+		graphics.setRenderingHint(
+				RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_OFF);
+		Model model = actor.getModel();
+		int vCount = model.getVerticesCount();
+		int[] x3d = model.getVerticesX();
+		int[] y3d = model.getVerticesY();
+		int[] z3d = model.getVerticesZ();
+
+		int[] x2d = new int[vCount];
+		int[] y2d = new int[vCount];
+
+		int size = 1;
+		if (actor instanceof NPC)
+		{
+			NPCComposition composition = ((NPC) actor).getTransformedComposition();
+			if (composition != null)
+			{
+				size = composition.getSize();
+			}
+		}
+
+		final LocalPoint lp = actor.getLocalLocation();
+
+		final int localX = lp.getX();
+		final int localY = lp.getY();
+		final int northEastX = lp.getX() + Perspective.LOCAL_TILE_SIZE * (size - 1) / 2;
+		final int northEastY = lp.getY() + Perspective.LOCAL_TILE_SIZE * (size - 1) / 2;
+		final LocalPoint northEastLp = new LocalPoint(northEastX, northEastY);
+		int localZ = Perspective.getTileHeight(client, northEastLp, client.getPlane());
+		int rotation = actor.getCurrentOrientation();
+
+		Perspective.modelToCanvas(client, vCount, localX, localY, localZ, rotation, x3d, z3d, y3d, x2d, y2d);
+
+		boolean anyVisible = false;
+
+		for (int i = 0; i < vCount; i++) {
+			int x = x2d[i];
+			int y = y2d[i];
+
+			boolean visibleX = x >= clipX1 && x < clipX2;
+			boolean visibleY = y >= clipY1 && y < clipY2;
+			anyVisible |= visibleX && visibleY;
+		}
+
+		if (!anyVisible) return;
+
+		int tCount = model.getFaceCount();
+		int[] tx = model.getFaceIndices1();
+		int[] ty = model.getFaceIndices2();
+		int[] tz = model.getFaceIndices3();
+
+		Composite orig = graphics.getComposite();
+		graphics.setComposite(AlphaComposite.Clear);
+		graphics.setColor(Color.WHITE);
+		for (int i = 0; i < tCount; i++) {
+			// Cull tris facing away from the camera
+			if (getTriDirection(x2d[tx[i]], y2d[tx[i]], x2d[ty[i]], y2d[ty[i]], x2d[tz[i]], y2d[tz[i]]) >= 0)
+			{
+				continue;
+			}
+			Polygon p = new Polygon(
+					new int[]{x2d[tx[i]], x2d[ty[i]], x2d[tz[i]]},
+					new int[]{y2d[tx[i]], y2d[ty[i]], y2d[tz[i]]},
+					3);
+			graphics.fill(p);
+
+		}
+		graphics.setComposite(orig);
+		graphics.setRenderingHint(
+				RenderingHints.KEY_ANTIALIASING,
+				origAA);
+	}
+
+	private int getTriDirection(int x1, int y1, int x2, int y2, int x3, int y3) {
+		int x4 = x2 - x1;
+		int y4 = y2 - y1;
+		int x5 = x3 - x1;
+		int y5 = y3 - y1;
+		return x4 * y5 - y4 * x5;
 	}
 }
