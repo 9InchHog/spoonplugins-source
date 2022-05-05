@@ -243,6 +243,9 @@ public class SpoonGOTRPlugin extends Plugin {
 				timeTillNextGame = 0;
 				portalsSpawned = 0;
 				infoBoxManager.removeInfoBox(timerBox);
+				if (config.instanceTimer()) {
+					client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "GOTR game complete. Duration: <col=ff0000>" + ticksToSeconds(client.getTickCount() - startTick), "");
+				}
 				startTick = -1;
 				client.clearHintArrow();
 			} else if (event.getMessage().contains("Elemental attunement level:") && event.getMessage().contains("Catalytic attunement level:")) {
@@ -304,14 +307,14 @@ public class SpoonGOTRPlugin extends Plugin {
 	private void onNpcSpawned(NpcSpawned event) {
 		if (event.getNpc().getId() == 11403) {
 			bigGuy = event.getNpc();
-		} 
+		}
 	}
 
 	@Subscribe
 	private void onNpcDespawned(NpcDespawned event) {
 		if (event.getNpc().getId() == 11403) {
 			bigGuy = null;
-		} 
+		}
 	}
 
 	@Subscribe

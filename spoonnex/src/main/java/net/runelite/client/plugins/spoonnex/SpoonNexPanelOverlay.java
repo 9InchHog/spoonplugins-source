@@ -24,7 +24,7 @@ public class SpoonNexPanelOverlay extends OverlayPanel{
 
     public Dimension render(Graphics2D graphics) {
         this.panelComponent.getChildren().clear();
-        if(config.playerCounter() && plugin.nexAltar != null && plugin.nexBanker == null){
+        if(config.playerCounter() && plugin.nexAltar != null && plugin.nexBanker == null && plugin.followPlayers.size() > 1){
             this.panelComponent.getChildren().add(LineComponent.builder()
                     .leftColor(Color.WHITE)
                     .left("Players: ")

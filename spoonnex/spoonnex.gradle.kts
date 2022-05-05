@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.9"
+version = "1.0.10"
 
 project.extra["PluginName"] = "Spoon Nex"
 project.extra["PluginDescription"] = "SpoonLite Nex Plugin"

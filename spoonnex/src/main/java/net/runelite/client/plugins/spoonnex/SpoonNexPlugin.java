@@ -215,9 +215,7 @@ public class SpoonNexPlugin extends Plugin {
 
 	@Subscribe
 	private void onPlayerDespawned(PlayerDespawned event) {
-		if(nexAltar != null || nexBanker != null) {
-			followPlayers.removeIf(fp -> fp.player.getName() != null && fp.player.getName().equals(event.getPlayer().getName()));
-		}
+		followPlayers.removeIf(fp -> fp.player.getName() != null && fp.player.getName().equals(event.getPlayer().getName()));
 	}
 
 	@Subscribe
