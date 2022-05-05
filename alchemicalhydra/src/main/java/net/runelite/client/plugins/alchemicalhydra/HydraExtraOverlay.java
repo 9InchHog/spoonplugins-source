@@ -82,17 +82,19 @@ public class HydraExtraOverlay extends Overlay {
                 Font oldFont = graphics.getFont();
                 graphics.setFont(FontManager.getRunescapeBoldFont());
                 Color color = Color.WHITE;
-                if (plugin.redVent != null && (plugin.hydra.getNpc() == null || plugin.hydra.getNpc().getId() == 8615)) {
+                if (plugin.redVent != null) {
                     Point textLoc = plugin.redVent.getCanvasTextLocation(graphics, text, 25);
                     Point pointShadow = new Point(textLoc.getX() + 1, textLoc.getY() + 1);
                     OverlayUtil.renderTextLocation(graphics, pointShadow, text, Color.BLACK);
                     OverlayUtil.renderTextLocation(graphics, textLoc, text, color);
-                } else if (plugin.greenVent != null && (plugin.hydra.getNpc().getId() == 8619 || plugin.hydra.getNpc().getId() == 8616)) {
+                }
+                if (plugin.greenVent != null) {
                     Point textLoc = plugin.greenVent.getCanvasTextLocation(graphics, text, 25);
                     Point pointShadow = new Point(textLoc.getX() + 1, textLoc.getY() + 1);
                     OverlayUtil.renderTextLocation(graphics, pointShadow, text, Color.BLACK);
                     OverlayUtil.renderTextLocation(graphics, textLoc, text, color);
-                } else if (plugin.blueVent != null && (plugin.hydra.getNpc().getId() == 8620 || plugin.hydra.getNpc().getId() == 8617 || plugin.hydra.getNpc().getId() == 8621 || plugin.hydra.getNpc().getId() == 8618)) {
+                }
+                if (plugin.blueVent != null) {
                     Point textLoc = plugin.blueVent.getCanvasTextLocation(graphics, text, 25);
                     Point pointShadow = new Point(textLoc.getX() + 1, textLoc.getY() + 1);
                     OverlayUtil.renderTextLocation(graphics, pointShadow, text, Color.BLACK);
