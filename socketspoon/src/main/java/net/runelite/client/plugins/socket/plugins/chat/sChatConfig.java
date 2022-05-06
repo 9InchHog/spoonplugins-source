@@ -139,6 +139,14 @@ public interface sChatConfig extends Config {
 
     @ConfigItem(
             position = 12,
+            keyName = "splitSocketChat",
+            name = "Split Chat",
+            description = "Combine Socket Chat with private chat"
+    )
+    default boolean splitSocketChat() {return false;}
+
+    @ConfigItem(
+            position = 13,
             keyName = "showSomeStupidShit",
             name = "Show Custom Message",
             description = "Can put whatever the fuck you want here... I don't fucking know"
@@ -146,7 +154,7 @@ public interface sChatConfig extends Config {
     default String showSomeStupidShit() {return "";}
 
     @ConfigItem(
-            position = 13,
+            position = 14,
             keyName = "chatnameFake",
             name = "Use Fake Name",
             description = "Uses a fake name for socket messages, made by Azo"

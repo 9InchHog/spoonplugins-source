@@ -257,6 +257,11 @@ public class sChatPlugin extends Plugin implements KeyListener {
                         + ColorUtil.prependColorTag(msg, config.messageColor()), null, false);
             }
 
+            if (config.splitSocketChat())
+            {
+                client.addChatMessage(ChatMessageType.PRIVATECHAT, "","[S] " +  sender + ": " +  msg, null, false);
+            }
+
             sentMessages.put(senderReal, new SentSocketMessage(client.getTickCount(), msg, false));
             checkOverhead(false);
 
