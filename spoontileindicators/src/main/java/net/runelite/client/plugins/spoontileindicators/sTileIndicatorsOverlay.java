@@ -9,7 +9,6 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.util.ImageUtil;
-import net.runelite.client.util.RaveUtils;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -21,17 +20,14 @@ public class sTileIndicatorsOverlay extends Overlay {
 
 	private final sTileIndicatorsConfig config;
 
-	private final RaveUtils raveUtils;
-
 	private final BufferedImage ARROW_ICON;
 	private LocalPoint lastDestination;
 	private int gameCycle;
 
 	@Inject
-	private sTileIndicatorsOverlay(Client client, sTileIndicatorsConfig config, RaveUtils raveUtils) {
+	private sTileIndicatorsOverlay(Client client, sTileIndicatorsConfig config) {
 		this.client = client;
 		this.config = config;
-		this.raveUtils = raveUtils;
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		setPriority(OverlayPriority.HIGHEST);
@@ -126,8 +122,8 @@ public class sTileIndicatorsOverlay extends Overlay {
 			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 		}
 		if (config.rave()) {
-			color = raveUtils.getColor(dest.hashCode(), true);
-			Color raveFillColor = raveUtils.getColor(dest.hashCode(), true);
+			color = getColor(dest.hashCode(), true);
+			Color raveFillColor = getColor(dest.hashCode(), true);
 			fillColor = new Color(raveFillColor.getRed(), raveFillColor.getGreen(), raveFillColor.getBlue(), fillColor.getAlpha());
 		}
 		if (borderWidth == 0) {
@@ -153,7 +149,7 @@ public class sTileIndicatorsOverlay extends Overlay {
 		Point canvasLoc = Perspective.getCanvasImageLocation(client, dest, ARROW_ICON, 150 + (int) (20 * Math.sin(client.getGameCycle() / 10.0)));
 
 		if (config.rave()) {
-			color = raveUtils.getColor(dest.hashCode(), true);
+			color = getColor(dest.hashCode(), true);
 		}
 
 		if (poly != null)
@@ -298,5 +294,17 @@ public class sTileIndicatorsOverlay extends Overlay {
 		int x5 = x3 - x1;
 		int y5 = y3 - y1;
 		return x4 * y5 - y4 * x5;
+	}
+
+	public Color getColor(int hashCode, boolean syncColor)
+	{
+		return getColor(hashCode, client.getGameCycle(), syncColor, config.raveSpeed());
+	}
+
+	public static Color getColor(int hashCode, int gameCycle, boolean syncColor, int colorSpeed)
+	{
+		if (syncColor) hashCode = 0;
+		int clientTicks = colorSpeed / 20;
+		return Color.getHSBColor(((hashCode + gameCycle) % clientTicks) / ((float) clientTicks), 1.0f, 1.0f);
 	}
 }

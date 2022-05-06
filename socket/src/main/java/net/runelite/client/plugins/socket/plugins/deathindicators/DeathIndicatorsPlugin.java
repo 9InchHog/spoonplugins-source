@@ -626,7 +626,9 @@ public class DeathIndicatorsPlugin extends Plugin
     @Subscribe
     public void onClientTick(ClientTick event)
     {
-        client.setMenuEntries(updateMenuEntries(client.getMenuEntries()));
+        if (config.deprioNylo()) {
+            client.setMenuEntries(updateMenuEntries(client.getMenuEntries()));
+        }
     }
 
     private MenuEntry[] updateMenuEntries(MenuEntry[] menuEntries) {

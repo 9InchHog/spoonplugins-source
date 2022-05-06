@@ -299,6 +299,17 @@ public interface sTileIndicatorsConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+			keyName = "raveSpeed",
+			name = "Rave Highlight Speed",
+			description = "Sets the speed of all rave highlights",
+			position = 19,
+			hidden = true,
+			unhide = "rave"
+	)
+	@Units(Units.MILLISECONDS)
+	default int raveSpeed() {return 6000;}
+
 	@Getter
 	@AllArgsConstructor
 	public enum TileStyle {
