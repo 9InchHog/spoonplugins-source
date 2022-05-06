@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.3"
+version = "1.0.4"
 
 project.extra["PluginName"] = "Spoon Tile Indicators"
 project.extra["PluginDescription"] = "Additional features for tile indicators"
