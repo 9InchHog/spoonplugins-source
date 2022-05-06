@@ -23,6 +23,14 @@ public interface DeathIndicatorsConfig extends Config
     )
     default boolean hideNylo() { return true;}
 
+    @ConfigItem(
+            position = 2,
+            keyName = "deprioNylo",
+            name = "Deprioritize Dead Nylo",
+            description = "Deprioritizes attack option on Nylos when dead"
+    )
+    default boolean deprioNylo() { return false;}
+
     /*@ConfigItem(
             position = 2,
             keyName = "maidenMarkers",

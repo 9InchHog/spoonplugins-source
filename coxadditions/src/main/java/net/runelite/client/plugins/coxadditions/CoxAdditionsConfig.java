@@ -550,6 +550,16 @@ public interface CoxAdditionsConfig extends Config {
         return Color.WHITE;
     }
 
+    @ConfigItem(
+            name = "Left Click Leave CC",
+            keyName = "leftClickLeave",
+            description = "Fuck this shit im out",
+            position = 29,
+            section = roomSection)
+    default boolean leftClickLeave() {
+        return false;
+    }
+
     //Prep Section
     @ConfigItem(
             keyName = "swapBats",

@@ -8,17 +8,15 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 import javax.inject.Inject;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.Hitsplat.HitsplatType;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.HitsplatApplied;
-import net.runelite.api.events.NpcDespawned;
-import net.runelite.api.events.NpcSpawned;
-import net.runelite.api.events.ScriptPreFired;
+import net.runelite.api.events.*;
 import net.runelite.api.kit.KitType;
+import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
@@ -624,4 +622,26 @@ public class DeathIndicatorsPlugin extends Plugin
             }
         }
     }
+
+    @Subscribe
+    public void onClientTick(ClientTick event)
+    {
+        client.setMenuEntries(updateMenuEntries(client.getMenuEntries()));
+    }
+
+    private MenuEntry[] updateMenuEntries(MenuEntry[] menuEntries) {
+        return Arrays.stream(menuEntries)
+                .filter(filterMenuEntries).sorted((o1, o2) -> 0)
+                .toArray(MenuEntry[]::new);
+    }
+
+    private final Predicate<MenuEntry> filterMenuEntries = entry -> {
+        int id = entry.getIdentifier();
+        String option = Text.standardize(entry.getOption(), true).toLowerCase();
+
+        if (option.contains("attack") && deadNylos.contains(client.getCachedNPCs()[id])) {
+            entry.setDeprioritized(true);
+        }
+        return true;
+    };
 }
