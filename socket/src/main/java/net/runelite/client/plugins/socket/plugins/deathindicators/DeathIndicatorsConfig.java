@@ -22,7 +22,9 @@ public interface DeathIndicatorsConfig extends Config
             position = 1,
             keyName = "showHull",
             name = "Use Retard Outline",
-            description = "Shows hull when killed"
+            description = "Shows hull when killed",
+            hidden = true,
+            unhide = "showOutline"
     )
     default boolean showHull() { return false;}
 
