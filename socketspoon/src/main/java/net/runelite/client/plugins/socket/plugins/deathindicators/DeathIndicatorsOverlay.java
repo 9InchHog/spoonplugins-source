@@ -32,11 +32,13 @@ public class DeathIndicatorsOverlay extends Overlay
     {
         if(config.showOutline())
         {
-            for (NPC n : plugin.getDeadNylos())
-            {
-                //Shape objectClickbox = n.getConvexHull();
-                //renderPoly(graphics, Color.red, objectClickbox);
-                this.modelOutlineRenderer.drawOutline(n, 2, Color.red, 4);
+            for (NPC n : plugin.getDeadNylos()) {
+                if (config.showHull()){
+                    Shape objectClickbox = n.getConvexHull();
+                    renderPoly(graphics, config.outlineColor(), objectClickbox);
+                } else {
+                    modelOutlineRenderer.drawOutline(n, 2, config.outlineColor(), 4);
+                }
             }
         }
         /*if(plugin.getMaidenNPC() != null && config.maidenMarkers())
