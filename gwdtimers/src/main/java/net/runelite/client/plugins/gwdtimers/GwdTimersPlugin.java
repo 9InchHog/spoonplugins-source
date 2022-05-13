@@ -24,7 +24,6 @@
 package net.runelite.client.plugins.gwdtimers;
 
 import com.google.inject.Provides;
-import com.openosrs.client.game.NPCManager;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Client;
@@ -36,7 +35,6 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
@@ -93,9 +91,6 @@ public class GwdTimersPlugin extends Plugin
 
 	@Inject
 	private GwdTimersConfig config;
-
-	@Inject
-	private NPCManager npcManager;
 
 	@Getter(AccessLevel.PACKAGE)
 	private Set<NPCContainer> npcContainers = new HashSet<>();
@@ -261,7 +256,7 @@ public class GwdTimersPlugin extends Plugin
 			case NpcID.KREEARRA:
 				if (config.gwd())
 				{
-					npcContainers.add(new NPCContainer(npc, npcManager.getAttackSpeed(npc.getId())));
+					npcContainers.add(new NPCContainer(npc));
 				}
 				break;
 		}

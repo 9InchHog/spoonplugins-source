@@ -89,7 +89,18 @@ public class AughPlugin extends Plugin {
                     clip.start();
                 }
             }
-        } else if (interactingName.equals("Turael") && taskScreen != null) {
+        } if (interactingName.equals("Konar") && taskScreen != null) {
+            String taskText = taskScreen.getText();
+            if ((taskText.contains("Your") || taskText.contains("You're")) && !taskText.toLowerCase().contains("hydra")) {
+                String replacementText = "AAAAAAAAUUUUUUUUGGGGGHHHHHHHHHHHH";
+                taskScreen.setText(replacementText + "!!!");
+                if (clip != null) {
+                    clip.setFramePosition(0);
+                    clip.start();
+                }
+            }
+        }
+        else if (interactingName.equals("Turael") && taskScreen != null) {
             String taskText = taskScreen.getText();
             String replacementText = "";
             if ((taskText.contains("Your") || taskText.contains("You're")) && taskText.contains("monkeys") && config.monkeys().length() > 0) {
