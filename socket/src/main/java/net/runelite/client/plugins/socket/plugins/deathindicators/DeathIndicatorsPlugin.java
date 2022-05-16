@@ -10,15 +10,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import javax.inject.Inject;
+
+import com.openosrs.client.util.WeaponMap;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import net.runelite.api.Hitsplat.HitsplatType;
 import net.runelite.api.events.*;
 import net.runelite.api.kit.KitType;
 import net.runelite.api.util.Text;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
@@ -34,6 +33,7 @@ import net.runelite.client.plugins.socket.packet.SocketReceivePacket;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
+
 @Slf4j
 @Extension
 @PluginDescriptor(
@@ -48,16 +48,20 @@ public class DeathIndicatorsPlugin extends Plugin
     @Inject
     private DeathIndicatorsConfig config;
     @Inject
+    ConfigManager configManager;
+    @Inject
+    PluginManager pluginManager;
+    @Inject
     private DeathIndicatorsOverlay overlay;
     @Inject
     private Client client;
     @Inject
     private OverlayManager overlayManager;
-    private ArrayList<NyloQ> nylos;
     @Inject
     private EventBus eventBus;
-    private boolean inNylo = false;
-
+    private ArrayList<NyloQ> nylos;
+    private ArrayList<Method> reflectedMethods;
+    private ArrayList<Plugin> reflectedPlugins;
     @Getter
     private ArrayList<NPC> deadNylos;
     @Getter
@@ -65,11 +69,12 @@ public class DeathIndicatorsPlugin extends Plugin
 
     private ArrayList<Integer> hiddenIndices;
     private int partySize;
-
-    @Inject
-    PluginManager pluginManager;
-    private ArrayList<Method> reflectedMethods;
-    private ArrayList<Plugin> reflectedPlugins;
+    private int ATTACK;
+    private int STRENGTH;
+    private int DEFENCE;
+    private int RANGED;
+    private int MAGIC;
+    private boolean inNylo = false;
 
     @Provides
     DeathIndicatorsConfig getConfig(ConfigManager configManager)
@@ -77,9 +82,13 @@ public class DeathIndicatorsPlugin extends Plugin
         return configManager.getConfig(DeathIndicatorsConfig.class);
     }
 
-    @Override
     protected void startUp()
     {
+        ATTACK = -1;
+        STRENGTH = -1;
+        DEFENCE = -1;
+        RANGED = -1;
+        MAGIC = -1;
         deadNylos = new ArrayList<>();
         nylos = new ArrayList<>();
         hiddenIndices = new ArrayList<>();
@@ -103,6 +112,7 @@ public class DeathIndicatorsPlugin extends Plugin
             reflectedMethods.add(m);
             reflectedPlugins.add(p);
         }
+
     }
 
     @Override
@@ -117,67 +127,96 @@ public class DeathIndicatorsPlugin extends Plugin
     @Subscribe
     public void onNpcSpawned(NpcSpawned event)
     {
-        if (partySize != -1)
+        int smSmallHP = -1;
+        int smBigHP = -1;
+        int bigHP = -1;
+        int smallHP = -1;
+        int maidenHP = -1;
+        if (partySize == 1)
         {
-            int bigHP = -1;
-            int smallHP = -1;
-            int maidenHP = -1;
-            if (partySize < 4)
-            {
-                bigHP = 16;
-                smallHP = 8;
-                maidenHP = 2625;
-            }
-            else if (partySize == 4)
-            {
-                bigHP = 19;
-                smallHP = 9;
-                maidenHP = 3062;
-            }
-            else if (partySize == 5)
-            {
-                bigHP = 22;
-                smallHP = 11;
-                maidenHP = 3500;
-            }
-
-            int id = event.getNpc().getId();
-            switch (id)
-            {
-                case 8342:
-                case 8343:
-                case 8344:
-                case 10791:
-                case 10792:
-                case 10793:
-                case 10797:
-                case 10798:
-                case 10799:
-                    nylos.add(new NyloQ(event.getNpc(), 0, smallHP));
-                    break;
-                case 8345:
-                case 8346:
-                case 8347:
-                case 8351:
-                case 8352:
-                case 8353:
-                case 10794:
-                case 10795:
-                case 10796:
-                case 10800:
-                case 10801:
-                case 10802:
-                    nylos.add(new NyloQ(event.getNpc(), 0, bigHP));
-                    break;
-                case NpcID.THE_MAIDEN_OF_SUGADINTI:
-                case NpcID.THE_MAIDEN_OF_SUGADINTI_10822:
-                    NyloQ maidenTemp = new NyloQ(event.getNpc(), 0, maidenHP);
-                    nylos.add(maidenTemp);
-                    maidenNPC = maidenTemp;
-                    break;
-            }
-
+            bigHP = 16;
+            smallHP = 8;
+            maidenHP = 2625;
+            smSmallHP = 2;
+            smBigHP = 3;
         }
+        else if (partySize == 2)
+        {
+            bigHP = 16;
+            smallHP = 8;
+            maidenHP = 2625;
+            smSmallHP = 4;
+            smBigHP = 6;
+        }
+        else if (partySize == 3)
+        {
+            bigHP = 16;
+            smallHP = 8;
+            maidenHP = 2625;
+            smSmallHP = 6;
+            smBigHP = 9;
+        }
+        else if (partySize == 4)
+        {
+            bigHP = 19;
+            smallHP = 9;
+            maidenHP = 3062;
+            smSmallHP = 8;
+            smBigHP = 12;
+        }
+        else if (partySize == 5)
+        {
+            bigHP = 22;
+            smallHP = 11;
+            maidenHP = 3500;
+            smSmallHP = 10;
+            smBigHP = 15;
+        }
+
+        int id = event.getNpc().getId();
+        switch(id)
+        {
+            case 8342:
+            case 8343:
+            case 8344:
+            case 10791:
+            case 10792:
+            case 10793:
+                nylos.add(new NyloQ(event.getNpc(), 0, smallHP));
+                break;
+            case 8345:
+            case 8346:
+            case 8347:
+            case 8351:
+            case 8352:
+            case 8353:
+            case 10783:
+            case 10784:
+            case 10785:
+            case 10794:
+            case 10795:
+            case 10796:
+            case 10800:
+            case 10801:
+            case 10802:
+                nylos.add(new NyloQ(event.getNpc(), 0, bigHP));
+                break;
+            case 8360:
+                NyloQ maidenTemp = new NyloQ(event.getNpc(), 0, maidenHP);
+                nylos.add(maidenTemp);
+                maidenNPC = maidenTemp;
+                break;
+            case 10774:
+            case 10775:
+            case 10776:
+                nylos.add(new NyloQ(event.getNpc(), 0, smSmallHP));
+                break;
+            case 10777:
+            case 10778:
+            case 10779:
+                nylos.add(new NyloQ(event.getNpc(), 0, smBigHP));
+        }
+
     }
 
     @Subscribe
@@ -216,16 +255,6 @@ public class DeathIndicatorsPlugin extends Plugin
             {
                 int[] intStack = client.getIntStack();
                 int intStackSize = client.getIntStackSize();
-                int widgetId = intStack[intStackSize - 4];
-
-                try
-                {
-                    processXpDrop(widgetId);
-                }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
             }
 
         }
@@ -275,7 +304,7 @@ public class DeathIndicatorsPlugin extends Plugin
                     q = nyloQIterator.next();
                 } while (!hitsplatApplied.getActor().equals(q.npc));
 
-                if (hitsplatApplied.getHitsplat().getHitsplatType().equals(HitsplatType.HEAL))
+                if (hitsplatApplied.getHitsplat().getHitsplatType().equals(Hitsplat.HitsplatType.HEAL))
                 {
                     q.hp += hitsplatApplied.getHitsplat().getAmount();
                 }
@@ -435,102 +464,123 @@ public class DeathIndicatorsPlugin extends Plugin
         }
     }
 
-    private void processXpDrop(int widgetId) throws InterruptedException
+    @Subscribe
+    public void onFakeXpDrop(FakeXpDrop event) throws InterruptedException
     {
-        Widget xpDrop = client.getWidget(WidgetInfo.TO_GROUP(widgetId), WidgetInfo.TO_CHILD(widgetId));
-        if (xpDrop != null)
+        if (!inNylo)
         {
-            Widget[] children = xpDrop.getChildren();
-            Widget text = children[0];
-            String cleansedXpDrop = cleanseXpDrop(text.getText());
-            int damage = -1;
-            int weaponUsed = Objects.requireNonNull(Objects.requireNonNull(client.getLocalPlayer()).getPlayerComposition()).getEquipmentId(KitType.WEAPON);
-            if (client.getLocalPlayer().getAnimation() != 1979)
+            return;
+        }
+
+        int xpdiff = event.getXp();
+        String skill = event.getSkill().toString();
+        if (!(skill.equals("RANGED") || skill.equals("MAGIC") || skill.equals("STRENGTH") || skill.equals("ATTACK") || skill.equals("DEFENCE")))
+        {
+            return;
+        }
+
+        switch (skill)
+        {
+            case "MAGIC":
             {
-                // magic sprite
-                if (Arrays.stream(children).skip(1L).filter(Objects::nonNull).mapToInt(Widget::getSpriteId).anyMatch((id) -> id == 202))
+                xpdiff = event.getXp() - MAGIC;
+                MAGIC = event.getXp();
+                break;
+            }
+            case "RANGED":
+            {
+                xpdiff = event.getXp() - RANGED;
+                RANGED = event.getXp();
+                break;
+            }
+            case "STRENGTH":
+            {
+                xpdiff = event.getXp() - STRENGTH;
+                STRENGTH = event.getXp();
+                break;
+            }
+            case "ATTACK":
+            {
+                xpdiff = event.getXp() - ATTACK;
+                ATTACK = event.getXp();
+                break;
+            }
+            case "DEFENCE":
+            {
+                xpdiff = event.getXp() - DEFENCE;
+                DEFENCE = event.getXp();
+            }
+        }
+        processXpDrop(String.valueOf(xpdiff), skill);
+    }
+
+    @Subscribe
+    public void onStatChanged(StatChanged event) throws InterruptedException
+    {
+        if (!inNylo)
+        {
+            return;
+        }
+
+        int xpdiff = 0;
+        String skill = event.getSkill().toString();
+        if (!(skill.equals("RANGED") || skill.equals("MAGIC") || skill.equals("STRENGTH") || skill.equals("ATTACK") || skill.equals("DEFENCE")))
+        {
+            return;
+        }
+
+        switch (skill)
+        {
+            case "MAGIC":
+            {
+                xpdiff = event.getXp() - MAGIC;
+                MAGIC = event.getXp();
+                break;
+            }
+            case "RANGED":
+            {
+                xpdiff = event.getXp() - RANGED;
+                RANGED = event.getXp();
+                break;
+            }
+            case "STRENGTH":
+            {
+                xpdiff = event.getXp() - STRENGTH;
+                STRENGTH = event.getXp();
+                break;
+            }
+            case "ATTACK":
+            {
+                xpdiff = event.getXp() - ATTACK;
+                ATTACK = event.getXp();
+                break;
+            }
+            case "DEFENCE":
+            {
+                xpdiff = event.getXp() - DEFENCE;
+                DEFENCE = event.getXp();
+            }
+        }
+        processXpDrop(String.valueOf(xpdiff), skill);
+    }
+
+    private void processXpDrop(String xpDrop, String skill) throws InterruptedException
+    {
+        int damage = 0;
+        int weaponUsed = Objects.requireNonNull(Objects.requireNonNull(client.getLocalPlayer()).getPlayerComposition()).getEquipmentId(KitType.WEAPON);
+        if (client.getLocalPlayer().getAnimation() != 1979)
+        {
+            if (skill.equals("MAGIC"))
+            {
+                // sang/tridents
+                if ((weaponUsed == 22323 || weaponUsed == 11905 || weaponUsed == 11907 || weaponUsed == 12899 || weaponUsed == 22292 || weaponUsed == 25731) && client.getVar(VarPlayer.ATTACK_STYLE) != 3)
                 {
-                    // sang/tridents
-                    if (weaponUsed == 22323 || weaponUsed == 11905 || weaponUsed == 11907 || weaponUsed == 12899 || weaponUsed == 22292 || weaponUsed == 25731)
-                    {
-                        if (client.getLocalPlayer().getAnimation() == 1979)
-                        {
-                            return;
-                        }
-
-                        if (client.getVarbitValue(4696) == 0)
-                        {
-                            if (client.getVar(VarPlayer.ATTACK_STYLE) != 3)
-                            {
-                                damage = (int) ((double) Integer.parseInt(cleansedXpDrop) / 2.0D);
-                            }
-                        }
-                        else
-                        {
-                            if (client.getVar(VarPlayer.ATTACK_STYLE) == 3)
-                            {
-                                damage = (int) Math.round((double) Integer.parseInt(cleansedXpDrop) / 3.6667D);
-                            }
-                            else
-                            {
-                                damage = (int) Math.round((double) Integer.parseInt(cleansedXpDrop) / 3.3334D);
-                            }
-                        }
-                    }
+                    damage = (int)((double)Integer.parseInt(xpDrop) / 2.0D);
                 }
-                // att, str, def sprite
-                else if (Arrays.stream(children).skip(1L).filter(Objects::nonNull).mapToInt(Widget::getSpriteId).anyMatch((id) -> id == 197 || id == 198 || id == 199))
-                {
-                    if (weaponUsed == 22325 || weaponUsed == 25739 || weaponUsed == 25736 || weaponUsed == 21015) //Don't apply if weapon is scythe
-                    {
-                        return;
-                    }
-
-                    if (client.getVarbitValue(4696) == 0)
-                    {
-                        // checking if casting on long range
-                        if (weaponUsed != 22323 && weaponUsed != 11905 && weaponUsed != 11907 && weaponUsed != 12899 && weaponUsed != 22292 && weaponUsed != 25731) //Powered Staves
-                        {
-                            if (weaponUsed == 12006)
-                            {
-                                if (client.getVar(VarPlayer.ATTACK_STYLE) == 1)
-                                {
-                                    if (Arrays.stream(children).skip(1L).filter(Objects::nonNull).mapToInt(Widget::getSpriteId).anyMatch((id) -> id == 197))
-                                    {
-                                        damage = (int) Math.round(3.0D * (double) Integer.parseInt(cleansedXpDrop) / 4.0D);
-                                    }
-                                }
-                                else
-                                {
-                                    damage = Integer.parseInt(cleansedXpDrop) / 4;
-                                }
-                            }
-                            else
-                            {
-                                damage = Integer.parseInt(cleansedXpDrop) / 4;
-                            }
-                        }
-                        else
-                        {
-                            // :gottago: if barrage
-                            if (client.getLocalPlayer().getAnimation() == 1979)
-                            {
-                                return;
-                            }
-
-                            if (client.getVarbitValue(4696) == 0 && client.getVar(VarPlayer.ATTACK_STYLE) == 3)
-                            {
-                                damage = Integer.parseInt(cleansedXpDrop);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        damage = (int) Math.round((double) Integer.parseInt(cleansedXpDrop) / 5.3333D);
-                    }
-                }
-                // range sprite
-                else if (Arrays.stream(children).skip(1L).filter(Objects::nonNull).mapToInt(Widget::getSpriteId).anyMatch((id) -> id == 200))
+            }
+            else if (!skill.equals("ATTACK") && !skill.equals("STRENGTH") && !skill.equals("DEFENCE"))
+            {
+                if (skill.equals("RANGED"))
                 {
                     // :gottago: if chins
                     if (weaponUsed == 11959)
@@ -538,18 +588,46 @@ public class DeathIndicatorsPlugin extends Plugin
                         return;
                     }
 
-                    if (client.getVarbitValue(4696) == 0)
+                    if (client.getVar(VarPlayer.ATTACK_STYLE) == 3)
                     {
-                        damage = (int) ((double) Integer.parseInt(cleansedXpDrop) / 4.0D);
+                        damage = (int)((double)Integer.parseInt(xpDrop) / 2.0D);
                     }
                     else
                     {
-                        damage = (int) Math.round((double) Integer.parseInt(cleansedXpDrop) / 5.333D);
+                        damage = (int)((double)Integer.parseInt(xpDrop) / 4.0D);
                     }
                 }
-
-                addToDamageQueue(damage);
             }
+            else
+            {
+                if (weaponUsed == 22325 || weaponUsed == 25739 || weaponUsed == 25736) //Don't apply if weapon is scythe
+                {
+                    return;
+                }
+
+                if (weaponUsed != 22323 && weaponUsed != 11905 && weaponUsed != 11907 && weaponUsed != 12899 && weaponUsed != 22292 && weaponUsed != 25731) //Powered Staves
+                {
+                    if (WeaponMap.StyleMap.get(weaponUsed).toString().equals("MELEE"))
+                    {
+                        damage = (int)((double)Integer.parseInt(xpDrop) / 4.0D);
+                    }
+                }
+                else
+                {
+                    // :gottago: if barrage
+                    if (client.getLocalPlayer().getAnimation() == 1979)
+                    {
+                        return;
+                    }
+
+                    if (client.getVar(VarPlayer.ATTACK_STYLE) == 3)
+                    {
+                        damage = Integer.parseInt(xpDrop);
+                    }
+                }
+            }
+
+            addToDamageQueue(damage);
         }
     }
 
@@ -577,35 +655,28 @@ public class DeathIndicatorsPlugin extends Plugin
     @Subscribe
     public void onGameTick(GameTick event)
     {
-        if (inRegion(13122, 12613))
+        if (client.getLocalPlayer() != null && MAGIC == -1)
         {
-            inNylo = true;
-            partySize = 0;
-            for (int i = 330; i < 335; i++)
-            {
-                if (client.getVarcStrValue(i) != null && !client.getVarcStrValue(i).equals(""))
-                {
-                    partySize++;
-                }
-            }
+            initStatXp();
+        }
 
-            for (NyloQ q : nylos)
+        if (!inNylo)
+        {
+            if (inRegion(13122))
             {
-                if (q.hidden)
+                inNylo = true;
+                partySize = 0;
+
+                for (int i = 330; i < 335; i++)
                 {
-                    q.hiddenTicks++;
-                    if (q.npc.getHealthRatio() != 0 && q.hiddenTicks > 5)
+                    if (client.getVarcStrValue(i) != null && !client.getVarcStrValue(i).equals(""))
                     {
-                        q.hiddenTicks = 0;
-                        q.hidden = false;
-                        setHiddenNpc(q.npc, false);
-                        deadNylos.removeIf((x) -> x.equals(q.npc));
+                        partySize++;
                     }
                 }
             }
-
         }
-        else
+        else if (!inRegion(13122))
         {
             inNylo = false;
             if (!hiddenIndices.isEmpty())
@@ -621,6 +692,22 @@ public class DeathIndicatorsPlugin extends Plugin
                 deadNylos.clear();
             }
         }
+
+        for (NyloQ q : nylos)
+        {
+            if (q.hidden)
+            {
+                q.hiddenTicks++;
+                if (q.npc.getHealthRatio() != 0 && q.hiddenTicks > 5)
+                {
+                    q.hiddenTicks = 0;
+                    q.hidden = false;
+                    setHiddenNpc(q.npc, false);
+                    deadNylos.removeIf((x) -> x.equals(q.npc));
+                }
+            }
+        }
+
     }
 
     @Subscribe
@@ -646,4 +733,13 @@ public class DeathIndicatorsPlugin extends Plugin
         }
         return true;
     };
+
+    private void initStatXp()
+    {
+        ATTACK = client.getSkillExperience(Skill.ATTACK);
+        STRENGTH = client.getSkillExperience(Skill.STRENGTH);
+        DEFENCE = client.getSkillExperience(Skill.DEFENCE);
+        RANGED = client.getSkillExperience(Skill.RANGED);
+        MAGIC = client.getSkillExperience(Skill.MAGIC);
+    }
 }
