@@ -251,12 +251,21 @@ public interface SpoonEzSwapsConfig extends Config
 	)
 	default boolean swapEmptyPouch() {return false;}
 
+	@ConfigItem(
+			keyName = "situatonalTraps",
+			name = "Box Traps",
+			description = "Remove box trap options unless you're on top of them",
+			position = 12,
+			section = skillingSection
+	)
+	default boolean situationalTraps() {return false;}
+
 
 	@ConfigItem(
 			keyName = "customDrop",
 			name = "Left Click Drop",
 			description = "Anything in the list will be dropped on left click",
-			position = 12,
+			position = 13,
 			section = skillingSection
 	)
 	default String customDrop()

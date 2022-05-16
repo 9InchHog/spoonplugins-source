@@ -7,6 +7,7 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.kit.KitType;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.SpriteManager;
+import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
@@ -178,11 +179,21 @@ public class CorpBoostOverlay extends Overlay {
         }
 
         if(config.coreHighlight() != CorpBoostConfig.CoreHighlightMode.OFF && plugin.core != null) {
+            if (config.coreStunTicks() && plugin.coreStunTick != -1) {
+                graphics.setFont(new Font(FontManager.getRunescapeFont().toString(), Font.BOLD, 18));
+                String text = String.valueOf(client.getTickCount() - plugin.coreStunTick);
+                Point textLocation = plugin.core.getCanvasTextLocation(graphics, text, 30);
+                if (textLocation != null) {
+                    textLocation = new Point(textLocation.getX(), textLocation.getY());
+                    OverlayUtil.renderTextLocation(graphics, textLocation, text, Color.ORANGE);
+                }
+            }
+
             if (config.coreHighlight() == CorpBoostConfig.CoreHighlightMode.AREA) {
                 renderAreaOverlay(graphics, plugin.core, config.coreHighlightColor());
             }
 
-            if (this.config.coreHighlight() == CorpBoostConfig.CoreHighlightMode.TILE) {
+            if (config.coreHighlight() == CorpBoostConfig.CoreHighlightMode.TILE) {
                 NPCComposition npcComp = plugin.core.getComposition();
                 int size = npcComp.getSize();
                 LocalPoint lp = plugin.core.getLocalLocation();
@@ -190,7 +201,7 @@ public class CorpBoostOverlay extends Overlay {
                 renderPoly(graphics, config.coreHighlightColor(), tilePoly);
             }
 
-            if (this.config.coreHighlight() == CorpBoostConfig.CoreHighlightMode.HULL) {
+            if (config.coreHighlight() == CorpBoostConfig.CoreHighlightMode.HULL) {
                 Shape objectClickbox = plugin.core.getConvexHull();
                 if (objectClickbox != null) {
                     graphics.setStroke(new BasicStroke(config.coreHighlightWidth()));
@@ -199,7 +210,7 @@ public class CorpBoostOverlay extends Overlay {
                 }
             }
 
-            if (this.config.coreHighlight() == CorpBoostConfig.CoreHighlightMode.TRUE_LOCATION) {
+            if (config.coreHighlight() == CorpBoostConfig.CoreHighlightMode.TRUE_LOCATION) {
                 int size = 1;
                 NPCComposition composition = plugin.core.getTransformedComposition();
                 if (composition != null)
@@ -212,7 +223,7 @@ public class CorpBoostOverlay extends Overlay {
                 }
             }
 
-            if (this.config.coreHighlight() == CorpBoostConfig.CoreHighlightMode.OUTLINE) {
+            if (config.coreHighlight() == CorpBoostConfig.CoreHighlightMode.OUTLINE) {
                 modelOutlineRenderer.drawOutline(plugin.core, config.coreHighlightWidth(), config.coreHighlightColor(), config.coreHighlightGlow());
             }
         }

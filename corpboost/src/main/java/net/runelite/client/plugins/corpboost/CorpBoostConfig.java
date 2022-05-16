@@ -22,6 +22,14 @@ public interface CorpBoostConfig extends Config{
     )
     String boostingSection = "boosting";
 
+    @ConfigSection(
+            name = "Other",
+            description = "Other Plugins",
+            position = 3,
+            closedByDefault = true
+    )
+    public static final String otherSection = "other";
+
     @ConfigItem(
             keyName = "boosterRole",
             name = "Booster Role",
@@ -221,11 +229,76 @@ public interface CorpBoostConfig extends Config{
     )
     default double serpWidth() { return 2; }
 
+    @ConfigItem(
+            keyName = "coreStunTicks",
+            name = "Show Stunned Core Ticks",
+            description = "Displays how many ticks the core has been stunned for",
+            position = 11,
+            section = coreSection
+    )
+    default boolean coreStunTicks() { return true; }
+
     enum CoreHighlightMode {
         OFF, AREA, HULL, TILE, TRUE_LOCATION, OUTLINE;
     }
 
     enum boosterRoleMode {
         OFF, XFER, STUNNER, BOTH
+    }
+
+    @ConfigItem(
+            keyName = "hideBlack",
+            name = "Hide Black Screen",
+            description = "Hide black screen when entering house",
+            position = 0,
+            section = "other"
+    )
+    default boolean hideBlack() {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "hideMore",
+            name = "Hide House Icon",
+            description = "Also hides the little house icon when entering house",
+            position = 1,
+            section = otherSection
+    )
+    default boolean hideMore() {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "hideOps",
+            name = "Hide House Options",
+            description = "Hides leave/expel house ops",
+            position = 2,
+            section = otherSection
+    )
+    default boolean hideOps() {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "hidePlayers",
+            name = "Hide Players",
+            description = "hides all players when entering corp cave, reappear when boss spawns or failsafe of 60ticks later",
+            position = 3,
+            section = otherSection
+    )
+    default boolean hidePlayersTillBossSpawn() {
+        return false;
+    }
+
+    @Range(min = 10, max = 60)
+    @ConfigItem(keyName = "hidePlayersDuration",
+            name = "Hide duration",
+            description = "duration in ticks to hide players for",
+            position = 4,
+            section = otherSection
+    )
+    @Units(Units.TICKS)
+    default int hidePlayersDuration() {
+        return 60;
     }
 }

@@ -309,6 +309,7 @@ public class SpoonEzSwapsPlugin extends Plugin {
 
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event) {
+		String option = Text.removeTags(event.getMenuOption());
 		if (event.getMenuOption().equalsIgnoreCase("wield")) {
 			WeaponStyle newStyle = WeaponMap.StyleMap.get(event.getItemId());
 			if (newStyle != null) {
@@ -832,6 +833,9 @@ public class SpoonEzSwapsPlugin extends Plugin {
 					}
 				}
 			}
+		} else if (config.situationalTraps() && (target.contains("box trap") || target.contains("shaking box")) && !option.contains("lay")) {
+			Tile tile = client.getScene().getTiles()[client.getPlane()][entry.getParam0()][entry.getParam1()];
+			return tile.getWorldLocation().equals(client.getLocalPlayer().getWorldLocation());
 		}
 		return true;
 	};

@@ -8,6 +8,7 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.api.kit.KitType;
 import net.runelite.api.util.Text;
+import net.runelite.api.widgets.Widget;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -104,6 +105,7 @@ public class CorpBoostPlugin extends Plugin
 
     public NPC corp = null;
     public NPC core = null;
+    int coreStunTick = -1;
 
     @Provides
     CorpBoostConfig provideConfig(ConfigManager configManager)
@@ -202,6 +204,12 @@ public class CorpBoostPlugin extends Plugin
         if (gameStateChanged.getGameState() != GameState.LOGGED_IN || client.getLocalPlayer() == null)
         {
             return;
+        }
+
+        if (config.hidePlayersTillBossSpawn()) {
+            if (!temporaryHide && withinBounds(2964, 2970, 4379, 4387)) {
+                TemporarilyHidePlayers(true, config.hidePlayersDuration());
+            }
         }
 
         cannonSpotPoints.clear();
@@ -321,12 +329,13 @@ public class CorpBoostPlugin extends Plugin
 
     @Subscribe
     public void onNpcSpawned(NpcSpawned event) {
-        if (event.getNpc().getId() == 319){
+        if (event.getNpc().getId() == NpcID.CORPOREAL_BEAST){
             corp = event.getNpc();
         }
 
-        if (event.getNpc().getId() == 320){
+        if (event.getNpc().getId() == NpcID.DARK_ENERGY_CORE){
             core = event.getNpc();
+            coreStunTick = -1;
             if (config.coreArrow()) {
                 client.setHintArrow(event.getNpc());
             }
@@ -335,14 +344,26 @@ public class CorpBoostPlugin extends Plugin
 
     @Subscribe
     public void onNpcDespawned(NpcDespawned event) {
-        if (event.getNpc().getId() == 319){
+        if (event.getNpc().getId() == NpcID.CORPOREAL_BEAST){
             corp = null;
+            coreStunTick = -1;
         }
 
-        if (event.getNpc().getId() == 320 && event.getNpc().isDead()){
+        if (event.getNpc().getId() == NpcID.DARK_ENERGY_CORE && event.getNpc().isDead()){
             core = null;
+            coreStunTick = -1;
             if (config.coreArrow()) {
                 client.clearHintArrow();
+            }
+        }
+    }
+
+    @Subscribe
+    public void onActorDeath (ActorDeath event) {
+        if (event.getActor() instanceof NPC) {
+            NPC npc = (NPC) event.getActor();
+            if (npc.getId() == NpcID.CORPOREAL_BEAST || npc.getId() == NpcID.DARK_ENERGY_CORE) {
+                coreStunTick = -1;
             }
         }
     }
@@ -362,9 +383,46 @@ public class CorpBoostPlugin extends Plugin
         }
     }
 
+    int lastRangeXP = -1;
+
+    @Subscribe
+    public void onStatChanged(StatChanged statChanged) {
+        if (statChanged.getSkill() == Skill.RANGED) {
+            int rangeXP = client.getSkillExperience(Skill.RANGED);
+            if (lastRangeXP == -1) {
+                lastRangeXP = rangeXP;
+                return;
+            }
+            int diff = rangeXP - lastRangeXP;
+            lastRangeXP = rangeXP;
+            if (diff > 0)
+                HandleCoreCheck(client.getLocalPlayer());
+        }
+    }
+
+    void HandleCoreCheck(Player player) {
+        if (player != null && player.getInteracting() != null) {
+            NPC npc = (NPC) player.getInteracting();
+            if (npc != null && npc.getId() == NpcID.DARK_ENERGY_CORE) {
+                if (player.getAnimation() == 5061) {
+                    coreStunTick = client.getTickCount();
+                }
+            }
+        }
+    }
+
+    @Subscribe
+    public void onFakeXpDrop(FakeXpDrop fakeXpDrop) {
+        if (fakeXpDrop.getSkill() == Skill.RANGED) {
+            int diff = fakeXpDrop.getXp();
+            if (diff > 0)
+                HandleCoreCheck(client.getLocalPlayer());
+        }
+    }
+
     @Subscribe
     public void onClientTick(ClientTick clientTick) {
-        if (this.client.getGameState() != GameState.LOGGED_IN || client.isMenuOpen())
+        if (client.getGameState() != GameState.LOGGED_IN || client.isMenuOpen())
             return;
         MenuEntry[] menuEntries = client.getMenuEntries();
         int idx = 0;
@@ -376,5 +434,95 @@ public class CorpBoostPlugin extends Plugin
         idx = 0;
         for (MenuEntry entry : menuEntries)
             swapMenuEntry(idx++, entry);
+    }
+
+    @Subscribe
+    public void onBeforeRender(BeforeRender event) {
+        if (config.hideBlack())
+            HideWidgets(71, new int[] { 0 });
+        if (config.hideMore())
+            HideWidgets(71, new int[] { 1, 2, 3, 4 });
+        if (config.hideOps())
+            HideWidgets(370, new int[] { 17, 18 });
+    }
+
+    public void HideWidgets(int groupId, int[] childIds) {
+        for (int childId : childIds) {
+            Widget widget = client.getWidget(groupId, childId);
+            if (widget != null && !widget.isSelfHidden())
+                widget.setHidden(true);
+        }
+    }
+
+    @Subscribe
+    public void onInteractingChanged(InteractingChanged event) {
+        if (config.hidePlayersTillBossSpawn() && client.getLocalPlayer() != null && client.getLocalPlayer().getName() != null) {
+            String sourceName = (event.getSource() != null && event.getSource().getName() != null) ? event.getSource().getName().toLowerCase() : "";
+            String targetName = (event.getTarget() != null && event.getTarget().getName() != null) ? event.getTarget().getName().toLowerCase() : "";
+            if (!sourceName.equals(client.getLocalPlayer().getName().toLowerCase()))
+                return;
+            if (targetName.equals("corporeal beast")) {
+                TemporarilyHidePlayers(false, -1);
+            }
+        }
+    }
+
+    int unhideFailSafeTick = -1;
+    public boolean temporaryHide = false;
+
+    public void TemporarilyHidePlayers(boolean hiding, int failSafeTicks) {
+        temporaryHide = hiding;
+        if (hiding) {
+            unhideFailSafeTick = client.getTickCount() + failSafeTicks;
+            hideShit(true);
+        } else {
+            hideShit(false);
+            unhideFailSafeTick = -1;
+        }
+    }
+
+    public void hideShit (boolean hide) {
+        if (hide) {
+            client.setIsHidingEntities(true);
+            client.setOthersHidden(true);
+            client.setOthersHidden2D(true);
+            client.setFriendsHidden(true);
+            client.setFriendsChatMembersHidden(true);
+            client.setClanChatMembersHidden(true);
+        } else {
+            client.setOthersHidden(false);
+            client.setOthersHidden2D(false);
+            client.setFriendsHidden(false);
+            client.setFriendsChatMembersHidden(false);
+            client.setClanChatMembersHidden(false);
+        }
+    }
+
+    @Subscribe
+    public void onGameTick(GameTick event) {
+        if (unhideFailSafeTick != -1) {
+            if (client.getTickCount() >= unhideFailSafeTick) {
+                unhideFailSafeTick = -1;
+                TemporarilyHidePlayers(false, -1);
+            }
+        }
+
+        if (coreStunTick == -1 && core != null)
+            for (Player player : client.getPlayers()) {
+                if (player == null)
+                    continue;
+                if (player == client.getLocalPlayer())
+                    continue;
+                HandleCoreCheck(player);
+            }
+    }
+
+    public boolean withinBounds(int x1, int x2, int y1, int y2) {
+        if (client.getLocalPlayer() == null)
+            return false;
+        if (client.getLocalPlayer().getLocalLocation() == null)
+            return false;
+        WorldPoint point = client.getLocalPlayer().getWorldLocation();
+        return (point.getX() >= x1 && point.getX() <= x2 && point.getY() >= y1 && point.getY() <= y2);
     }
 }
