@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.1.8"
+version = "1.1.9"
 
 project.extra["PluginName"] = "Spoon Socket"
 project.extra["PluginDescription"] = "Contains all Socket plugins from SpoonLite"

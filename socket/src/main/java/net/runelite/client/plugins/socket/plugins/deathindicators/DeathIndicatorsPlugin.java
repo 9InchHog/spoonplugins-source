@@ -479,38 +479,6 @@ public class DeathIndicatorsPlugin extends Plugin
             return;
         }
 
-        switch (skill)
-        {
-            case "MAGIC":
-            {
-                xpdiff = event.getXp() - MAGIC;
-                MAGIC = event.getXp();
-                break;
-            }
-            case "RANGED":
-            {
-                xpdiff = event.getXp() - RANGED;
-                RANGED = event.getXp();
-                break;
-            }
-            case "STRENGTH":
-            {
-                xpdiff = event.getXp() - STRENGTH;
-                STRENGTH = event.getXp();
-                break;
-            }
-            case "ATTACK":
-            {
-                xpdiff = event.getXp() - ATTACK;
-                ATTACK = event.getXp();
-                break;
-            }
-            case "DEFENCE":
-            {
-                xpdiff = event.getXp() - DEFENCE;
-                DEFENCE = event.getXp();
-            }
-        }
         processXpDrop(String.valueOf(xpdiff), skill);
     }
 
@@ -561,6 +529,7 @@ public class DeathIndicatorsPlugin extends Plugin
                 DEFENCE = event.getXp();
             }
         }
+
         processXpDrop(String.valueOf(xpdiff), skill);
     }
 
