@@ -7,6 +7,7 @@ import com.openosrs.client.util.WeaponMap;
 import com.openosrs.client.util.WeaponStyle;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuEntryAdded;
@@ -21,7 +22,11 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.pf4j.Extension;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 
 @Extension
 @PluginDescriptor(
@@ -42,6 +47,7 @@ public class InfernoRetardPlugin extends Plugin {
     private WeaponStyle weaponStyle;
     private boolean skipTickCheck = false;
     private boolean brewedDown = false;
+    private String spellbookType = "";
 
     protected static final Set<String> INFERNO_NPC = ImmutableSet.of(
             "Jal-Nib", "Jal-MejRah", "Jal-Ak", "Jal-AkRek-Xil", "Jal-AkRek-Mej", "Jal-AkRek-Ket", "Jal-ImKot", "Jal-Xil", "Jal-Zek",
@@ -53,14 +59,26 @@ public class InfernoRetardPlugin extends Plugin {
             ItemID.TRIDENT_OF_THE_SEAS_FULL, ItemID.TRIDENT_OF_THE_SWAMP_E, ItemID.TRIDENT_OF_THE_SWAMP
     );
 
+    protected static final Set<Integer> UNCHARGED_TRIDENTS = ImmutableSet.of(
+            ItemID.UNCHARGED_TOXIC_TRIDENT, ItemID.UNCHARGED_TOXIC_TRIDENT_E
+    );
+
     @Provides
     InfernoRetardConfig provideConfig(ConfigManager configManager) {
         return configManager.getConfig(InfernoRetardConfig.class);
     }
 
-    private boolean isInInferno()
-    {
+    private boolean isInInferno() {
         return ArrayUtils.contains(client.getMapRegions(), INFERNO_REGION);
+    }
+
+    private boolean isInInfernoBank() {
+        if (client.getLocalPlayer() != null && client.getLocalPlayer().getLocalLocation() != null) {
+            return WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID() == 10063 ||
+                    WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID() == 10064 ||
+                    WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID() == 10065;
+        }
+        return false;
     }
 
     @Subscribe
@@ -136,6 +154,19 @@ public class InfernoRetardPlugin extends Plugin {
             }
             brewedDown = magicLvl < castThreshold;
         }
+
+        if (isInInfernoBank()) {
+            int spellbook = client.getVarbitValue(4070);
+            if (spellbook == 0) {
+                spellbookType = "NORMAL";
+            } else if (spellbook == 1) {
+                spellbookType = "ANCIENT";
+            } else if (spellbook == 2) {
+                spellbookType = "LUNAR";
+            } else if (spellbook == 3) {
+                spellbookType = "ARCEUUS";
+            }
+        }
     }
 
     @Subscribe
@@ -170,12 +201,45 @@ public class InfernoRetardPlugin extends Plugin {
             }
         }
     }
+    //12900 toxic trident uncharged
+    //22294 toxic trident (e) uncharged
+    private boolean unchargedTridentsInventory() {
+        return (client.getItemContainer(InventoryID.INVENTORY).contains(ItemID.UNCHARGED_TOXIC_TRIDENT) ||
+                client.getItemContainer(InventoryID.INVENTORY).contains(ItemID.UNCHARGED_TOXIC_TRIDENT_E));
+    }
+
+    private boolean unchargedTridentsEquipped() {
+        int weapon = Objects.requireNonNull(client.getLocalPlayer()).getPlayerComposition().getEquipmentId(KitType.WEAPON);
+        return weapon == ItemID.UNCHARGED_TOXIC_TRIDENT || weapon == ItemID.UNCHARGED_TOXIC_TRIDENT_E;
+    }
 
     @Subscribe
     public void onMenuEntryAdded(MenuEntryAdded event) {
-        if (isInInferno() && !config.consumeClick()) {
-            String target = Text.removeTags(event.getTarget(), true);
+        if (isInInfernoBank()) {
+            String option = Text.standardize(event.getOption(), true).toLowerCase();
+            String target = Text.standardize(event.getTarget(), true).toLowerCase();
 
+            if (option.contains("jump-in") && target.contains("the inferno")) {
+                if (config.spellbookCheck().contains(InfernoRetardConfig.spellbook.NORMAL) && spellbookType.equals("NORMAL")) {
+                    client.setMenuOptionCount(client.getMenuOptionCount() - 1);
+                } else if (config.spellbookCheck().contains(InfernoRetardConfig.spellbook.ANCIENT) && spellbookType.equals("ANCIENT")) {
+                    client.setMenuOptionCount(client.getMenuOptionCount() - 1);
+                } else if (config.spellbookCheck().contains(InfernoRetardConfig.spellbook.LUNAR) && spellbookType.equals("LUNAR")) {
+                    client.setMenuOptionCount(client.getMenuOptionCount() - 1);
+                } else if (spellbookType.equals("ARCEUUS")) {
+                    if (config.noTrident()) {
+                        if (unchargedTridentsInventory() || unchargedTridentsEquipped()) {
+                            client.setMenuOptionCount(client.getMenuOptionCount() - 1);
+                        }
+                    } else if (config.spellbookCheck().contains(InfernoRetardConfig.spellbook.ARCEUUS)) {
+                        client.setMenuOptionCount(client.getMenuOptionCount() - 1);
+                    }
+                }
+            }
+        }
+
+        if (isInInferno() && !config.consumeClick()) {
+            String target = Text.standardize(event.getTarget(), true).toLowerCase();
             if (INFERNO_NPC.contains(target) && event.getType() == MenuAction.NPC_SECOND_OPTION.getId() && weaponStyle != null
                     && client.getLocalPlayer() != null && client.getLocalPlayer().getPlayerComposition() != null) {
                 int feet = -1;
@@ -184,8 +248,8 @@ public class InfernoRetardPlugin extends Plugin {
                         if (config.antibop() && (!client.getSpellSelected() && client.getVarbitValue(275) == 0
                                 && !TRIDENT_IDS.contains(client.getLocalPlayer().getPlayerComposition().getEquipmentId(KitType.WEAPON)))
                                 || (client.getVarbitValue(275) == 1 && brewedDown)) {
-                                client.setMenuOptionCount(client.getMenuOptionCount() - 1);
-                            }
+                            client.setMenuOptionCount(client.getMenuOptionCount() - 1);
+                        }
                         break;
                     case MELEE:
                         if (config.antikick() && feet == (client.getLocalPlayer().getPlayerComposition().getEquipmentId(KitType.WEAPON))) {

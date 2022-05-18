@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.2"
+version = "1.0.3"
 
 project.extra["PluginName"] = "Inferno Wheelchair"
 project.extra["PluginDescription"] = "Tries to minimize you doing stupid shit and getting yourself killed... Not tick timers"

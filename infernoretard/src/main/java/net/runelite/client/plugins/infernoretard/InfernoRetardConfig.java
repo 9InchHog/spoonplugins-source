@@ -4,6 +4,8 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
+import java.util.Set;
+
 @ConfigGroup("infernoretard")
 public interface InfernoRetardConfig extends Config {
     @ConfigItem(
@@ -29,4 +31,26 @@ public interface InfernoRetardConfig extends Config {
             description = "Clicks through NPCs instead of kicking/punching"
     )
     default boolean antikick() {return true;}
+
+    @ConfigItem(
+            position = 3,
+            keyName = "spellbookCheck",
+            name = "Remove Enter on Wrong Spellbook",
+            description = "Makes it so you can't enter the inferno with the spellbooks you choose"
+    )
+    default Set<spellbook> spellbookCheck() {
+        return Set.of(spellbook.NORMAL, spellbook.ANCIENT, spellbook.LUNAR, spellbook.ARCEUUS);
+    }
+
+    @ConfigItem(
+            position = 4,
+            keyName = "noTrident",
+            name = "Remove Enter - Uncharged Trident",
+            description = "Removes enter if you are on the Arceuus spellbook and have an uncharged trident in your inventory or equipped"
+    )
+    default boolean noTrident() {return true;}
+
+    enum spellbook {
+        NORMAL, ANCIENT, LUNAR, ARCEUUS
+    }
 }
