@@ -569,7 +569,8 @@ public class DeathIndicatorsPlugin extends Plugin
             }
             else
             {
-                if (weaponUsed == 22325 || weaponUsed == 25739 || weaponUsed == 25736) //Don't apply if weapon is scythe
+                if (weaponUsed == 22325 || weaponUsed == 25739 || weaponUsed == 25736 || weaponUsed == 21015)
+                //Don't apply if weapon is scythe or dinhs
                 {
                     return;
                 }
