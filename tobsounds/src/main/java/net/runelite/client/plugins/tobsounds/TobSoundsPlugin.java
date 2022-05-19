@@ -84,27 +84,46 @@ public class TobSoundsPlugin extends Plugin {
 
     @Subscribe
     private void onAnimationChanged(AnimationChanged event) {
-        if (event.getActor() instanceof NPC) {
-            NPC npc = (NPC) event.getActor();
-            String name = npc.getName();
-            if (name != null && name.equalsIgnoreCase("pestilent bloat")) {
-                if (npc.getAnimation() == 8082 && this.config.bloatSounds()) {
-                    bloatDown = true;
-                    try {
-                        AudioInputStream stream = AudioSystem.getAudioInputStream(new BufferedInputStream(TobSoundsPlugin.class.getResourceAsStream("BloatShutdown.wav")));
-                        AudioFormat format = stream.getFormat();
-                        DataLine.Info info = new DataLine.Info(Clip.class, format);
-                        clip = (Clip) AudioSystem.getLine(info);
-                        clip.open(stream);
-                        FloatControl control = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-                        if (control != null) {
-                            control.setValue((float) (this.config.soundVolume() / 2 - 45));
+        if (client.getVarbitValue(Varbits.THEATRE_OF_BLOOD) == 2) {
+            if (event.getActor() instanceof NPC && config.bloatSounds()) {
+                NPC npc = (NPC) event.getActor();
+                String name = npc.getName();
+                if (name != null && name.equalsIgnoreCase("pestilent bloat")) {
+                    if (npc.getAnimation() == 8082) {
+                        bloatDown = true;
+                        try {
+                            AudioInputStream stream = AudioSystem.getAudioInputStream(new BufferedInputStream(TobSoundsPlugin.class.getResourceAsStream("BloatShutdown.wav")));
+                            AudioFormat format = stream.getFormat();
+                            DataLine.Info info = new DataLine.Info(Clip.class, format);
+                            clip = (Clip) AudioSystem.getLine(info);
+                            clip.open(stream);
+                            FloatControl control = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                            if (control != null) {
+                                control.setValue((float) (this.config.soundVolume() / 2 - 45));
+                            }
+                            clip.setFramePosition(0);
+                            clip.start();
+                        } catch (Exception var6) {
+                            clip = null;
                         }
-                        clip.setFramePosition(0);
-                        clip.start();
-                    } catch (Exception var6) {
-                        clip = null;
                     }
+                }
+            } else if (config.verzikBounce() && event.getActor() instanceof Player && event.getActor() == client.getLocalPlayer()
+                    && event.getActor().getAnimation() == 1157) {
+                try {
+                    AudioInputStream stream = AudioSystem.getAudioInputStream(new BufferedInputStream(TobSoundsPlugin.class.getResourceAsStream("Waaaah.wav")));
+                    AudioFormat format = stream.getFormat();
+                    DataLine.Info info = new DataLine.Info(Clip.class, format);
+                    clip = (Clip) AudioSystem.getLine(info);
+                    clip.open(stream);
+                    FloatControl control = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                    if (control != null) {
+                        control.setValue((float) (this.config.soundVolume() / 2 - 45));
+                    }
+                    clip.setFramePosition(0);
+                    clip.start();
+                } catch (Exception var6) {
+                    clip = null;
                 }
             }
         }

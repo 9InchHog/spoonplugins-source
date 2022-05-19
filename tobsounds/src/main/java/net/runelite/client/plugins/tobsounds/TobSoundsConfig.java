@@ -57,4 +57,14 @@ public interface TobSoundsConfig extends Config {
     default boolean tobDeath() {
         return false;
     }
+
+    @ConfigItem(
+            keyName = "verzikBounce",
+            name = "Verzik Bounce",
+            description = "Waaaaaaaaaaaaaaaaah!",
+            position = 6
+    )
+    default boolean verzikBounce() {
+        return false;
+    }
 }

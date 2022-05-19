@@ -36,6 +36,15 @@ class SpoonNexOverlay extends Overlay {
 				RenderTile(client, plugin.nex.npc.getWorldLocation().dx(2).dy(2), 23, Color.black, graphics);
 			}
 
+			if (config.tankHighlight() && plugin.nex.npc.getInteracting() != null && client.getLocalPlayer() != null) {
+				Color color = config.forWhy() ? plugin.forWhyColors.get(5) : plugin.currentTank.equals(client.getLocalPlayer().getName()) ? config.personalTankHighlightColor() : config.tankHighlightColor();
+				LocalPoint lp = plugin.nex.npc.getInteracting().getLocalLocation();
+				if (lp != null) {
+					Polygon poly = Perspective.getCanvasTilePoly(client, lp);
+					renderPoly(graphics, color, poly, 2, 255, 50);
+				}
+			}
+
 			Font oldFont = graphics.getFont();
 			graphics.setFont(new Font("Arial", Font.BOLD, config.textSize()));
 
@@ -143,15 +152,6 @@ class SpoonNexOverlay extends Overlay {
 								renderPoly(graphics, color, poly, 2, 255, 50);
 							}
 						}
-					}
-				}
-
-				if (config.tankHighlight() && plugin.nex.npc.getInteracting() != null && client.getLocalPlayer() != null) {
-					Color color = config.forWhy() ? plugin.forWhyColors.get(5) : plugin.currentTank.equals(client.getLocalPlayer().getName()) ? config.personalTankHighlightColor() : config.tankHighlightColor();
-					LocalPoint lp = plugin.nex.npc.getInteracting().getLocalLocation();
-					if (lp != null) {
-						Polygon poly = Perspective.getCanvasTilePoly(client, lp);
-						renderPoly(graphics, color, poly, 2, 255, 50);
 					}
 				}
 

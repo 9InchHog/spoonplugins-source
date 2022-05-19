@@ -115,6 +115,16 @@ public class CursedOverlay extends OverlayPanel {
 				graphics.drawImage(icon, (client.getCanvasWidth() - 210) / 2, (client.getCanvasHeight() - 250) / 2, 210, 250, null);
 			}
 		}
+
+		if (client.getLocalPlayer() != null && plugin.gtaTicks > 0) {
+			BufferedImage icon = ImageUtil.loadImageResource(CursedPlugin.class, "MissionPassed.png");
+			if (icon != null) {
+				Composite oldComposite = graphics.getComposite();
+				graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, plugin.gtaOpacity));
+				graphics.drawImage(icon, (client.getCanvasWidth() - 300) / 2, ((client.getCanvasHeight() - 100) / 2) - 100, 300, 100, null);
+				graphics.setComposite(oldComposite);
+			}
+		}
 		return super.render(graphics);
 	}
 

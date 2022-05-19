@@ -72,6 +72,9 @@ public class CursedPlugin extends Plugin {
 
     public int clippyTicks = 0;
 
+    public int gtaTicks = 0;
+    public float gtaOpacity = 0;
+
     @Provides
     CursedConfig provideConfig(ConfigManager configManager) {
         return (CursedConfig) configManager.getConfig(CursedConfig.class);
@@ -109,6 +112,8 @@ public class CursedPlugin extends Plugin {
         playCatJam = false;
         catJamOpacity = 0;
         clippyTicks = 0;
+        gtaTicks = 0;
+        gtaOpacity = 0;
     }
 
     @Subscribe
@@ -157,6 +162,20 @@ public class CursedPlugin extends Plugin {
                     FloatControl control = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
                     if (control != null) {
                         control.setValue((float) (config.diabloBrewsVolume() / 2 - 45));
+                    }
+                }
+            } else if (event.getKey().equals("coxDepressionVolume")) {
+                if (clip != null) {
+                    FloatControl control = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                    if (control != null) {
+                        control.setValue((float) (config.coxDepressionVolume() / 2 - 45));
+                    }
+                }
+            } else if (event.getKey().equals("gtaCaVolume")) {
+                if (clip != null) {
+                    FloatControl control = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                    if (control != null) {
+                        control.setValue((float) (config.gtaCaVolume() / 2 - 45));
                     }
                 }
             }
@@ -210,6 +229,10 @@ public class CursedPlugin extends Plugin {
 
         if (clippyTicks > 0) {
             clippyTicks--;
+        }
+
+        if (gtaTicks > 0) {
+            gtaTicks--;
         }
     }
 
@@ -307,11 +330,26 @@ public class CursedPlugin extends Plugin {
                     psychedelicBlue--;
                 }
             }
+
+            if(gtaTicks > 0) {
+                if (gtaTicks > 6) {
+                    gtaOpacity += .010f;
+                } else {
+                    gtaOpacity -= .010f;
+                }
+
+                if (gtaOpacity > 1f) {
+                    gtaOpacity = 1f;
+                } else if (gtaOpacity < 0) {
+                    gtaOpacity = 0;
+                }
+            }
         }
     }
 
     @Subscribe
     private void onChatMessage(ChatMessage event) {
+        String msg = Text.removeTags(event.getMessage());
         if (event.getMessage().contains("You drink some of the foul liquid.") && config.diabloBrews()) {
             try {
                 AudioInputStream stream = AudioSystem.getAudioInputStream(new BufferedInputStream(CursedPlugin.class.getResourceAsStream("DiabloPotion.wav")));
@@ -322,6 +360,40 @@ public class CursedPlugin extends Plugin {
                 FloatControl control = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
                 if (control != null)
                     control.setValue((float)(config.diabloBrewsVolume() / 2 - 45));
+                clip.setFramePosition(0);
+                clip.start();
+            } catch (Exception var6) {
+                clip = null;
+            }
+        } else if (client.getVarbitValue(Varbits.IN_RAID) == 1 && (msg.contains(" - Dexterous prayer scroll") || msg.contains(" - Arcane prayer scroll"))
+                && config.coxDepression()) {
+            try {
+                AudioInputStream stream = AudioSystem.getAudioInputStream(new BufferedInputStream(CursedPlugin.class.getResourceAsStream("emotionalDamage.wav")));
+                AudioFormat format = stream.getFormat();
+                DataLine.Info info = new DataLine.Info(Clip.class, format);
+                clip = (Clip)AudioSystem.getLine(info);
+                clip.open(stream);
+                FloatControl control = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
+                if (control != null)
+                    control.setValue((float)(config.coxDepressionVolume() / 2 - 45));
+                clip.setFramePosition(0);
+                clip.start();
+            } catch (Exception var6) {
+                clip = null;
+            }
+        }else if (event.getMessageNode().getType() == ChatMessageType.GAMEMESSAGE && event.getMessage().contains("Congratulations, you've completed a")
+                && event.getMessage().contains(" combat task:") && config.gtaCa()) {
+            gtaTicks = 12;
+            gtaOpacity = 0;
+            try {
+                AudioInputStream stream = AudioSystem.getAudioInputStream(new BufferedInputStream(CursedPlugin.class.getResourceAsStream("MissionPassed.wav")));
+                AudioFormat format = stream.getFormat();
+                DataLine.Info info = new DataLine.Info(Clip.class, format);
+                clip = (Clip)AudioSystem.getLine(info);
+                clip.open(stream);
+                FloatControl control = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
+                if (control != null)
+                    control.setValue((float)(config.gtaCaVolume() / 2 - 45));
                 clip.setFramePosition(0);
                 clip.start();
             } catch (Exception var6) {

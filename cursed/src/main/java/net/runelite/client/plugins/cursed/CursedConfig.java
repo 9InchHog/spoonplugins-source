@@ -53,4 +53,18 @@ public interface CursedConfig extends Config {
 
     @ConfigItem(keyName = "bigDie", name = "Big Die", description = "Big die", position = 14)
     default boolean bigDie() { return false; }
+
+    @ConfigItem(keyName = "coxDepression", name = "CoX Depression", description = "Emotional damage!", position = 15)
+    default boolean coxDepression() { return false; }
+
+    @Range(min = 0, max = 100)
+    @ConfigItem(keyName = "coxDepressionVolume", name = "CoX Depression Volume", description = "Slightly lessens the damage", position = 16)
+    default int coxDepressionVolume() { return 40; }
+
+    @ConfigItem(keyName = "gtaCa", name = "GTA CA", description = "Mission passed. Respect earned.", position = 17)
+    default boolean gtaCa() { return false; }
+
+    @Range(min = 0, max = 100)
+    @ConfigItem(keyName = "gtaCaVolume", name = "GTA CA Volume", description = "Another volume setting so im not deaf by 30", position = 18)
+    default int gtaCaVolume() { return 40; }
 }
