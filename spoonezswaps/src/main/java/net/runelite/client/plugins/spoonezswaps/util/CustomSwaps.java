@@ -247,6 +247,30 @@ public class CustomSwaps implements KeyListener
 		}
 	}
 
+	/**
+	 * Validate config syntax
+	 * @param value config value
+	 * @return true on valid, otherwise false
+	 * Credit to JZ... meow
+	 */
+	public static boolean checkSyntax(String value)
+	{
+		String[] lines = value.split("\\r?\\n");
+
+		if (lines.length == 1 && lines[0].isBlank()) {
+			return true;
+		}
+
+		for (String line : lines)
+		{
+			if (line.split(",").length != 2 && line.split(",").length != 4 && !line.isEmpty()) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	private void parseConfigToList(String value, List<EntryFromConfig> set)
 	{
 		List<String> strList = SPLITTER.splitToList(value);

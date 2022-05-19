@@ -2,6 +2,7 @@ package net.runelite.client.plugins.spoonezswaps;
 
 import net.runelite.client.config.*;
 import net.runelite.client.plugins.spoonezswaps.config.*;
+import net.runelite.client.plugins.spoonezswaps.util.CustomSwaps;
 
 @ConfigGroup("spoonezswaps")
 public interface SpoonEzSwapsConfig extends Config
@@ -1009,7 +1010,10 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "customSwapsStr",
 			description = "",
 			section = customSwapsSection,
-			position = 4
+			position = 4,
+			parse = true,
+			method = "checkSyntax",
+			clazz = CustomSwaps.class
 	)
 	default String customSwapsString()
 	{
@@ -1021,7 +1025,10 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "bankCustomSwapsStr",
 			description = "",
 			section = customSwapsSection,
-			position = 5
+			position = 5,
+			parse = true,
+			method = "checkSyntax",
+			clazz = CustomSwaps.class
 	)
 	default String bankCustomSwapsString()
 	{
@@ -1046,7 +1053,10 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "shiftCustomSwapsStr",
 			description = "",
 			section = shiftCustomSwapsSection,
-			position = 7
+			position = 7,
+			parse = true,
+			method = "checkSyntax",
+			clazz = CustomSwaps.class
 	)
 	default String shiftCustomSwapsString()
 	{
@@ -1058,7 +1068,10 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "bankShiftCustomSwapsStr",
 			description = "",
 			section = shiftCustomSwapsSection,
-			position = 8
+			position = 8,
+			parse = true,
+			method = "checkSyntax",
+			clazz = CustomSwaps.class
 	)
 	default String bankShiftCustomSwapsString()
 	{
@@ -1095,7 +1108,10 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "keyCustomSwapsStr",
 			description = "",
 			section = keyCustomSwapsSection,
-			position = 3
+			position = 3,
+			parse = true,
+			method = "checkSyntax",
+			clazz = CustomSwaps.class
 	)
 	default String keyCustomSwapsString()
 	{
@@ -1107,7 +1123,10 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "bankKeyCustomSwapsStr",
 			description = "",
 			section = keyCustomSwapsSection,
-			position = 4
+			position = 4,
+			parse = true,
+			method = "checkSyntax",
+			clazz = CustomSwaps.class
 	)
 	default String bankKeyCustomSwapsString()
 	{
@@ -1141,7 +1160,10 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "regionCustomSwapsStr",
 			description = "",
 			section = regionSwapsSection,
-			position = 3
+			position = 3,
+			parse = true,
+			method = "checkSyntax",
+			clazz = CustomSwaps.class
 	)
 	default String regionCustomSwapsString()
 	{
@@ -1153,7 +1175,10 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "bankRegionCustomSwapsStr",
 			description = "",
 			section = regionSwapsSection,
-			position = 4
+			position = 4,
+			parse = true,
+			method = "checkSyntax",
+			clazz = CustomSwaps.class
 	)
 	default String bankRegionCustomSwapsString()
 	{
@@ -1178,7 +1203,10 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "removeOptionsStr",
 			description = "",
 			section = removeSwapsSection,
-			position = 10
+			position = 10,
+			parse = true,
+			method = "checkSyntax",
+			clazz = CustomSwaps.class
 	)
 	default String removeOptionsString()
 	{
