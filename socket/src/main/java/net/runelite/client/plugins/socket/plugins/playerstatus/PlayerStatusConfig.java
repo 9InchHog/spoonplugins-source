@@ -50,6 +50,16 @@ public interface PlayerStatusConfig extends Config {
     }
 
     @ConfigItem(
+            position = 1,
+            keyName = "getIndicatorZOffset",
+            name = "Indicator Z Offset",
+            description = "This is Z offset of the indicators."
+    )
+    default int getIndicatorZOffset() {
+        return 0;
+    }
+
+    @ConfigItem(
             position = 2,
             keyName = "getIndicatorPadding",
             name = "Indicator Border Padding",

@@ -87,89 +87,58 @@ public interface SpoonTobConfig extends Config {
 
     @ConfigItem(
             position = 1,
-            keyName = "maidenBlood",
-            name = "Show Maiden Blood Toss",
-            description = "Displays the tile location where tossed blood will land.",
+            keyName = "leakedMessage",
+            name = "Show Leaked Message",
+            description = "For all those shit freezers out there",
             section = maiden
     )
-    default maidenBloodSplatMode maidenBlood() {
-        return maidenBloodSplatMode.COLOR;
-    }
+    default boolean leakedMessage() { return false; }
 
-    @Alpha
     @ConfigItem(
             position = 2,
-            keyName = "bloodTossColour",
-            name = "Blood Toss Color",
-            description = "Colors the tile where blood will land",
+            keyName = "maidenProcThreshold",
+            name = "Maiden Proc Threshold",
+            description = "Shows a rough estimate on the damage needed to proc next phase",
             section = maiden
     )
-    default Color bloodTossColour() {
-        return new Color(0, 255, 255, 150);
+    default boolean maidenProcThreshold()
+    {
+        return true;
     }
 
-    @Range(min = 0, max = 255)
     @ConfigItem(
             position = 3,
-            keyName = "bloodTossFill",
-            name = "Blood Toss Opacity",
-            description = "Changes the opacity of the blood toss highlight",
+            name = "Maiden Max Hit (Tooltip)",
+            keyName = "maidenMaxHit",
+            description = "When hovering over Maiden's clickbox it will display her max hits for:<br>No Prayer<br>Prayer<br>Elysian Spirit Shield",
             section = maiden
     )
-    default int bloodTossFill() {
-        return 10;
+    default MaidenMaxHitTTMode maidenMaxHit() {
+        return MaidenMaxHitTTMode.OFF;
     }
 
     @ConfigItem(
             position = 4,
-            keyName = "bloodTossTicks",
-            name = "Blood Toss Ticks",
-            description = "Show the ticks until the blood splat lands",
+            name = "Maiden Max Hit (Overlay)",
+            keyName = "maidenMaxHitOverlay",
+            description = "Overlay that will display her max hits for:<br>No Prayer<br>Prayer<br>Elysian Spirit Shield",
             section = maiden
     )
-    default boolean bloodTossTicks() {
-        return false;
+    default MaidenMaxHit maidenMaxHitOverlay() {
+        return MaidenMaxHit.OFF;
     }
 
     @ConfigItem(
             position = 5,
-            keyName = "maidenSpawns",
-            name = "Show Blood Spawns True Tile",
-            description = "Show the tiles that blood spawns will travel to.",
+            name = "<html><p style=\"color:#25C54F\">—————— Nylocas Matomenos</p></html>",
+            keyName = "maiden divider",
+            description = "",
             section = maiden
     )
-    default boolean maidenSpawns() {
-        return false;
-    }
+    void maidenDivider1();
 
     @ConfigItem(
             position = 6,
-            keyName = "maidenSpawnsTrail",
-            name = "Show Blood Spawns Trailing Tile",
-            description = "Shows the trailing tile of the blood spawns location.",
-            section = maiden,
-            hidden = true,
-            unhide = "maidenSpawns"
-    )
-    default boolean maidenSpawnsTrail() {
-        return false;
-    }
-
-    @ConfigItem(
-            position = 7,
-            keyName = "bloodSpawnsColor",
-            name = "Blood Spawns Color",
-            description = "Color of the tiles that blood spawns will travel to.",
-            section = maiden,
-            hidden = true,
-            unhide = "maidenSpawns"
-    )
-    default Color bloodSpawnsColor() {
-        return new Color(0, 150, 200);
-    }
-
-    @ConfigItem(
-            position = 8,
             keyName = "MaidenRecolourNylos",
             name = "Recolor HP Nylo Menu",
             description = "Recolor nylos in right click menu based on their HP and adds the HP % next to the name.",
@@ -180,7 +149,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 9,
+            position = 7,
             keyName = "maidenFreezeTimer",
             name = "Nylo Freeze Timers",
             description = "Displays how long each Nylocas Matomenos is frozen for",
@@ -189,7 +158,7 @@ public interface SpoonTobConfig extends Config {
     default maidenFreezeTimerMode maidenFreezeTimer() { return maidenFreezeTimerMode.OFF; }
 
     @ConfigItem(
-            position = 10,
+            position = 8,
             keyName = "showMaidenCrabsDistance",
             name = "Show Crabs Distance",
             description = "You really need me to explain this?",
@@ -198,7 +167,7 @@ public interface SpoonTobConfig extends Config {
     default boolean showMaidenCrabsDistance() { return false; }
 
     @ConfigItem(
-            position = 11,
+            position = 9,
             keyName = "singleLineDistance",
             name = "Single Line Crabs Distance",
             description = "Makes the crabs distance and hp % a single line",
@@ -209,7 +178,7 @@ public interface SpoonTobConfig extends Config {
     default boolean singleLineDistance() { return false; }
 
     @ConfigItem(
-            position = 12,
+            position = 10,
             keyName = "showFrozenDistance",
             name = "Show Distance When Frozen",
             description = "Shows the distance overlay on the crabs when they are frozen",
@@ -220,7 +189,7 @@ public interface SpoonTobConfig extends Config {
     default boolean showFrozenDistance() { return false; }
 
     @ConfigItem(
-            position = 13,
+            position = 11,
             keyName = "distanceColor",
             name = "Crabs Distance Color",
             description = "You really need me to explain this?",
@@ -231,7 +200,7 @@ public interface SpoonTobConfig extends Config {
     default Color distanceColor() { return Color.WHITE; }
 
     @ConfigItem(
-            position = 14,
+            position = 12,
             keyName = "showMaidenCrabHp",
             name = "Show Crabs HP",
             description = "Crab HP show do",
@@ -239,35 +208,9 @@ public interface SpoonTobConfig extends Config {
     )
     default boolean showMaidenCrabHp() { return false; }
 
-    @ConfigItem(
-            position = 15,
-            keyName = "removeMaidenBloods",
-            name = "Remove Blood Spawns",
-            description = "Yup... cast, attack, both",
-            section = maiden
-    )
-    default maidenBloodsMode removeMaidenBloods() { return maidenBloodsMode.BOTH; }
 
     @ConfigItem(
-            position = 16,
-            keyName = "leakedMessage",
-            name = "Show Leaked Message",
-            description = "For all those shit freezers out there",
-            section = maiden
-    )
-    default boolean leakedMessage() { return false; }
-
-    @ConfigItem(
-            position = 17,
-            keyName = "bloodSpawnFreezeTimer",
-            name = "Blood Spawn Freeze Timer",
-            description = "y freeze?",
-            section = maiden
-    )
-    default boolean bloodSpawnFreezeTimer() { return false; }
-
-    @ConfigItem(
-            position = 18,
+            position = 13,
             keyName = "maidenScuffedCrab",
             name = "Scuffed Crab Outline",
             description = "Spawn right you little shit",
@@ -276,7 +219,7 @@ public interface SpoonTobConfig extends Config {
     default boolean maidenScuffedCrab() { return false; }
 
     @ConfigItem(
-            position = 19,
+            position = 14,
             keyName = "maidenScuffedCrabColor",
             name = "Scuffed Crab Color",
             description = "Sets the color for Scuffed Crab Outline",
@@ -289,7 +232,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 20,
+            position = 15,
             keyName = "maidenCrabHpPriority",
             name = "Prioritize Highest Hp Crab",
             description = "Swaps menu entries so the highest HP crab is left click",
@@ -298,41 +241,7 @@ public interface SpoonTobConfig extends Config {
     default boolean maidenCrabHpPriority() {return false;}
 
     @ConfigItem(
-            position = 21,
-            keyName = "maidenProcThreshold",
-            name = "Maiden Proc Threshold",
-            description = "Shows a rough estimate on the damage needed to proc next phase",
-            section = maiden
-    )
-    default boolean maidenProcThreshold()
-    {
-        return true;
-    }
-
-    @ConfigItem(
-            position = 22,
-            name = "Maiden Max Hit (Tooltip)",
-            keyName = "maidenMaxHit",
-            description = "When hovering over Maiden's clickbox it will display her max hits for:<br>No Prayer<br>Prayer<br>Elysian Spirit Shield",
-            section = maiden
-    )
-    default MaidenMaxHitTTMode maidenMaxHit() {
-        return MaidenMaxHitTTMode.OFF;
-    }
-
-    @ConfigItem(
-            position = 23,
-            name = "Maiden Max Hit (Overlay)",
-            keyName = "maidenMaxHitOverlay",
-            description = "Overlay that will display her max hits for:<br>No Prayer<br>Prayer<br>Elysian Spirit Shield",
-            section = maiden
-    )
-    default MaidenMaxHit maidenMaxHitOverlay() {
-        return MaidenMaxHit.OFF;
-    }
-
-    @ConfigItem(
-            position = 24,
+            position = 16,
             name = "Reds Freeze Warning",
             keyName = "redsFreezeWarning",
             description = "Highlights the N3 and S3 crabs when the north mager cannot freeze them in time <br> Must be on Ancient spellbook and be 4 or 5 man scale",
@@ -343,7 +252,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 25,
+            position = 17,
             name = "Reds Freeze Warning Color",
             keyName = "redsFreezeWarningColor",
             description = "Color of the N3 crabs when the north mager cannot freeze them in time",
@@ -354,6 +263,116 @@ public interface SpoonTobConfig extends Config {
     default Color redsFreezeWarningColor() {
         return Color.RED;
     }
+
+    @ConfigItem(
+            position = 18,
+            name = "<html><p style=\"color:#25C54F\">—————— Blood Spawns</p></html>",
+            keyName = "maiden divider",
+            description = "",
+            section = maiden
+    )
+    void maidenDivider2();
+
+    @ConfigItem(
+            position = 19,
+            keyName = "maidenBlood",
+            name = "Show Maiden Blood Toss",
+            description = "Displays the tile location where tossed blood will land.",
+            section = maiden
+    )
+    default maidenBloodSplatMode maidenBlood() {
+        return maidenBloodSplatMode.COLOR;
+    }
+
+    @Alpha
+    @ConfigItem(
+            position = 20,
+            keyName = "bloodTossColour",
+            name = "Blood Toss Color",
+            description = "Colors the tile where blood will land",
+            section = maiden
+    )
+    default Color bloodTossColour() {
+        return new Color(0, 255, 255, 150);
+    }
+
+    @Range(min = 0, max = 255)
+    @ConfigItem(
+            position = 21,
+            keyName = "bloodTossFill",
+            name = "Blood Toss Opacity",
+            description = "Changes the opacity of the blood toss highlight",
+            section = maiden
+    )
+    default int bloodTossFill() {
+        return 10;
+    }
+
+    @ConfigItem(
+            position = 22,
+            keyName = "bloodTossTicks",
+            name = "Blood Toss Ticks",
+            description = "Show the ticks until the blood splat lands",
+            section = maiden
+    )
+    default boolean bloodTossTicks() {
+        return false;
+    }
+
+    @ConfigItem(
+            position = 23,
+            keyName = "maidenSpawns",
+            name = "Show Blood Spawns True Tile",
+            description = "Show the tiles that blood spawns will travel to.",
+            section = maiden
+    )
+    default boolean maidenSpawns() {
+        return false;
+    }
+
+    @ConfigItem(
+            position = 24,
+            keyName = "maidenSpawnsTrail",
+            name = "Show Blood Spawns Trailing Tile",
+            description = "Shows the trailing tile of the blood spawns location.",
+            section = maiden,
+            hidden = true,
+            unhide = "maidenSpawns"
+    )
+    default boolean maidenSpawnsTrail() {
+        return false;
+    }
+
+    @ConfigItem(
+            position = 25,
+            keyName = "bloodSpawnsColor",
+            name = "Blood Spawns Color",
+            description = "Color of the tiles that blood spawns will travel to.",
+            section = maiden,
+            hidden = true,
+            unhide = "maidenSpawns"
+    )
+    default Color bloodSpawnsColor() {
+        return new Color(0, 150, 200);
+    }
+
+    @ConfigItem(
+            position = 26,
+            keyName = "removeMaidenBloods",
+            name = "Remove Blood Spawns",
+            description = "Yup... cast, attack, both",
+            section = maiden
+    )
+    default maidenBloodsMode removeMaidenBloods() { return maidenBloodsMode.BOTH; }
+
+    @ConfigItem(
+            position = 27,
+            keyName = "bloodSpawnFreezeTimer",
+            name = "Blood Spawn Freeze Timer",
+            description = "y freeze?",
+            section = maiden
+    )
+    default boolean bloodSpawnFreezeTimer() { return false; }
 
     //------------------------------------------------------------//
     // Bloat
@@ -409,55 +428,8 @@ public interface SpoonTobConfig extends Config {
     )
     default Color bloatIndicatorColorWARN() {return new Color(255, 0, 0, 150);}
 
-
     @ConfigItem(
             position = 6,
-            keyName = "showBloatHands",
-            name = "Show Bloat Hands",
-            description = "Highlights the falling hands inside Bloat.",
-            section = bloat
-    )
-    default bloatHandsMode showBloatHands() {
-        return bloatHandsMode.COLOR;
-    }
-
-    @ConfigItem(
-            position = 7,
-            keyName = "bloatHandsTicks",
-            name = "Bloat Hands Ticks",
-            description = "Shows the ticks till the hands hit the ground",
-            section = bloat
-    )
-    default boolean bloatHandsTicks() {
-        return false;
-    }
-
-    @Alpha
-    @ConfigItem(
-            position = 8,
-            keyName = "bloatColor",
-            name = "Hands Color",
-            description = "Bloat Hands Color",
-            section = bloat
-    )
-    default Color bloatHandColor() {
-        return new Color(106, 61, 255, 255);
-    }
-
-    @Range(min = 0, max = 255)
-    @ConfigItem(
-            position = 9,
-            keyName = "bloatColorFill",
-            name = "Hands Color Opacity",
-            description = "Changes the opacity of the bloat hands highlight",
-            section = bloat
-    )
-    default int bloatColorFill() {
-        return 10;
-    }
-
-    @ConfigItem(
-            position = 10,
             keyName = "bloatUpTimer",
             name = "Bloat Timer",
             description = "Show the estimated time when Bloat will stop moving.",
@@ -468,7 +440,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 11,
+            position = 7,
             keyName = "bloatEntryTimer",
             name = "Bloat Entry Timer",
             description = "Shows the ticks since entering the Bloat region. Disappears once you start Bloat",
@@ -479,53 +451,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 12,
-            keyName = "hideAnnoyingAssObjects",
-            name = "Hide Objects",
-            description = "Hides annoying objects in the bloat room",
-            section = bloat
-    )
-    default annoyingObjectHideMode hideAnnoyingAssObjects() {
-        return annoyingObjectHideMode.CHAINS;
-    }
-
-    @ConfigItem(
-            position = 13,
-            keyName = "bloatStompMode",
-            name = "Stomp Safespots",
-            description = "Shows lines for where you should go to flinch bloat stomps",
-            section = bloat
-    )
-    default bloatStompMode bloatStompMode() {
-        return bloatStompMode.COLOR;
-    }
-
-    @ConfigItem(
-            position = 14,
-            keyName = "bloatStompColor",
-            name = "Stomp Color",
-            description = "Color of the stomp lines",
-            section = bloat
-    )
-    @Alpha
-    default Color bloatStompColor() {
-        return new Color(0, 255, 0, 100);
-    }
-
-    @ConfigItem(
-            position = 15,
-            keyName = "bloatStompWidth",
-            name = "Stomp Width",
-            description = "Girth",
-            section = bloat
-    )
-    @Range(max = 3, min = 1)
-    default int bloatStompWidth() {
-        return 1;
-    }
-	
-	@ConfigItem(
-            position = 16,
+            position = 8,
             keyName = "bloatReverseNotifier",
             name = "Bloat Turn",
             description = "Plays a sound to let you know when bloat changes direction",
@@ -537,7 +463,7 @@ public interface SpoonTobConfig extends Config {
 
     @Range(max = 100)
     @ConfigItem(
-            position = 17,
+            position = 9,
             keyName = "reverseVolume",
             name = "Turn Volume",
             description = "Cha cha real smooth",
@@ -545,6 +471,116 @@ public interface SpoonTobConfig extends Config {
     )
     default int reverseVolume() {
         return 50;
+    }
+
+    @ConfigItem(
+            position = 10,
+            name = "<html><p style=\"color:#25C54F\">—————— Hands</p></html>",
+            keyName = "bloat divider",
+            description = "",
+            section = bloat
+    )
+    void bloatDivider1();
+
+    @ConfigItem(
+            position = 11,
+            keyName = "showBloatHands",
+            name = "Show Bloat Hands",
+            description = "Highlights the falling hands inside Bloat.",
+            section = bloat
+    )
+    default bloatHandsMode showBloatHands() {
+        return bloatHandsMode.COLOR;
+    }
+
+    @ConfigItem(
+            position = 12,
+            keyName = "bloatHandsTicks",
+            name = "Bloat Hands Ticks",
+            description = "Shows the ticks till the hands hit the ground",
+            section = bloat
+    )
+    default boolean bloatHandsTicks() {
+        return false;
+    }
+
+    @Alpha
+    @ConfigItem(
+            position = 13,
+            keyName = "bloatColor",
+            name = "Hands Color",
+            description = "Bloat Hands Color",
+            section = bloat
+    )
+    default Color bloatHandColor() {
+        return new Color(106, 61, 255, 255);
+    }
+
+    @Range(min = 0, max = 255)
+    @ConfigItem(
+            position = 14,
+            keyName = "bloatColorFill",
+            name = "Hands Color Opacity",
+            description = "Changes the opacity of the bloat hands highlight",
+            section = bloat
+    )
+    default int bloatColorFill() {
+        return 10;
+    }
+
+    @ConfigItem(
+            position = 15,
+            name = "<html><p style=\"color:#25C54F\">—————— Misc</p></html>",
+            keyName = "bloat divider",
+            description = "",
+            section = bloat
+    )
+    void bloatDivider2();
+
+    @ConfigItem(
+            position = 16,
+            keyName = "hideAnnoyingAssObjects",
+            name = "Hide Objects",
+            description = "Hides annoying objects in the bloat room",
+            section = bloat
+    )
+    default annoyingObjectHideMode hideAnnoyingAssObjects() {
+        return annoyingObjectHideMode.CHAINS;
+    }
+
+    @ConfigItem(
+            position = 17,
+            keyName = "bloatStompMode",
+            name = "Stomp Safespots",
+            description = "Shows lines for where you should go to flinch bloat stomps",
+            section = bloat
+    )
+    default bloatStompMode bloatStompMode() {
+        return bloatStompMode.COLOR;
+    }
+
+    @ConfigItem(
+            position = 18,
+            keyName = "bloatStompColor",
+            name = "Stomp Color",
+            description = "Color of the stomp lines",
+            section = bloat
+    )
+    @Alpha
+    default Color bloatStompColor() {
+        return new Color(0, 255, 0, 100);
+    }
+
+    @ConfigItem(
+            position = 19,
+            keyName = "bloatStompWidth",
+            name = "Stomp Width",
+            description = "Girth",
+            section = bloat
+    )
+    @Range(max = 3, min = 1)
+    default int bloatStompWidth() {
+        return 1;
     }
 
     //------------------------------------------------------------//
@@ -596,29 +632,16 @@ public interface SpoonTobConfig extends Config {
 
     @ConfigItem(
             position = 3,
-            keyName = "nyloPillars",
-            name = "Show Nylocas Pillar Health",
-            description = "Show the health bars of the Nylocas pillars.",
+            name = "<html><p style=\"color:#25C54F\">——————</p></html>",
+            keyName = "nylo divider",
+            description = "",
             section = nylocas
     )
-    default boolean nyloPillars() {
-        return false;
-    }
-
-    @ConfigItem(
-            position = 4,
-            keyName = "showLowestPillar",
-            name = "Show Lowest Pillar Health",
-            description = "Puts a hint arrow on the Nylocas pillar with the lowest health.",
-            section = nylocas
-    )
-    default boolean showLowestPillar() {
-        return true;
-    }
+    void nyloDivider1();
 
     @Range(max = 52)
     @ConfigItem(
-            position = 5,
+            position = 4,
             keyName = "nyloExplosionDisplayTicks",
             name = "Display Last Ticks",
             description = "Displays the last 'x' amount of ticks for a Nylocas. (ex: to see the last 10 ticks, you set it to 10).",
@@ -630,7 +653,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 6,
+            position = 5,
             keyName = "nyloTimeAliveCountStyle",
             name = "Nylocas Tick Time Alive Style",
             description = "Count up or Count down options on the tick time alive.",
@@ -639,7 +662,7 @@ public interface SpoonTobConfig extends Config {
     default nylotimealive nyloTimeAliveCountStyle() { return nylotimealive.COUNTUP;}
 
     @ConfigItem(
-            position = 7,
+            position = 6,
             keyName = "showNylocasExplosions",
             name = "Explosion Warning",
             description = "Displays ticks until explosion, a yellow tile, or both.",
@@ -650,7 +673,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 8,
+            position = 7,
             keyName = "nyloExplosionType",
             name = "Explosion Mode",
             description = "Display nylo explosion as either tile or explosion radius",
@@ -661,7 +684,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 9,
+            position = 8,
             keyName = "nyloRecolorMenu",
             name = "Nylocas Recolor Menu",
             description = "Recolors the right click menu to the color of the nylos. Bigs are darker.",
@@ -672,7 +695,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 10,
+            position = 9,
             keyName = "nyloTicksMenu",
             name = "Time Alive Right Click Menu",
             description = "Displays how many ticks the Nylos have left/been alive for in the right click menu <br> Must have Nylocas Recolour Menu on",
@@ -681,6 +704,15 @@ public interface SpoonTobConfig extends Config {
             unhide = "nyloRecolorMenu"
     )
     default boolean nyloTicksMenu() { return false; }
+
+    @ConfigItem(
+            position = 10,
+            name = "<html><p style=\"color:#25C54F\">——————</p></html>",
+            keyName = "nylo divider",
+            description = "",
+            section = nylocas
+    )
+    void nyloDivider2();
 
     @ConfigItem(
             position = 11,
@@ -710,6 +742,24 @@ public interface SpoonTobConfig extends Config {
 
     @ConfigItem(
             position = 13,
+            keyName = "nyloAggressiveOverlay",
+            name = "Highlight Aggressive Nylocas",
+            description = "Highlight nylocas that are aggressive.",
+            section = nylocas
+    )
+    default aggroStyle nyloAggressiveOverlay() { return aggroStyle.TILE; }
+
+    @ConfigItem(
+            position = 14,
+            name = "<html><p style=\"color:#25C54F\">—————— Waves</p></html>",
+            keyName = "nylo divider",
+            description = "",
+            section = nylocas
+    )
+    void nyloDivider3();
+
+    @ConfigItem(
+            position = 15,
             keyName = "nyloAliveCounter",
             name = "Nylocas Alive Display",
             description = "Show how many nylocas are alive in the room.",
@@ -720,27 +770,29 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 14,
-            keyName = "nyloAggressiveOverlay",
-            name = "Highlight Aggressive Nylocas",
-            description = "Highlight nylocas that are aggressive.",
+            position = 16,
+            keyName = "waveSpawnTimer",
+            name = "Wave Spawn Timer",
+            description = "Timer for when them niglets finna pull up",
             section = nylocas
     )
-    default aggroStyle nyloAggressiveOverlay() { return aggroStyle.TILE; }
-
-    @ConfigItem(
-            position = 15,
-            keyName = "nyloStallMessage",
-            name = "Nylo Stall Chat Message",
-            description = "Display a message in chatbox when a wave stalls.",
-            section = nylocas
-    )
-    default boolean nyloStallMessage() {
-        return false;
+    default waveSpawnTimerMode waveSpawnTimer() {
+        return waveSpawnTimerMode.OFF;
     }
 
     @ConfigItem(
-            position = 16,
+            position = 17,
+            keyName = "waveSpawnTimerColor",
+            name = "Wave Timer Color",
+            description = "Sets color of Wave Spawn Timer overlay",
+            section = nylocas
+    )
+    default Color waveSpawnTimerColor() {
+        return Color.WHITE;
+    }
+
+    @ConfigItem(
+            position = 20,
             keyName = "showBigSplits",
             name = "Show Big Splits",
             description = "Marks where a big nylo died and how long until littles spawn",
@@ -751,7 +803,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 17,
+            position = 21,
             keyName = "bigsColor",
             name = "Big Splits Color",
             description = "Big Splits Color",
@@ -764,7 +816,27 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 18,
+            position = 22,
+            name = "<html><p style=\"color:#25C54F\">—————— Chat Messages</p></html>",
+            keyName = "nylo divider",
+            description = "",
+            section = nylocas
+    )
+    void nyloDivider4();
+
+    @ConfigItem(
+            position = 23,
+            keyName = "nyloStallMessage",
+            name = "Nylo Stall Chat Message",
+            description = "Display a message in chatbox when a wave stalls.",
+            section = nylocas
+    )
+    default boolean nyloStallMessage() {
+        return false;
+    }
+
+    @ConfigItem(
+            position = 24,
             keyName = "nyloSplitsMsg",
             name = "Nylo Splits Message",
             description = "Shows how many of each boss phase and/or how many small splits you got",
@@ -775,7 +847,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 19,
+            position = 25,
             keyName = "splitMsgTiming",
             name = "Waves Message Timing",
             description = "Shows when to display how many small nylos you got from splits",
@@ -786,7 +858,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 20,
+            position = 26,
             keyName = "smallSplitsType",
             name = "Small Splits Type",
             description = "Caps = Pre  + Post cap splits, Total is just the total splits throughout the waves, both you don't need an explanation",
@@ -797,7 +869,38 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 21,
+            position = 29,
+            name = "<html><p style=\"color:#25C54F\">—————— Pillars</p></html>",
+            keyName = "nylo divider",
+            description = "",
+            section = nylocas
+    )
+    void nyloDivider5();
+
+    @ConfigItem(
+            position = 30,
+            keyName = "nyloPillars",
+            name = "Show Nylocas Pillar Health",
+            description = "Show the health bars of the Nylocas pillars.",
+            section = nylocas
+    )
+    default boolean nyloPillars() {
+        return false;
+    }
+
+    @ConfigItem(
+            position = 31,
+            keyName = "showLowestPillar",
+            name = "Show Lowest Pillar Health",
+            description = "Puts a hint arrow on the Nylocas pillar with the lowest health.",
+            section = nylocas
+    )
+    default boolean showLowestPillar() {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 32,
             keyName = "hidePillars",
             name = "Hide Pillars",
             description = "Removes the pillars in Nylo and the walls as well if set to clean",
@@ -808,7 +911,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 22,
+            position = 33,
             keyName = "hideEggs",
             name = "Hide Eggs",
             description = "You're an idiot. Nobody's allergic to eggs",
@@ -816,28 +919,6 @@ public interface SpoonTobConfig extends Config {
     )
     default boolean hideEggs() {
         return false;
-    }
-
-    @ConfigItem(
-            position = 23,
-            keyName = "waveSpawnTimer",
-            name = "Wave Spawn Timer",
-            description = "Timer for when them niglets finna pull up",
-            section = nylocas
-    )
-    default waveSpawnTimerMode waveSpawnTimer() {
-        return waveSpawnTimerMode.OFF;
-    }
-
-    @ConfigItem(
-            position = 24,
-            keyName = "waveSpawnTimerColor",
-            name = "Wave Timer Color",
-            description = "Sets color of Wave Spawn Timer overlay",
-            section = nylocas
-    )
-    default Color waveSpawnTimerColor() {
-        return Color.WHITE;
     }
 
     //------------------------------------------------------------//
@@ -890,6 +971,15 @@ public interface SpoonTobConfig extends Config {
 
     @ConfigItem(
             position = 5,
+            name = "<html><p style=\"color:#25C54F\">—————— Death Ball</p></html>",
+            keyName = "sote divider",
+            description = "",
+            section = sotetseg
+    )
+    void soteDivider1();
+
+    @ConfigItem(
+            position = 6,
             keyName = "SotetsegAttacks1",
             name = "Show Sotetseg Nuke",
             description = "Highlight the big AoE dragonball-z deathball mfkin thing.",
@@ -900,7 +990,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 6,
+            position = 7,
             keyName = "deathTicksOnPlayer",
             name = "Death Ball Ticks on Player",
             description = "Displays the death ball ticks on the targeted player instead of on the death ball",
@@ -911,7 +1001,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 7,
+            position = 8,
             keyName = "SotetsegAttacksSounds",
             name = "Sotetseg Nuke Sound",
             description = "Ear rape.",
@@ -923,7 +1013,7 @@ public interface SpoonTobConfig extends Config {
 
     @Range(max = 100)
     @ConfigItem(
-            position = 8,
+            position = 9,
             keyName = "SotetsegAttacksSoundsVolume",
             name = "Nuke Volume",
             description = "Set this to 100 or you're a pussy.",
@@ -936,7 +1026,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 9,
+            position = 10,
             keyName = "displayDeathBall",
             name = "Show Death Ball Target",
             description = "Shows who has the death ball",
@@ -947,7 +1037,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 10,
+            position = 11,
             keyName = "displayDeathBallColor",
             name = "Death Ball Target Color",
             description = "Sets color of the death ball target tile",
@@ -961,7 +1051,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 11,
+            position = 12,
             keyName = "deathballInfobox",
             name = "Attacks Until Death Ball",
             description = "Shows an infobox with the attacks left until death ball",
@@ -972,7 +1062,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 12,
+            position = 13,
             keyName = "deathballSingleLine",
             name = "Single Line Text",
             description = "Makes the attacks until deathball and ticks until attack a single line",
@@ -986,75 +1076,7 @@ public interface SpoonTobConfig extends Config {
     // Xarpus
     //------------------------------------------------------------//
     @ConfigItem(
-            position = 1,
-            keyName = "xarpusExhumed",
-            name = "Xarpus Exhumed",
-            description = "Highlight the exhumed tiles that spawn on the ground.",
-            section = xarpus
-    )
-    default exhumedMode xarpusExhumed() {
-        return exhumedMode.BOTH;
-    }
-
-    @Alpha
-    @ConfigItem(
-            position = 2,
-            keyName = "exhumedStepOffWarning",
-            name = "Exhumed Step Off Warning",
-            description = "Changes the color of exhumed ticks and/or highlights when they are not active.",
-            section = xarpus
-    )
-    default stepOffMode exhumedStepOffWarning() {
-        return stepOffMode.OFF;
-    }
-
-    @ConfigItem(
-            position = 3,
-            keyName = "xarpusExhumedInfo",
-            name = "Show Xarpus Exhumed Panel",
-            description = "Show a small info panel indicating how many exhumes remaining and total healed.",
-            section = xarpus
-    )
-    default boolean xarpusExhumedInfo() {
-        return false;
-    }
-
-    @ConfigItem(
-            position = 4,
-            keyName = "exhumedOnXarpus",
-            name = "Show Exhumed Count on Xarpus",
-            description = "Displays the number of exhumeds left on Xarpus",
-            section = xarpus
-    )
-    default boolean exhumedOnXarpus() {
-        return false;
-    }
-
-    @ConfigItem(
-            position = 5,
-            keyName = "exhumedIB",
-            name = "Show Exhumed Count Infobox",
-            description = "Displays the number of exhumeds left in an infobox",
-            section = xarpus
-    )
-    default boolean exhumedIB() {
-        return false;
-    }
-
-    @ConfigItem(
-            position = 6,
-            keyName = "xarpusHealingCount",
-            name = "Show Healing Count Infobox",
-            description = "Displays the healing done from exhumeds",
-            section = xarpus
-    )
-    default boolean xarpusHealingCount()
-    {
-        return true;
-    }
-
-    @ConfigItem(
-            position = 7,
+            position = 0,
             keyName = "xarpusTicks",
             name = "Xarpus Ticks",
             description = "Count down the ticks until xarpus attacks next",
@@ -1065,7 +1087,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 8,
+            position = 1,
             keyName = "xarpusLos",
             name = "Xarpus Line of Sight",
             description = "No attack here",
@@ -1077,7 +1099,7 @@ public interface SpoonTobConfig extends Config {
 
     @Alpha
     @ConfigItem(
-            position = 9,
+            position = 2,
             keyName = "xarpusLosColor",
             name = "Line of Sight Color",
             description = "What sorta fuckin description u need u moron",
@@ -1089,7 +1111,7 @@ public interface SpoonTobConfig extends Config {
 
     @Range(min = 0, max = 255)
     @ConfigItem(
-            position = 10,
+            position = 3,
             keyName = "xarpusLosFill",
             name = "Line of Sight Opacity",
             description = "Changes the opacity of the Xarpus Line of Sight highlight",
@@ -1100,7 +1122,93 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
+            position = 4,
+            name = "<html><p style=\"color:#25C54F\">—————— Exhumeds</p></html>",
+            keyName = "xarpus divider",
+            description = "",
+            section = xarpus
+    )
+    void xarpusDivider1();
+
+    @ConfigItem(
+            position = 5,
+            keyName = "xarpusExhumed",
+            name = "Xarpus Exhumed",
+            description = "Highlight the exhumed tiles that spawn on the ground.",
+            section = xarpus
+    )
+    default exhumedMode xarpusExhumed() {
+        return exhumedMode.BOTH;
+    }
+
+    @Alpha
+    @ConfigItem(
+            position = 6,
+            keyName = "exhumedStepOffWarning",
+            name = "Exhumed Step Off Warning",
+            description = "Changes the color of exhumed ticks and/or highlights when they are not active.",
+            section = xarpus
+    )
+    default stepOffMode exhumedStepOffWarning() {
+        return stepOffMode.OFF;
+    }
+
+    @ConfigItem(
+            position = 7,
+            keyName = "xarpusExhumedInfo",
+            name = "Show Xarpus Exhumed Panel",
+            description = "Show a small info panel indicating how many exhumes remaining and total healed.",
+            section = xarpus
+    )
+    default boolean xarpusExhumedInfo() {
+        return false;
+    }
+
+    @ConfigItem(
+            position = 8,
+            keyName = "exhumedOnXarpus",
+            name = "Show Exhumed Count on Xarpus",
+            description = "Displays the number of exhumeds left on Xarpus",
+            section = xarpus
+    )
+    default boolean exhumedOnXarpus() {
+        return false;
+    }
+
+    @ConfigItem(
+            position = 9,
+            keyName = "exhumedIB",
+            name = "Show Exhumed Count Infobox",
+            description = "Displays the number of exhumeds left in an infobox",
+            section = xarpus
+    )
+    default boolean exhumedIB() {
+        return false;
+    }
+
+    @ConfigItem(
+            position = 10,
+            keyName = "xarpusHealingCount",
+            name = "Show Healing Count Infobox",
+            description = "Displays the healing done from exhumeds",
+            section = xarpus
+    )
+    default boolean xarpusHealingCount()
+    {
+        return true;
+    }
+
+    @ConfigItem(
             position = 11,
+            name = "<html><p style=\"color:#25C54F\">—————— Audio</p></html>",
+            keyName = "xarpus divider",
+            description = "",
+            section = xarpus
+    )
+    void xarpusDivider2();
+
+    @ConfigItem(
+            position = 12,
             keyName = "muteXarpusHmEarrape",
             name = "Mute HM Earrape",
             description = "Fuck that noise",
@@ -1111,7 +1219,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 12,
+            position = 13,
             keyName = "sheesh",
             name = "Sheeeesh",
             description = "Why not?",
@@ -1123,7 +1231,7 @@ public interface SpoonTobConfig extends Config {
 
 	@Range(max = 100)
     @ConfigItem(
-            position = 13,
+            position = 14,
             keyName = "sheeshVolume",
             name = "Sheesh Volume",
             description = "Muted hard mode earrape.... then I added this",
@@ -1219,6 +1327,38 @@ public interface SpoonTobConfig extends Config {
 
     @ConfigItem(
             position = 8,
+            keyName = "muteVerzikSounds",
+            name = "Mute Verzik Sounds",
+            description = "Woooooo.... more sounds to mute",
+            section = verzik
+    )
+    default boolean muteVerzikSounds() {
+        return false;
+    }
+
+    @ConfigItem(
+            position = 9,
+            keyName = "deletePillars",
+            name = "Delete Pillars",
+            description = "Delete the pillars at verzik, replacing them with tile outlines <br> " +
+                    "Turns green on tick 13",
+            section = verzik
+    )
+    default boolean deletePillars() {
+        return false;
+    }
+
+    @ConfigItem(
+            position = 10,
+            name = "<html><p style=\"color:#25C54F\">—————— Nylocas</p></html>",
+            keyName = "verzik divider",
+            description = "",
+            section = verzik
+    )
+    void verzikDivider1();
+
+    @ConfigItem(
+            position = 11,
             keyName = "VerzikNyloAggro",
             name = "Show Crab Targets",
             description = "Show a text overlay on crab spawns that are aggressive to you.",
@@ -1229,7 +1369,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 9,
+            position = 12,
             keyName = "VerzikNyloExplode",
             name = "Crab Tile",
             description = "Show crab explosion range with a tile indicator.",
@@ -1240,7 +1380,7 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 10,
+            position = 13,
             keyName = "VerzikNyloExplodeColour",
             name = "Crab Tile Color",
             description = "Color of the tile for the exploding range.",
@@ -1251,47 +1391,13 @@ public interface SpoonTobConfig extends Config {
     }
 
     @ConfigItem(
-            position = 11,
+            position = 14,
             keyName = "redsHp",
             name = "Show Red Crab Hp",
             description = "Shows the hp % of red crabs during P2 verzik",
             section = verzik
     )
     default boolean redsHp() {
-        return false;
-    }
-
-    @ConfigItem(
-            position = 12,
-            keyName = "showVerzikYellows",
-            name = "Show Yellows Tick",
-            description = "<u>Count down the ticks until Verzik yellow's damage tick.</u>"
-                    + "<br> Thank you to Caps Lock13 for contributing to the 'groups' option",
-            section = verzik
-    )
-    default verzikYellowsMode showVerzikYellows() {
-        return verzikYellowsMode.OFF;
-    }
-
-    @ConfigItem(
-            position = 13,
-            keyName = "yellowTicksOnPlayer",
-            name = "Yellows Ticks on Player",
-            description = "Displays the yellows ticks on the local player instead of on the yellows",
-            section = verzik
-    )
-    default boolean yellowTicksOnPlayer() {
-        return false;
-    }
-
-    @ConfigItem(
-            position = 14,
-            keyName = "hideAttackYellows",
-            name = "Hide Attack Yellows",
-            description = "Hides attack option on Verzik during yellows",
-            section = verzik
-    )
-    default boolean hideAttackYellows() {
         return false;
     }
 
@@ -1317,33 +1423,69 @@ public interface SpoonTobConfig extends Config {
 
     @ConfigItem(
             position = 17,
-            keyName = "displayGreenBall",
-            name = "Show Green Ball",
-            description = "Highlights whoever the green ball is on",
+            keyName = "purpleCrabInfobox",
+            name = "Attacks Until Purple Crab",
+            description = "Shows an infobox with the attacks left until purple crab can spawn",
             section = verzik
     )
-    default greenBallMode displayGreenBall() { return greenBallMode.OFF; }
+    default boolean purpleCrabInfobox() {
+        return false;
+    }
 
     @ConfigItem(
             position = 18,
-            keyName = "displayGreenBallTicks",
-            name = "Show Green Ball Ticks",
-            description = "Shows ticks on the person who has green ball on them",
+            name = "<html><p style=\"color:#25C54F\">—————— Yellows</p></html>",
+            keyName = "verzik divider",
+            description = "",
             section = verzik
     )
-    default boolean displayGreenBallTicks() { return false; }
+    void verzikDivider2();
 
     @ConfigItem(
             position = 19,
-            keyName = "greenBouncePanel",
-            name = "Green Bounce/Dmg Counter",
-            description = "Infobox to display how many times you have bounced the green ball",
+            keyName = "showVerzikYellows",
+            name = "Show Yellows Tick",
+            description = "<u>Count down the ticks until Verzik yellow's damage tick.</u>"
+                    + "<br> Thank you to Caps Lock13 for contributing to the 'groups' option",
             section = verzik
     )
-    default greenBouncePanelMode greenBouncePanel() { return greenBouncePanelMode.OFF; }
+    default verzikYellowsMode showVerzikYellows() {
+        return verzikYellowsMode.OFF;
+    }
 
     @ConfigItem(
             position = 20,
+            keyName = "yellowTicksOnPlayer",
+            name = "Yellows Ticks on Player",
+            description = "Displays the yellows ticks on the local player instead of on the yellows",
+            section = verzik
+    )
+    default boolean yellowTicksOnPlayer() {
+        return false;
+    }
+
+    @ConfigItem(
+            position = 21,
+            keyName = "hideAttackYellows",
+            name = "Hide Attack Yellows",
+            description = "Hides attack option on Verzik during yellows",
+            section = verzik
+    )
+    default boolean hideAttackYellows() {
+        return false;
+    }
+
+    @ConfigItem(
+            position = 22,
+            name = "<html><p style=\"color:#25C54F\">—————— Tornadoes</p></html>",
+            keyName = "verzik divider",
+            description = "",
+            section = verzik
+    )
+    void verzikDivider3();
+
+    @ConfigItem(
+            position = 23,
             keyName = "showVerzikNados",
             name = "Show Tornadoes",
             description = "Highlights all or only your personal tornado",
@@ -1354,7 +1496,7 @@ public interface SpoonTobConfig extends Config {
     }
 	
 	@ConfigItem(
-            position = 21,
+            position = 24,
             keyName = "showVerzikNadoStyle",
             name = "Tornado Style",
             description = "Sets the type of highlight for Show Tornadoes",
@@ -1366,7 +1508,7 @@ public interface SpoonTobConfig extends Config {
 
     @Alpha
     @ConfigItem(
-            position = 22,
+            position = 25,
             keyName = "showVerzikNadoColor",
             name = "Verzik Nado Color",
             description = "Color for the tornadoes",
@@ -1376,7 +1518,7 @@ public interface SpoonTobConfig extends Config {
 
     @Alpha
     @ConfigItem(
-            position = 23,
+            position = 26,
             keyName = "verzikNadoOpacity",
             name = "Verzik Nado Opacity",
             description = "opacity for the tornadoes",
@@ -1385,7 +1527,7 @@ public interface SpoonTobConfig extends Config {
     default int verzikNadoOpacity() { return 0; }
 
     @ConfigItem(
-            position = 24,
+            position = 27,
             keyName = "hideOtherNados",
             name = "Hide Other Tornadoes",
             description = "Hides any tornado not following you",
@@ -1394,7 +1536,16 @@ public interface SpoonTobConfig extends Config {
     default boolean hideOtherNados() { return false; }
 
     @ConfigItem(
-            position = 25,
+            position = 28,
+            name = "<html><p style=\"color:#25C54F\">—————— Projectiles</p></html>",
+            keyName = "verzik divider",
+            description = "",
+            section = verzik
+    )
+    void verzikDivider4();
+
+    @ConfigItem(
+            position = 29,
             keyName = "showVerzikRangeAttacks",
             name = "Show Verzik Range Attacks",
             description = "Shows the tile in which a ranged attack on P2 will land.",
@@ -1404,7 +1555,7 @@ public interface SpoonTobConfig extends Config {
 
     @Alpha
     @ConfigItem(
-            position = 26,
+            position = 30,
             keyName = "verzikRangeAttacksColor",
             name = "Verzik Range Attacks Color",
             description = "Color for the garlic balls",
@@ -1416,7 +1567,7 @@ public interface SpoonTobConfig extends Config {
 
     @Range(min = 0, max = 255)
     @ConfigItem(
-            position = 27,
+            position = 31,
             keyName = "verzikRangeAttacksFill",
             name = "Verzik Range Attacks Opacity",
             description = "Changes the opacity of the Xarpus Line of Sight highlight",
@@ -1427,9 +1578,65 @@ public interface SpoonTobConfig extends Config {
     default int verzikRangeAttacksFill() {
         return 20;
     }
+
+    @ConfigItem(
+            position = 32,
+            keyName = "lightningInfobox",
+            name = "Attacks Until Lightning",
+            description = "Shows the attacks left until lightning",
+            section = verzik
+    )
+    default lightningMode lightningInfobox() {
+        return lightningMode.OFF;
+    }
+
+    @ConfigItem(
+            position = 33,
+            keyName = "lightningAttackTick",
+            name = "Lightning Attack Tick",
+            description = "Displays the number of ticks before a lightning ball hits you.",
+            section = verzik
+    )
+    default boolean lightningAttackTick() { return false; }
+
+    @ConfigItem(
+            position = 34,
+            keyName = "displayGreenBall",
+            name = "Show Green Ball",
+            description = "Highlights whoever the green ball is on",
+            section = verzik
+    )
+    default greenBallMode displayGreenBall() { return greenBallMode.OFF; }
+
+    @ConfigItem(
+            position = 35,
+            keyName = "displayGreenBallTicks",
+            name = "Show Green Ball Ticks",
+            description = "Shows ticks on the person who has green ball on them",
+            section = verzik
+    )
+    default boolean displayGreenBallTicks() { return false; }
+
+    @ConfigItem(
+            position = 36,
+            keyName = "greenBouncePanel",
+            name = "Green Bounce/Dmg Counter",
+            description = "Infobox to display how many times you have bounced the green ball",
+            section = verzik
+    )
+    default greenBouncePanelMode greenBouncePanel() { return greenBouncePanelMode.OFF; }
+
+    @ConfigItem(
+            position = 37,
+            name = "<html><p style=\"color:#25C54F\">—————— Hard Mode</p></html>",
+            keyName = "verzik divider",
+            description = "",
+            section = verzik
+    )
+    void verzikDivider5();
 	
 	@ConfigItem(
-            position = 28,
+            position = 38,
             keyName = "showVerzikRocks",
             name = "Show HM Verzik Rocks",
             description = "Shows the tile the rocks will land on in P1 of Hard mode",
@@ -1439,7 +1646,7 @@ public interface SpoonTobConfig extends Config {
 
     @Alpha
     @ConfigItem(
-            position = 29,
+            position = 39,
             keyName = "showVerzikRocksColor",
             name = "Verzik Rock Color",
             description = "Color for the rocks in P1",
@@ -1450,7 +1657,7 @@ public interface SpoonTobConfig extends Config {
     default Color showVerzikRocksColor() { return new Color(106, 61, 255); }
 
     @ConfigItem(
-            position = 30,
+            position = 40,
             keyName = "showVerzikAcid",
             name = "Show HM Acid",
             description = "Shows the tile the acid from hard mode Verzik range attacks is on",
@@ -1460,7 +1667,7 @@ public interface SpoonTobConfig extends Config {
 
     @Range(min = 1)
     @ConfigItem(
-            position = 31,
+            position = 41,
             keyName = "showVerzikAcidDistance",
             name = "Acid Render Distance",
             description = "Only highlights acid within a certain distance",
@@ -1472,7 +1679,7 @@ public interface SpoonTobConfig extends Config {
 
     @Alpha
     @ConfigItem(
-            position = 32,
+            position = 42,
             keyName = "showVerzikAcidColor",
             name = "Verzik Acid Color",
             description = "Color for the acid from range attacks in P2",
@@ -1481,60 +1688,6 @@ public interface SpoonTobConfig extends Config {
             unhide = "showVerzikAcid"
     )
     default Color showVerzikAcidColor() { return Color.GREEN; }
-
-    @ConfigItem(
-            position = 33,
-            keyName = "lightningInfobox",
-            name = "Attacks Until Lightning",
-            description = "Shows the attacks left until lightning",
-            section = verzik
-    )
-    default lightningMode lightningInfobox() {
-        return lightningMode.OFF;
-    }
-
-    @ConfigItem(
-            position = 34,
-            keyName = "lightningAttackTick",
-            name = "Lightning Attack Tick",
-            description = "Displays the number of ticks before a lightning ball hits you.",
-            section = verzik
-    )
-    default boolean lightningAttackTick() { return false; }
-
-    @ConfigItem(
-            position = 35,
-            keyName = "purpleCrabInfobox",
-            name = "Attacks Until Purple Crab",
-            description = "Shows an infobox with the attacks left until purple crab can spawn",
-            section = verzik
-    )
-    default boolean purpleCrabInfobox() {
-        return false;
-    }
-
-    @ConfigItem(
-            position = 36,
-            keyName = "muteVerzikSounds",
-            name = "Mute Verzik Sounds",
-            description = "Woooooo.... more sounds to mute",
-            section = verzik
-    )
-    default boolean muteVerzikSounds() {
-        return false;
-    }
-
-    @ConfigItem(
-            position = 37,
-            keyName = "deletePillars",
-            name = "Delete Pillars",
-            description = "Delete the pillars at verzik, replacing them with tile outlines <br> " +
-                    "Turns green on tick 13",
-            section = verzik
-    )
-    default boolean deletePillars() {
-        return false;
-    }
 
     //------------------------------------------------------------//
     // Misc
@@ -1682,6 +1835,15 @@ public interface SpoonTobConfig extends Config {
             section = misc
     )
     default Color lootReminderColor() {return new Color(106, 61, 255, 100);}
+
+    @ConfigItem(
+            position = 89,
+            name = "<html><p style=\"color:#25C54F\">—————— Rave</p></html>",
+            keyName = "misc divider",
+            description = "",
+            section = misc
+    )
+    void miscDivider1();
 
     @ConfigItem(
             position = 90,
@@ -1852,6 +2014,15 @@ public interface SpoonTobConfig extends Config {
 
     @ConfigItem(
             position = 4,
+            name = "<html><p style=\"color:#25C54F\">——————</p></html>",
+            keyName = "font divider",
+            description = "",
+            section = font
+    )
+    void fontDivider1();
+
+    @ConfigItem(
+            position = 5,
             keyName = "deathballSize",
             name = "Death Ball Font Size",
             description = "Font size for the death ball ticks - must have on player selected",
@@ -1863,7 +2034,7 @@ public interface SpoonTobConfig extends Config {
 
     @Range(min = -60)
     @ConfigItem(
-            position = 5,
+            position = 6,
             keyName = "deathballOffset",
             name = "Death Ball Font Offset",
             description = "Offset for the death ball ticks - must have on player selected",
@@ -1874,7 +2045,16 @@ public interface SpoonTobConfig extends Config {
     default int deathballOffset() {return 0;}
 
     @ConfigItem(
-            position = 6,
+            position = 7,
+            name = "<html><p style=\"color:#25C54F\">——————</p></html>",
+            keyName = "font divider",
+            description = "",
+            section = font
+    )
+    void fontDivider2();
+
+    @ConfigItem(
+            position = 8,
             keyName = "yellowsSize",
             name = "Yellows Font Size",
             description = "Font size for the yellows ticks - must have on player selected",
@@ -1886,7 +2066,7 @@ public interface SpoonTobConfig extends Config {
 
     @Range(min = -60)
     @ConfigItem(
-            position = 7,
+            position = 9,
             keyName = "yellowsOffset",
             name = "Yellows Font Offset",
             description = "Offset for the yellows ticks - must have on player selected",
@@ -1897,7 +2077,16 @@ public interface SpoonTobConfig extends Config {
     default int yellowsOffset() {return 0;}
 
     @ConfigItem(
-            position = 8,
+            position = 10,
+            name = "<html><p style=\"color:#25C54F\">——————</p></html>",
+            keyName = "font divider",
+            description = "",
+            section = font
+    )
+    void fontDivider3();
+
+    @ConfigItem(
+            position = 11,
             keyName = "zapSize",
             name = "Zap Font Size",
             description = "Font size for the zap ticks - must have on player selected",
@@ -1909,7 +2098,7 @@ public interface SpoonTobConfig extends Config {
 
     @Range(min = -60)
     @ConfigItem(
-            position = 9,
+            position = 12,
             keyName = "zapOffset",
             name = "Zap Font Offset",
             description = "Offset for the zap ticks - must have on player selected",
@@ -1920,7 +2109,16 @@ public interface SpoonTobConfig extends Config {
     default int zapOffset() {return 0;}
 
     @ConfigItem(
-            position = 10,
+            position = 13,
+            name = "<html><p style=\"color:#25C54F\">——————</p></html>",
+            keyName = "font divider",
+            description = "",
+            section = font
+    )
+    void fontDivider4();
+
+    @ConfigItem(
+            position = 14,
             keyName = "greenBallSize",
             name = "Green Ball Font Size",
             description = "Font size for the green ball ticks - must have on player selected",
@@ -1932,7 +2130,7 @@ public interface SpoonTobConfig extends Config {
 
     @Range(min = -60)
     @ConfigItem(
-            position = 11,
+            position = 15,
             keyName = "greenBallOffset",
             name = "Green Ball Font Offset",
             description = "Offset for the green ball ticks - must have on player selected",
@@ -1943,7 +2141,16 @@ public interface SpoonTobConfig extends Config {
     default int greenBallOffset() {return 0;}
 
     @ConfigItem(
-            position = 12,
+            position = 16,
+            name = "<html><p style=\"color:#25C54F\">——————</p></html>",
+            keyName = "font divider",
+            description = "",
+            section = font
+    )
+    void fontDivider5();
+
+    @ConfigItem(
+            position = 17,
             keyName = "situationalTicksSize",
             name = "Sit. Ticks Font Size",
             description = "Font size for the situational ticks - must have on player selected",
@@ -1955,7 +2162,7 @@ public interface SpoonTobConfig extends Config {
 
     @Range(min = -60)
     @ConfigItem(
-            position = 13,
+            position = 18,
             keyName = "situationalTicksOffset",
             name = "Sit. Ticks Font Offset",
             description = "Offset for the situational ticks - must have on player selected",
@@ -1964,7 +2171,6 @@ public interface SpoonTobConfig extends Config {
             unhide = "situationalTicks"
     )
     default int situationalTicksOffset() {return 60;}
-
 
     //------------------------------------------------------------//
     // Maiden enums
@@ -2091,6 +2297,31 @@ public interface SpoonTobConfig extends Config {
 
     enum hidePillarsMode {
         OFF, PILLARS, CLEAN
+    }
+
+    enum waveTimerMode {
+        WR5("2:45"),
+        WR4("2:48"),
+        FIVES("2:50"),
+        FOURS("2:52"),
+        TRIO("2:55"),
+        WR2("3:09"),
+        WR2_1("3:12"),
+        DUO("3:14");
+
+        private final String name;
+
+        public String toString() {
+            return this.name;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        waveTimerMode(String name) {
+            this.name = name;
+        }
     }
 
     //------------------------------------------------------------//

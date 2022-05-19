@@ -94,7 +94,7 @@ public class PlayerStatusOverlay extends Overlay {
         graphics.setFont(new Font("SansSerif", Font.BOLD, (int) (0.75d * size)));
 
         Point base = Perspective.localToCanvas(client, p.getLocalLocation(), client.getPlane(), p.getLogicalHeight());
-        int zOffset = 0;
+        int zOffset = config.getIndicatorZOffset();
         int xOffset = config.getIndicatorXOffset() - (size / 2);
 
         for (AbstractMarker marker : markers) {
