@@ -192,6 +192,7 @@ public class Verzik extends Room {
     private boolean mirrorMode;
 
     BufferedImage icon = ImageUtil.loadImageResource(SpoonTobPlugin.class, "chinkspeak.png");
+    BufferedImage ratIcon = ImageUtil.loadImageResource(SpoonTobPlugin.class, "RatSpeakAmulet.png");
 
     @Inject
     private Verzik(SpoonTobPlugin plugin, SpoonTobConfig config) {
@@ -233,6 +234,7 @@ public class Verzik extends Room {
         overlayManager.add(purpleCrabPanel);
         overlayManager.add(redsOverlay);
         icon = ImageUtil.resizeImage(icon, 23, 32);
+        ratIcon = ImageUtil.resizeImage(icon, 23, 32);
         poisonStyle = null;
     }
 

@@ -201,6 +201,11 @@ public class VerzikOverlay extends RoomOverlay {
                     if (k.getInteracting().getName() != null) {
                         if (k.getInteracting().getName().equalsIgnoreCase("wayabove") || k.getInteracting().getName().equalsIgnoreCase("oblv way")) {
                             targetText = "Wayaboob";
+                            BufferedImage icon = verzik.ratIcon;
+                            Point iconPoint = Perspective.getCanvasImageLocation(client,k.getLocalLocation(), icon, 0);
+                            if (iconPoint != null) {
+                                OverlayUtil.renderImageLocation(graphics, iconPoint, icon);
+                            }
                         } else if (k.getInteracting().getName().equalsIgnoreCase("flaw less") || k.getInteracting().getName().equalsIgnoreCase("oblv flaw")
                                 || k.getInteracting().getName().equalsIgnoreCase("flaaw less")) {
                             targetText = "Glennjamin";
