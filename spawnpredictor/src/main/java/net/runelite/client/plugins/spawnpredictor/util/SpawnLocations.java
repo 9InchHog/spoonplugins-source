@@ -4,11 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public enum SpawnLocations {
-    NW(new int[] { 10, 50 }),
-    C(new int[] { 30, 30 }),
-    SE(new int[] { 50, 25 }),
-    S(new int[] { 35, 15 }),
-    SW(new int[] { 10, 15 });
+    NW(10, 50),
+    C(30, 30),
+    SE(50, 25),
+    S(35, 15),
+    SW(10, 15);
 
     private static final Logger log;
 
@@ -49,7 +49,7 @@ public enum SpawnLocations {
             case 10:
                 return SW;
         }
-        log.warn("Invalid sVal -> {}", Integer.valueOf(sVal));
+        log.warn("Invalid sVal -> {}", sVal);
         return null;
     }
 }

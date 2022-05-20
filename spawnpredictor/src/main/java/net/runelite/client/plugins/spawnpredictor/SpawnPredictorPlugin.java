@@ -1,6 +1,7 @@
 package net.runelite.client.plugins.spawnpredictor;
 
 import com.google.inject.Provides;
+import lombok.Getter;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -73,89 +74,71 @@ public class SpawnPredictorPlugin extends Plugin {
 
     @Provides
     SpawnPredictorConfig providesConfig(ConfigManager configManager) {
-        return (SpawnPredictorConfig)configManager.getConfig(SpawnPredictorConfig.class);
+        return configManager.getConfig(SpawnPredictorConfig.class);
     }
 
+    @Getter
     private static List<List<FightCavesNpcSpawn>> waveData = new ArrayList<>();
 
+    @Getter
     private int currentUTCTime;
 
+    @Getter
     private int rotationCol;
 
-    public static List<List<FightCavesNpcSpawn>> getWaveData() {
-        return waveData;
-    }
-
-    public int getCurrentUTCTime() {
-        return this.currentUTCTime;
-    }
-
-    public int getRotationCol() {
-        return this.rotationCol;
-    }
-
+    @Getter
     private static int currentWave = -1;
 
-    public static int getCurrentWave() {
-        return currentWave;
-    }
-
+    @Getter
     private int currentRotation = -1;
 
-    public int getCurrentRotation() {
-        return this.currentRotation;
-    }
-
+    @Getter
     private static int rsVal = -1;
-
-    public static int getRsVal() {
-        return rsVal;
-    }
 
     private boolean active = false;
 
     private final Pattern WAVE_PATTERN = Pattern.compile(".*Wave: (\\d+).*");
 
     public boolean isFightCavesActive() {
-        return (ArrayUtils.contains(this.client.getMapRegions(), 9551) && this.client.isInInstancedRegion());
+        return (ArrayUtils.contains(client.getMapRegions(), 9551) && client.isInInstancedRegion());
     }
 
     public boolean isLocatedAtTzhaars() {
-        return (ArrayUtils.contains(this.client.getMapRegions(), 9808) && !this.client.isInInstancedRegion());
+        return (ArrayUtils.contains(client.getMapRegions(), 9808) && !client.isInInstancedRegion());
     }
 
     protected void startUp() {
-        this.overlayManager.add((Overlay)this.rotationOverlayPanel);
-        this.overlayManager.add((Overlay)this.displayModeOverlay);
-        this.overlayManager.add((Overlay)this.debugOverlayPanel);
+        overlayManager.add(rotationOverlayPanel);
+        overlayManager.add(displayModeOverlay);
+        overlayManager.add(debugOverlayPanel);
     }
 
     protected void shutDown() {
-        this.overlayManager.remove((Overlay)this.rotationOverlayPanel);
-        this.overlayManager.remove((Overlay)this.displayModeOverlay);
-        this.overlayManager.remove((Overlay)this.debugOverlayPanel);
+        overlayManager.remove(rotationOverlayPanel);
+        overlayManager.remove(displayModeOverlay);
+        overlayManager.remove(debugOverlayPanel);
         reset();
     }
 
     private void reset() {
-        this.currentUTCTime = -1;
-        this.rotationCol = -1;
+        currentUTCTime = -1;
+        rotationCol = -1;
         currentWave = -1;
-        this.currentRotation = -1;
+        currentRotation = -1;
         rsVal = -1;
-        this.active = false;
+        active = false;
     }
 
     @Subscribe
     public void onGameStateChanged(GameStateChanged event) {
         if (event.getGameState() != GameState.LOGGED_IN)
             return;
-        if (isFightCavesActive() && !this.active) {
-            this.currentRotation = StartLocations.translateRotation(this.rotationCol);
-            rsVal = ((Integer)((Pair)StartLocations.getLookupMap().get(Integer.valueOf(this.currentRotation))).getLeft()).intValue();
+        if (isFightCavesActive() && !active) {
+            currentRotation = StartLocations.translateRotation(rotationCol);
+            rsVal = (Integer) ((Pair) StartLocations.getLookupMap().get(currentRotation)).getLeft();
             updateWaveData(rsVal);
             currentWave = 1;
-            this.active = true;
+            active = true;
         } else if (!isFightCavesActive()) {
             reset();
         }
@@ -163,13 +146,13 @@ public class SpawnPredictorPlugin extends Plugin {
 
     @Subscribe
     public void onChatMessage(ChatMessage event) {
-        Matcher waveMatcher = this.WAVE_PATTERN.matcher(event.getMessage());
+        Matcher waveMatcher = WAVE_PATTERN.matcher(event.getMessage());
         if (event.getType() != ChatMessageType.GAMEMESSAGE ||
                 !isFightCavesActive() ||
                 !waveMatcher.matches())
             return;
         currentWave = Integer.parseInt(waveMatcher.group(1));
-        if (this.currentRotation == 7 && currentWave == 3) {
+        if (currentRotation == 7 && currentWave == 3) {
             rsVal = 11;
             updateWaveData(rsVal);
         }
@@ -229,21 +212,21 @@ public class SpawnPredictorPlugin extends Plugin {
 
     @Schedule(period = 500L, unit = ChronoUnit.MILLIS)
     public void updateSchedule() {
-        if (this.client.getGameState() != GameState.LOGGED_IN)
+        if (client.getGameState() != GameState.LOGGED_IN)
             return;
-        if (!isLocatedAtTzhaars() || this.client.isInInstancedRegion())
+        if (!isLocatedAtTzhaars() || client.isInInstancedRegion())
             return;
-        this.currentUTCTime = getUTCTime().getHour() * 60 + getUTCTime().getMinute();
+        currentUTCTime = getUTCTime().getHour() * 60 + getUTCTime().getMinute();
         setRotationColVal();
     }
 
     private void setRotationColVal() {
-        this.rotationCol = this.currentUTCTime % 16;
+        rotationCol = currentUTCTime % 16;
         int minute = getUTCTime().getMinute();
-        if ((this.rotationCol == 15 && minute % 2 != 0) || (this.rotationCol == 0 && minute % 2 == 0)) {
-            this.rotationCol = 1;
+        if ((rotationCol == 15 && minute % 2 != 0) || (rotationCol == 0 && minute % 2 == 0)) {
+            rotationCol = 1;
         } else {
-            this.rotationCol++;
+            rotationCol++;
         }
     }
 

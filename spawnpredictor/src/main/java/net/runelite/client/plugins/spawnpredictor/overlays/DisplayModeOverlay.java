@@ -30,6 +30,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DisplayModeOverlay extends Overlay {
+    private static final Logger log = LoggerFactory.getLogger(DisplayModeOverlay.class);
+
+    private final Client client;
+
+    private final SpawnPredictorPlugin plugin;
+
+    private final SpawnPredictorConfig config;
+
     @Inject
     private DisplayModeOverlay(Client client, SpawnPredictorPlugin plugin, SpawnPredictorConfig config) {
         this.client = client;
@@ -41,43 +49,43 @@ public class DisplayModeOverlay extends Overlay {
     }
 
     public Dimension render(Graphics2D graphics) {
-        if (!this.plugin.isFightCavesActive() || SpawnPredictorPlugin.getCurrentWave() <= 0)
+        if (!plugin.isFightCavesActive() || SpawnPredictorPlugin.getCurrentWave() <= 0)
             return null;
-        if (this.config.displayMode() == SpawnPredictorConfig.DisplayMode.OFF)
+        if (config.displayMode() == SpawnPredictorConfig.DisplayMode.OFF)
             return null;
         int currentWave = SpawnPredictorPlugin.getCurrentWave() - 1;
         List<FightCavesNpcSpawn> currentWaveContents = SpawnPredictorPlugin.getWaveData().get(currentWave);
         List<FightCavesNpcSpawn> nextWaveContents = SpawnPredictorPlugin.getWaveData().get(currentWave + 1);
-        switch (this.config.displayMode()) {
+        switch (config.displayMode()) {
             case CURRENT_WAVE:
-                displayWaveContents(graphics, currentWaveContents, this.config.currentWaveColor());
+                displayWaveContents(graphics, currentWaveContents, config.currentWaveColor());
                 return null;
             case NEXT_WAVE:
                 if (currentWave == 0)
-                    displayWaveContents(graphics, currentWaveContents, this.config.currentWaveColor());
+                    displayWaveContents(graphics, currentWaveContents, config.currentWaveColor());
                 if (currentWave != 63)
-                    displayWaveContents(graphics, nextWaveContents, this.config.nextWaveColor());
+                    displayWaveContents(graphics, nextWaveContents, config.nextWaveColor());
                 return null;
             case BOTH:
-                displayWaveContents(graphics, currentWaveContents, this.config.currentWaveColor());
+                displayWaveContents(graphics, currentWaveContents, config.currentWaveColor());
                 if (currentWave == 0)
-                    displayWaveContents(graphics, currentWaveContents, this.config.currentWaveColor());
+                    displayWaveContents(graphics, currentWaveContents, config.currentWaveColor());
                 if (currentWave != 63)
-                    displayWaveContents(graphics, nextWaveContents, this.config.nextWaveColor());
+                    displayWaveContents(graphics, nextWaveContents, config.nextWaveColor());
                 return null;
         }
         throw new IllegalStateException("Illegal 'Display Mode' config state... How did this happen? Who knows");
     }
 
     private void displayWaveContents(Graphics2D graphics, List<FightCavesNpcSpawn> waveContents, Color color) {
-        if (!this.plugin.isFightCavesActive())
-            return;
-        for (FightCavesNpcSpawn fcNpc : waveContents) {
-            FightCavesNpc npc = fcNpc.getNpc();
-            int sVal = fcNpc.getSpawnLocation();
-            int[] spawnLocation = ((SpawnLocations)Objects.<SpawnLocations>requireNonNull(SpawnLocations.lookup(sVal))).getRegionXY();
-            LocalPoint localPoint = getLocalPointFromRegionCords(spawnLocation);
-            renderOverlays(graphics, localPoint, npc.getSize(), color, npc.getName());
+        if (plugin.isFightCavesActive()) {
+            for (FightCavesNpcSpawn fcNpc : waveContents) {
+                FightCavesNpc npc = fcNpc.getNpc();
+                int sVal = fcNpc.getSpawnLocation();
+                int[] spawnLocation = Objects.requireNonNull(SpawnLocations.lookup(sVal)).getRegionXY();
+                LocalPoint localPoint = getLocalPointFromRegionCords(spawnLocation);
+                renderOverlays(graphics, localPoint, npc.getSize(), color, npc.getName());
+            }
         }
     }
 
@@ -85,27 +93,26 @@ public class DisplayModeOverlay extends Overlay {
         if (localPoint == null)
             return;
         LocalPoint localLocation = getLocalPointFromSWTile(localPoint, size);
-        Polygon tileAreaPoly = Perspective.getCanvasTileAreaPoly(this.client, localLocation, size);
-        renderPolygon(graphics, tileAreaPoly, this.config.overlayStrokeSize(), color);
-        Point textPoint = Perspective.getCanvasTextLocation(this.client, graphics, localLocation, name, 0);
+        Polygon tileAreaPoly = Perspective.getCanvasTileAreaPoly(client, localLocation, size);
+        renderPolygon(graphics, tileAreaPoly, config.overlayStrokeSize(), color);
+        Point textPoint = Perspective.getCanvasTextLocation(client, graphics, localLocation, name, 0);
         if (textPoint != null)
-            OverlayUtil.renderTextLocation(graphics, textPoint, name, this.config.multicolorNames() ? color : Color.WHITE);
+            OverlayUtil.renderTextLocation(graphics, textPoint, name, config.multicolorNames() ? color : Color.WHITE);
     }
 
     private LocalPoint getLocalPointFromRegionCords(int... regionXY) {
-        Player p = this.client.getLocalPlayer();
+        Player p = client.getLocalPlayer();
         if (p == null)
             return null;
         WorldPoint pwp = p.getWorldLocation();
-        WorldPoint wp = WorldPoint.fromRegion(pwp.getRegionID(), regionXY[0], regionXY[1], this.client.getPlane());
-        return LocalPoint.fromWorld(this.client, wp);
+        WorldPoint wp = WorldPoint.fromRegion(pwp.getRegionID(), regionXY[0], regionXY[1], client.getPlane());
+        return LocalPoint.fromWorld(client, wp);
     }
 
     private LocalPoint getLocalPointFromSWTile(LocalPoint localPoint, int size) {
         int x = localPoint.getX();
         int y = localPoint.getY();
         int newSize = size - 1;
-        int tileSize = 64;
         return new LocalPoint(x + newSize * 64, y + newSize * 64);
     }
 
@@ -120,12 +127,4 @@ public class DisplayModeOverlay extends Overlay {
         graphics.fill(poly);
         graphics.setStroke(originalStroke);
     }
-
-    private static final Logger log = LoggerFactory.getLogger(DisplayModeOverlay.class);
-
-    private final Client client;
-
-    private final SpawnPredictorPlugin plugin;
-
-    private final SpawnPredictorConfig config;
 }

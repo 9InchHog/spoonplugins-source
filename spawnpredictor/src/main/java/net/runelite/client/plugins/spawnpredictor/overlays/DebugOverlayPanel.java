@@ -28,20 +28,40 @@ public class DebugOverlayPanel extends OverlayPanel {
     }
 
     public Dimension render(Graphics2D graphics) {
-        if (!this.config.debug())
+        if (!config.debug())
             return null;
-        this.panelComponent.setPreferredSize(new Dimension(75, 0));
-        if (!this.plugin.isFightCavesActive() && this.plugin.isLocatedAtTzhaars()) {
-            int rotationCol = this.plugin.getRotationCol();
-            this.panelComponent.getChildren().add(LineComponent.builder().left("RCol:").leftColor(Color.WHITE).right(Integer.toString(rotationCol)).rightColor(Color.GREEN).build());
-            this.panelComponent.getChildren().add(LineComponent.builder().left("RTrans:").leftColor(Color.WHITE).right(Integer.toString(StartLocations.translateRotation(rotationCol))).rightColor(Color.GREEN).build());
+        panelComponent.setPreferredSize(new Dimension(75, 0));
+        if (!plugin.isFightCavesActive() && plugin.isLocatedAtTzhaars()) {
+            int rotationCol = plugin.getRotationCol();
+            panelComponent.getChildren().add(LineComponent.builder().left("RCol:").leftColor(Color.WHITE).right(Integer.toString(rotationCol)).rightColor(Color.GREEN).build());
+            panelComponent.getChildren().add(LineComponent.builder().left("RTrans:").leftColor(Color.WHITE).right(Integer.toString(StartLocations.translateRotation(rotationCol))).rightColor(Color.GREEN).build());
         }
-        if (this.plugin.isFightCavesActive() && !this.plugin.isLocatedAtTzhaars()) {
-            int rotation = this.plugin.getCurrentRotation();
-            this.panelComponent.getChildren().add(LineComponent.builder().left("Wave:").leftColor(Color.WHITE).right(Integer.toString(SpawnPredictorPlugin.getCurrentWave())).rightColor(Color.GREEN).build());
-            this.panelComponent.getChildren().add(LineComponent.builder().left("Rotation:").leftColor(Color.WHITE).right(Integer.toString(rotation)).rightColor(Color.GREEN).build());
-            this.panelComponent.getChildren().add(LineComponent.builder().left("rsV:").leftColor(Color.WHITE).right(Integer.toString(SpawnPredictorPlugin.getRsVal())).rightColor(Color.ORANGE).build());
-            this.panelComponent.getChildren().add(LineComponent.builder().left("rsF:").leftColor(Color.WHITE).right(Integer.toString(((Integer)((Pair)StartLocations.getLookupMap().get(Integer.valueOf(rotation))).getRight()).intValue())).rightColor(Color.ORANGE).build());
+        if (plugin.isFightCavesActive() && !plugin.isLocatedAtTzhaars()) {
+            int rotation = plugin.getCurrentRotation();
+            panelComponent.getChildren().add(LineComponent.builder()
+                    .left("Wave:")
+                    .leftColor(Color.WHITE)
+                    .right(Integer.toString(SpawnPredictorPlugin.getCurrentWave()))
+                    .rightColor(Color.GREEN)
+                    .build());
+            panelComponent.getChildren().add(LineComponent.builder()
+                    .left("Rotation:")
+                    .leftColor(Color.WHITE)
+                    .right(Integer.toString(rotation))
+                    .rightColor(Color.GREEN)
+                    .build());
+            panelComponent.getChildren().add(LineComponent.builder()
+                    .left("rsV:")
+                    .leftColor(Color.WHITE)
+                    .right(Integer.toString(SpawnPredictorPlugin.getRsVal()))
+                    .rightColor(Color.ORANGE)
+                    .build());
+            panelComponent.getChildren().add(LineComponent.builder()
+                    .left("rsF:")
+                    .leftColor(Color.WHITE)
+                    .right(Integer.toString((Integer) ((Pair) StartLocations.getLookupMap().get(rotation)).getRight()))
+                    .rightColor(Color.ORANGE)
+                    .build());
         }
         return super.render(graphics);
     }

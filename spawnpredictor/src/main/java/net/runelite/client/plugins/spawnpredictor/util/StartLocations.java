@@ -89,13 +89,13 @@ public enum StartLocations {
             case 15:
                 return 7;
         }
-        log.warn("Invalid Rotation Column Number -> {}", Integer.valueOf(r));
+        log.warn("Invalid Rotation Column Number -> {}", r);
         return -1;
     }
 
     static {
         log = LoggerFactory.getLogger(StartLocations.class);
         lookupMap = new HashMap<>();
-        EnumSet.<StartLocations>allOf(StartLocations.class).forEach(n -> lookupMap.put(Integer.valueOf(n.getR()), new MutablePair(Integer.valueOf(n.getRsVal()), Integer.valueOf(n.getRfVal()))));
+        EnumSet.<StartLocations>allOf(StartLocations.class).forEach(n -> lookupMap.put(n.getR(), new MutablePair(n.getRsVal(), n.getRfVal())));
     }
 }

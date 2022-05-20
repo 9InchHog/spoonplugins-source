@@ -1,5 +1,7 @@
 package net.runelite.client.plugins.spawnpredictor.util;
 
+import lombok.Getter;
+
 public enum FightCavesNpc {
     BAT("Bat", 1),
     BLOB("Blob", 2),
@@ -8,20 +10,14 @@ public enum FightCavesNpc {
     MAGE("Mager", 5),
     JAD("Jad", 5);
 
+    @Getter
     private final String name;
 
+    @Getter
     private final int size;
 
     FightCavesNpc(String name, int size) {
         this.name = name;
         this.size = size;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public int getSize() {
-        return this.size;
     }
 }

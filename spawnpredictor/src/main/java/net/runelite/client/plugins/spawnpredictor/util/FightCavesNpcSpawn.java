@@ -1,8 +1,12 @@
 package net.runelite.client.plugins.spawnpredictor.util;
 
+import lombok.Getter;
+
 public class FightCavesNpcSpawn {
+    @Getter
     private final FightCavesNpc npc;
 
+    @Getter
     private final int spawnLocation;
 
     public FightCavesNpcSpawn(FightCavesNpc npc, int spawnLocation) {
@@ -10,15 +14,7 @@ public class FightCavesNpcSpawn {
         this.spawnLocation = spawnLocation;
     }
 
-    public FightCavesNpc getNpc() {
-        return this.npc;
-    }
-
-    public int getSpawnLocation() {
-        return this.spawnLocation;
-    }
-
     public String toString() {
-        return String.format("%s -> %d", new Object[] { this.npc.getName(), Integer.valueOf(this.spawnLocation) });
+        return String.format("%s -> %d", npc.getName(), spawnLocation);
     }
 }

@@ -27,31 +27,28 @@ public class RotationOverlayPanel extends OverlayPanel {
     }
 
     public Dimension render(Graphics2D graphics) {
-        if (!this.plugin.isLocatedAtTzhaars() || !this.config.lobbyRotationInfoOverlay())
+        if (!plugin.isLocatedAtTzhaars() || !config.lobbyRotationInfoOverlay())
             return null;
-        int rotation = this.plugin.getRotationCol();
-        this.panelComponent.setPreferredSize(new Dimension(125, 0));
-        if (this.config.includeUTCTime())
-            this.panelComponent.getChildren().add(LineComponent.builder()
+        int rotation = plugin.getRotationCol();
+        panelComponent.setPreferredSize(new Dimension(125, 0));
+        if (config.includeUTCTime())
+            panelComponent.getChildren().add(LineComponent.builder()
                     .left("Time:")
                     .leftColor(Color.WHITE)
-                    .right(this.plugin.getUTCFormatted())
+                    .right(plugin.getUTCFormatted())
                     .rightColor(Color.ORANGE)
                     .build());
-        this.panelComponent.getChildren().add(LineComponent.builder()
+        panelComponent.getChildren().add(LineComponent.builder()
                 .left("Current Rotation:")
                 .leftColor(Color.WHITE)
                 .right(Integer.toString(StartLocations.translateRotation(rotation)))
                 .rightColor(Color.GREEN)
                 .build());
-        this.panelComponent.getChildren().add(LineComponent.builder()
+        panelComponent.getChildren().add(LineComponent.builder()
                 .left("Next:")
                 .leftColor(Color.WHITE)
-                .right("[T - " +
-                        String.valueOf(60 - this.plugin.getUTCTime().getSecond()) + "s, Rot: " + (
-
-                        (rotation + 1 > 15) ? "4" : Integer.toString(StartLocations.translateRotation(rotation + 1))) + "]")
-
+                .right("[T - " + (60 - plugin.getUTCTime().getSecond()) + "s, Rot: " +
+                        ((rotation + 1 > 15) ? "4" : Integer.toString(StartLocations.translateRotation(rotation + 1))) + "]")
                 .rightColor(Color.YELLOW)
                 .build());
         return super.render(graphics);
