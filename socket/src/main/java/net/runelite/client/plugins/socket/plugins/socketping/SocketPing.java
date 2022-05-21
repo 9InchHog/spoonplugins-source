@@ -2,8 +2,12 @@ package net.runelite.client.plugins.socket.plugins.socketping;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
-import java.util.concurrent.ConcurrentHashMap;
+
+import java.awt.*;
+import java.io.BufferedInputStream;
+import java.util.Random;
 import javax.inject.Inject;
+import javax.sound.sampled.*;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -17,11 +21,13 @@ import net.runelite.api.Player;
 import net.runelite.api.Tile;
 import net.runelite.api.TileObject;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
@@ -41,6 +47,8 @@ import net.runelite.client.plugins.socket.plugins.socketping.packets.SocketPingN
 import net.runelite.client.plugins.socket.plugins.socketping.packets.SocketPingPlayerPacket;
 import net.runelite.client.plugins.socket.plugins.socketping.packets.SocketPingTilePacket;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.plugins.socket.RaveUtils;
+
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,6 +101,9 @@ public class SocketPing extends Plugin {
     @Inject
     private EventBus eventBus;
 
+    @Inject
+    private RaveUtils raveUtils;
+
     @Provides
     SocketPingConfig getConfig(ConfigManager configManager) {
         return (SocketPingConfig)configManager.getConfig(SocketPingConfig.class);
@@ -124,16 +135,34 @@ public class SocketPing extends Plugin {
             MenuAction.PLAYER_SEVENTH_OPTION.getId(),
             MenuAction.PLAYER_EIGTH_OPTION.getId());
 
+    public int pingTicks = 0;
+    public Color raveColor = Color.BLUE;
+    private static Clip clip;
+
     protected void startUp() {
         keyManager.registerKeyListener(socketPingKeyListener);
         mouseManager.registerMouseListener(socketPingMouseListener);
         overlayManager.add(socketPingOverlay);
+        pingTicks = 0;
     }
 
     protected void shutDown() {
         keyManager.unregisterKeyListener(socketPingKeyListener);
         mouseManager.unregisterMouseListener(socketPingMouseListener);
         overlayManager.remove(socketPingOverlay);
+        pingTicks = 0;
+    }
+
+    @Subscribe
+    protected void onConfigChanged(ConfigChanged event) {
+        if (event.getGroup().equals("socketping") && event.getKey().equals("pingSoundVolume")) {
+            if (clip != null) {
+                FloatControl control = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                if (control != null) {
+                    control.setValue((float) (config.pingSoundVolume() / 2 - 45));
+                }
+            }
+        }
     }
 
     @Subscribe
@@ -172,6 +201,24 @@ public class SocketPing extends Plugin {
                     eventBus.post(new SocketBroadcastPacket(packet));
                 }
             }
+
+            if(config.pingSound()) {
+                try {
+                    AudioInputStream stream = AudioSystem.getAudioInputStream(new BufferedInputStream(SocketPing.class.getResourceAsStream(pingType.type + ".wav")));
+                    AudioFormat format = stream.getFormat();
+                    DataLine.Info info = new DataLine.Info(Clip.class, format);
+                    clip = (Clip)AudioSystem.getLine(info);
+                    clip.open(stream);
+                    FloatControl control = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
+                    if (control != null)
+                        control.setValue((float)(config.pingSoundVolume() / 2 - 45));
+                    clip.setFramePosition(0);
+                    clip.start();
+                } catch (Exception var6) {
+                    clip = null;
+                }
+            }
+            pingTicks = 5;
         });
     }
 
@@ -300,5 +347,15 @@ public class SocketPing extends Plugin {
                     }
                 break;
         }
+    }
+
+    @Subscribe
+    public void onGameTick(GameTick event) {
+        if (config.raveWheel() == SocketPingConfig.RaveMode.RAVE) {
+            raveColor = Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F);
+        }
+
+        if (pingTicks > 0)
+            pingTicks--;
     }
 }

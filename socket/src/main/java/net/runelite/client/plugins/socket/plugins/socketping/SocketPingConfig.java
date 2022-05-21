@@ -1,10 +1,8 @@
 package net.runelite.client.plugins.socket.plugins.socketping;
 
 import java.awt.Color;
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ModifierlessKeybind;
+
+import net.runelite.client.config.*;
 
 @ConfigGroup("socketping")
 public interface SocketPingConfig extends Config {
@@ -190,5 +188,51 @@ public interface SocketPingConfig extends Config {
     )
     default ModifierlessKeybind hotkeyQuestionMark() {
         return new ModifierlessKeybind(0, 0);
+    }
+
+
+    @ConfigItem(
+            position = 97,
+            keyName = "pingSound",
+            name = "Ping Sound",
+            description = "Now you can flame your team in 2 games"
+    )
+    default boolean pingSound() {
+        return false;
+    }
+
+    @Range(min = 0, max = 100)
+    @ConfigItem(
+            position = 98,
+            keyName = "pingSoundVolume",
+            name = "Ping Sound Volume",
+            description = "Sets volume for Ping Sound"
+    )
+    default int pingSoundVolume() {
+        return 40;
+    }
+
+    @ConfigItem(
+            position = 99,
+            keyName = "raveWheel",
+            name = "Rave Wheel",
+            description = "What? How am I not supposed to do this"
+    )
+    default RaveMode raveWheel() {
+        return RaveMode.OFF;
+    }
+
+    @ConfigItem(
+            position = 100,
+            keyName = "pingLocationImage",
+            name = "Ping Location Image",
+            description = "Shows ping icon on tile where ping occured"
+    )
+    default boolean pingLocationImage() {
+        return false;
+    }
+
+    enum RaveMode {
+        OFF, RAVE, EPILEPSY, FLOW
     }
 }
