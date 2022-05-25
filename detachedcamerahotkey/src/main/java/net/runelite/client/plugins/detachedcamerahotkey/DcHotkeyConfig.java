@@ -28,4 +28,12 @@ public interface DcHotkeyConfig extends Config {
     default int getDCSpeed() {
         return 12;
     }
+
+    @ConfigItem(
+            name = "Ignore Compliance",
+            keyName = "ignoreCompliance",
+            description = "Allows you to click on shit when detached camera is enabled",
+            position = 2
+    )
+    default boolean ignoreCompliance() { return true; }
 }

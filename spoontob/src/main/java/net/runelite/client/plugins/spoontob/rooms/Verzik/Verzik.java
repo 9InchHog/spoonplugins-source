@@ -234,7 +234,7 @@ public class Verzik extends Room {
         overlayManager.add(purpleCrabPanel);
         overlayManager.add(redsOverlay);
         icon = ImageUtil.resizeImage(icon, 23, 32);
-        ratIcon = ImageUtil.resizeImage(icon, 23, 32);
+        ratIcon = ImageUtil.resizeImage(ratIcon, 23, 32);
         poisonStyle = null;
     }
 

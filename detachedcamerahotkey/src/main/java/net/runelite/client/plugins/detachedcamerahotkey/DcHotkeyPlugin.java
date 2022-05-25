@@ -44,8 +44,12 @@ public class DcHotkeyPlugin extends Plugin {
         public void hotkeyPressed() {
             toggled = !toggled;
             client.setOculusOrbState(toggled ? 1 : 0);
-            if (toggled)
+            if (toggled) {
                 client.setOculusOrbNormalSpeed(config.getDCSpeed());
+                if (config.ignoreCompliance()) {
+                    client.setComplianceValue("orbInteraction", true);
+                }
+            }
         }
     };
 
@@ -57,6 +61,7 @@ public class DcHotkeyPlugin extends Plugin {
         keyManager.unregisterKeyListener(masterSwitch);
         toggled = false;
         client.setOculusOrbState(0);
+        client.setComplianceValue("orbInteraction", false);
     }
 
     @Subscribe
@@ -64,6 +69,12 @@ public class DcHotkeyPlugin extends Plugin {
         if (e.getGroup().equals("detachedcamerahotkey")) {
             if (e.getKey().equals("dcSpeed") && toggled) {
                 client.setOculusOrbNormalSpeed(config.getDCSpeed());
+            } else if (e.getKey().equals("ignoreCompliance")) {
+                if (config.ignoreCompliance() && toggled) {
+                    client.setComplianceValue("orbInteraction", true);
+                } else if (!config.ignoreCompliance()) {
+                    client.setComplianceValue("orbInteraction", false);
+                }
             }
         }
     }
