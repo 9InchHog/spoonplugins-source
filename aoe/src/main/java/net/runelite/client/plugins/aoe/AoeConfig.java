@@ -404,6 +404,14 @@ public interface AoeConfig extends Config {
 	default boolean isGargBossEnabled() { return true; }
 
 	@ConfigItem(
+			keyName = "sireMiasma",
+			name = "Sire Miasma Pools",
+			description = "Shows the AoE for where the miasma pools are at Sire",
+			section = otherSection
+	)
+	default boolean sireMiasma() { return true; }
+
+	@ConfigItem(
 			keyName = "vetion",
 			name = "Vet'ion",
 			description = "Configures whether or not AoE Projectile Warnings for Vet'ion are displayed",

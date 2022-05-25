@@ -68,19 +68,19 @@ public class AoeOverlay extends Overlay {
 	@Override
 	public Dimension render(Graphics2D graphics) {
 		AtomicInteger index = new AtomicInteger();
-		if(this.client.getLocalPlayer() != null) {
-			WorldPoint lp = client.getLocalPlayer().getWorldLocation();
+		if(client.getLocalPlayer() != null) {
+			WorldPoint wp = client.getLocalPlayer().getWorldLocation();
 
 			if (client.getVarbitValue(Varbits.IN_RAID) == 1) {
 				plugin.getLightningTrail().forEach(o -> {
 					if (config.raveHighlights() != AoeConfig.raveMode.OFF) {
 						if (config.raveHighlights() == AoeConfig.raveMode.RAVE) {
-							OverlayUtil.drawTiles(graphics, client, o, lp, plugin.raveColors.get(index.intValue()), 2, 150, 50);
+							OverlayUtil.drawTiles(graphics, client, o, wp, plugin.raveColors.get(index.intValue()), 2, 150, 50);
 						} else {
-							OverlayUtil.drawTiles(graphics, client, o, lp, plugin.flowColor, 2, 150, 50);
+							OverlayUtil.drawTiles(graphics, client, o, wp, plugin.flowColor, 2, 150, 50);
 						}
 					} else {
-						OverlayUtil.drawTiles(graphics, client, o, lp, new Color(0, 150, 200), 2, 150, 50);
+						OverlayUtil.drawTiles(graphics, client, o, wp, new Color(0, 150, 200), 2, 150, 50);
 					}
 					index.getAndIncrement();
 				});
@@ -89,12 +89,12 @@ public class AoeOverlay extends Overlay {
 					plugin.getAcidTrail().forEach(o -> {
 						if (config.raveHighlights() != AoeConfig.raveMode.OFF) {
 							if (config.raveHighlights() == AoeConfig.raveMode.RAVE) {
-								OverlayUtil.drawTiles(graphics, client, o.getWorldLocation(), lp, plugin.raveColors.get(index.intValue()), 2, 150, 50);
+								OverlayUtil.drawTiles(graphics, client, o.getWorldLocation(), wp, plugin.raveColors.get(index.intValue()), 2, 150, 50);
 							} else {
-								OverlayUtil.drawTiles(graphics, client, o.getWorldLocation(), lp, plugin.flowColor, 2, 150, 50);
+								OverlayUtil.drawTiles(graphics, client, o.getWorldLocation(), wp, plugin.flowColor, 2, 150, 50);
 							}
 						} else {
-							OverlayUtil.drawTiles(graphics, client, o.getWorldLocation(), lp, new Color(69, 241, 44), 2, 150, 50);
+							OverlayUtil.drawTiles(graphics, client, o.getWorldLocation(), wp, new Color(69, 241, 44), 2, 150, 50);
 						}
 						index.getAndIncrement();
 					});
@@ -104,12 +104,12 @@ public class AoeOverlay extends Overlay {
 					plugin.getCrystalSpike().forEach(o -> {
 						if (config.raveHighlights() != AoeConfig.raveMode.OFF) {
 							if (config.raveHighlights() == AoeConfig.raveMode.RAVE) {
-								OverlayUtil.drawTiles(graphics, client, o.getWorldLocation(), lp, plugin.raveColors.get(index.intValue()), 2, 150, 50);
+								OverlayUtil.drawTiles(graphics, client, o.getWorldLocation(), wp, plugin.raveColors.get(index.intValue()), 2, 150, 50);
 							} else {
-								OverlayUtil.drawTiles(graphics, client, o.getWorldLocation(), lp, plugin.flowColor, 2, 150, 50);
+								OverlayUtil.drawTiles(graphics, client, o.getWorldLocation(), wp, plugin.flowColor, 2, 150, 50);
 							}
 						} else {
-							OverlayUtil.drawTiles(graphics, client, o.getWorldLocation(), lp, new Color(255, 0, 84), 2, 150, 50);
+							OverlayUtil.drawTiles(graphics, client, o.getWorldLocation(), wp, new Color(255, 0, 84), 2, 150, 50);
 						}
 						index.getAndIncrement();
 					});
@@ -120,15 +120,31 @@ public class AoeOverlay extends Overlay {
 				plugin.getWintertodtSnowFall().forEach(o -> {
 					if (config.raveHighlights() != AoeConfig.raveMode.OFF) {
 						if (config.raveHighlights() == AoeConfig.raveMode.RAVE) {
-							OverlayUtil.drawTiles(graphics, client, o.getWorldLocation(), lp, plugin.raveColors.get(index.intValue()), 2, 150, 50);
+							OverlayUtil.drawTiles(graphics, client, o.getWorldLocation(), wp, plugin.raveColors.get(index.intValue()), 2, 150, 50);
 						} else {
-							OverlayUtil.drawTiles(graphics, client, o.getWorldLocation(), lp, plugin.flowColor, 2, 150, 50);
+							OverlayUtil.drawTiles(graphics, client, o.getWorldLocation(), wp, plugin.flowColor, 2, 150, 50);
 						}
 					} else {
-						OverlayUtil.drawTiles(graphics, client, o.getWorldLocation(), lp, new Color(255, 0, 84), 2, 150, 50);
+						OverlayUtil.drawTiles(graphics, client, o.getWorldLocation(), wp, new Color(255, 0, 84), 2, 150, 50);
 					}
 					index.getAndIncrement();
 				});
+			}
+			
+			if (config.sireMiasma()) {
+				for (GraphicsObject obj : client.getGraphicsObjects()) {
+					if (obj.getId() == 1275) {
+						if (config.raveHighlights() != AoeConfig.raveMode.OFF) {
+							if (config.raveHighlights() == AoeConfig.raveMode.RAVE) {
+								OverlayUtil.drawTiles(graphics, client, WorldPoint.fromLocal(client, obj.getLocation()), wp, plugin.raveColors.get(index.intValue()), 2, 150, 50);
+							} else {
+								OverlayUtil.drawTiles(graphics, client, WorldPoint.fromLocal(client, obj.getLocation()), wp, plugin.flowColor, 2, 150, 50);
+							}
+						} else {
+							OverlayUtil.drawTiles(graphics, client, WorldPoint.fromLocal(client, obj.getLocation()), wp, new Color(69, 241, 44), 2, 150, 50);
+						}
+					}
+				}
 			}
 		}
 
