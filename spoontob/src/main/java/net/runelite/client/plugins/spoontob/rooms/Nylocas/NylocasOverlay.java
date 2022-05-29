@@ -78,7 +78,7 @@ public class NylocasOverlay extends RoomOverlay {
                         String name = npc.getName();
                         LocalPoint lp = npc.getLocalLocation();
 
-                        if(!npc.isDead()){
+                        if(!npc.isDead() && !client.getHiddenNpcIndices().contains(npc.getIndex())){
                             if (nylocas.getAggressiveNylocas().contains(npc) && lp != null) {
                                 if (config.nyloAggressiveOverlay() == SpoonTobConfig.aggroStyle.TILE) {
                                     Polygon poly = getCanvasTileAreaPoly(client, lp, npc.getComposition().getSize(), -25);
