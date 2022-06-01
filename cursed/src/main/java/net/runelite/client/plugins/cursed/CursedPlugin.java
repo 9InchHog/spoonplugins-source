@@ -381,8 +381,8 @@ public class CursedPlugin extends Plugin {
             } catch (Exception var6) {
                 clip = null;
             }
-        }else if (event.getMessageNode().getType() == ChatMessageType.GAMEMESSAGE && event.getMessage().contains("Congratulations, you've completed a")
-                && event.getMessage().contains(" combat task:") && config.gtaCa()) {
+        } else if (event.getMessageNode().getType() == ChatMessageType.GAMEMESSAGE && (event.getMessage().contains("New item added to your collection log:")
+                || (event.getMessage().contains("Congratulations, you've completed a") && event.getMessage().contains(" combat task:"))) && config.gtaCa()) {
             gtaTicks = 12;
             gtaOpacity = 0;
             try {

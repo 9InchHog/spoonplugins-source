@@ -345,8 +345,7 @@ public class SpoonNpcHighlightPlugin extends Plugin {
                     || event.getMenuOption().contains("-True-Tile") || event.getMenuOption().contains("-SW-Tile") || event.getMenuOption().contains("-Hull")
                     || event.getMenuOption().contains("-Area") || event.getMenuOption().contains("-Outline") || event.getMenuOption().contains("-Turbo"))){
                 final int id = event.getId();
-	            final NPC[] cachedNPCs = client.getCachedNPCs();
-	            final NPC npc = cachedNPCs[id];
+	            final NPC npc = client.getCachedNPCs()[id];
 
 	            ArrayList<String> listToChange = new ArrayList<>();
 	            if(npc.getName() != null) {
@@ -422,19 +421,14 @@ public class SpoonNpcHighlightPlugin extends Plugin {
     @Subscribe
 	public void onNpcSpawned(NpcSpawned event){
         for(NpcSpawn n : npcSpawns){
-            if(event.getNpc().getIndex() == n.index){
-                if(n.spawnPoint == null) {
-                    NPCComposition comp = event.getNpc().getTransformedComposition();
-                    if (comp != null) {
-                        for (WorldPoint wp : n.spawnLocations) {
-                            if (wp.getX() == event.getNpc().getWorldLocation().getX() && wp.getY() == event.getNpc().getWorldLocation().getY()) {
-                                n.spawnPoint = event.getNpc().getWorldLocation();
-                                n.respawnTime = client.getTickCount() - n.diedOnTick + 1;
-                                break;
-                            }
-                        }
+            if(event.getNpc().getIndex() == n.index && event.getNpc().getId() == n.id){
+                if(n.spawnPoint == null && n.diedOnTick != -1) {
+                    if (n.spawnLocations.contains(event.getNpc().getWorldLocation())) {
+                        n.spawnPoint = event.getNpc().getWorldLocation();
+                        n.respawnTime = client.getTickCount() - n.diedOnTick + 1;
+                    } else {
+                        n.spawnLocations.add(event.getNpc().getWorldLocation());
                     }
-                    n.spawnLocations.add(event.getNpc().getWorldLocation());
                 }
                 n.dead = false;
                 break;
@@ -446,7 +440,7 @@ public class SpoonNpcHighlightPlugin extends Plugin {
 	public void onNpcDespawned(NpcDespawned event){
         if(event.getNpc().isDead()){
             for(NpcSpawn n : npcSpawns){
-                if(event.getNpc().getIndex() == n.index){
+                if(event.getNpc().getIndex() == n.index && event.getNpc().getId() == n.id){
                     n.diedOnTick = client.getTickCount();
                     n.dead = true;
                     return;
