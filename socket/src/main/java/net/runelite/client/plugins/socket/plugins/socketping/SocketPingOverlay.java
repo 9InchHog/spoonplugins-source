@@ -31,7 +31,7 @@ import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 import net.runelite.client.util.ImageUtil;
-import net.runelite.client.util.RaveUtils;
+import net.runelite.client.plugins.socket.RaveUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
