@@ -31,9 +31,6 @@ public class NpcSpawn {
 		this.dead = true;
 
 		final NPCComposition composition = npc.getTransformedComposition();
-
-		if (composition != null){
-			this.size = composition.getSize();
-		}
+		this.size = composition != null ? composition.getSize() : 1;
 	}
 }

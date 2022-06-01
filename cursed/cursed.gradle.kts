@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.6"
+version = "1.0.7"
 
 project.extra["PluginName"] = "Cursed"
 project.extra["PluginDescription"] = "For this shall be... my masterpiece"

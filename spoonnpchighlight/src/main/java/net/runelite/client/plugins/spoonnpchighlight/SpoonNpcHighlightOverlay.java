@@ -48,8 +48,8 @@ public class SpoonNpcHighlightOverlay extends Overlay {
 
                 NPCComposition npcComposition = npc.getTransformedComposition();
                 if (npcComposition != null) {
-                    if (config.tileHighlight() && plugin.checkSpecificList(plugin.tileNames, plugin.tileIds, npc)) {
-                        int size = npcComposition.getSize();
+                    int size = npcComposition.getSize();
+                    if (config.tileHighlight() && plugin.checkSpecificList(plugin.tileNames, plugin.tileIds, npc)) {                        
                         LocalPoint lp = npc.getLocalLocation();
                         if (lp != null) {
                             Polygon tilePoly = Perspective.getCanvasTileAreaPoly(this.client, lp, size);
@@ -61,7 +61,6 @@ public class SpoonNpcHighlightOverlay extends Overlay {
                     }
 
                     if (config.trueTileHighlight() && plugin.checkSpecificList(plugin.trueTileNames, plugin.trueTileIds, npc)) {
-                        int size = npcComposition.getSize();
                         LocalPoint lp = LocalPoint.fromWorld(this.client, npc.getWorldLocation());
                         if (lp != null) {
                             lp = new LocalPoint(lp.getX() + size * 128 / 2 - 64, lp.getY() + size * 128 / 2 - 64);
@@ -74,7 +73,6 @@ public class SpoonNpcHighlightOverlay extends Overlay {
                     }
 
                     if (config.swTileHighlight() && plugin.checkSpecificList(plugin.swTileNames, plugin.swTileIds, npc)) {
-                        int size = npcComposition.getSize();
                         LocalPoint lp = npc.getLocalLocation();
                         if (lp != null) {
                             int x = lp.getX() - (size - 1) * 128 / 2;
@@ -130,7 +128,6 @@ public class SpoonNpcHighlightOverlay extends Overlay {
                         }
 
                         if(plugin.turboModeStyle == 0){
-                            int size = npcComposition.getSize();
                             LocalPoint lp = npc.getLocalLocation();
                             if (lp != null) {
                                 Polygon tilePoly = Perspective.getCanvasTileAreaPoly(this.client, lp, size);
@@ -139,7 +136,6 @@ public class SpoonNpcHighlightOverlay extends Overlay {
                                 }
                             }
                         }else if(plugin.turboModeStyle == 1){
-                            int size = npcComposition.getSize();
                             LocalPoint lp = LocalPoint.fromWorld(this.client, npc.getWorldLocation());
                             if (lp != null) {
                                 lp = new LocalPoint(lp.getX() + size * 128 / 2 - 64, lp.getY() + size * 128 / 2 - 64);
@@ -149,7 +145,6 @@ public class SpoonNpcHighlightOverlay extends Overlay {
                                 }
                             }
                         }else if(plugin.turboModeStyle == 2){
-                            int size = npcComposition.getSize();
                             LocalPoint lp = npc.getLocalLocation();
                             if (lp != null) {
                                 int x = lp.getX() - (size - 1) * 128 / 2;
@@ -173,7 +168,7 @@ public class SpoonNpcHighlightOverlay extends Overlay {
                     }
 
                     if (foundNpc && config.interactingHighlight() == SpoonNpcHighlightConfig.interactingHighlightMode.BOTH && npc.getInteracting() != null
-                            && this.client.getLocalPlayer() != null && npc.getInteracting().getName() != null && npc.getInteracting().getName().equals(this.client.getLocalPlayer().getName())) {
+                            && client.getLocalPlayer() != null && npc.getInteracting().getName() != null && npc.getInteracting().getName().equals(client.getLocalPlayer().getName())) {
                         String text = npc.getInteracting().getName();
                         Point textLoc = npc.getCanvasTextLocation(graphics, text, npc.getLogicalHeight() + 20);
                         if (textLoc != null) {
@@ -200,9 +195,7 @@ public class SpoonNpcHighlightOverlay extends Overlay {
                     final LocalPoint lp = LocalPoint.fromWorld(client, n.spawnPoint.getX(), n.spawnPoint.getY());
 
                     if (lp != null) {
-                    final LocalPoint centerLp = new LocalPoint(
-                            lp.getX() + Perspective.LOCAL_TILE_SIZE * (n.size - 1) / 2,
-                            lp.getY() + Perspective.LOCAL_TILE_SIZE * (n.size - 1) / 2);
+                        final LocalPoint centerLp = new LocalPoint(lp.getX() + Perspective.LOCAL_TILE_SIZE * (n.size - 1) / 2, lp.getY() + Perspective.LOCAL_TILE_SIZE * (n.size - 1) / 2);
                         Color raveColor = plugin.turboIds.contains(n.id) ? plugin.turboColors.get(plugin.turboIds.indexOf(n.id) + plugin.turboNames.size()) : Color.WHITE;
                         Polygon tilePoly = Perspective.getCanvasTileAreaPoly(this.client, centerLp, n.size);
                         if (tilePoly != null) {
@@ -230,13 +223,13 @@ public class SpoonNpcHighlightOverlay extends Overlay {
                             final Instant now = Instant.now();
                             final double baseTick = (n.respawnTime - (client.getTickCount() - n.diedOnTick)) * (Constants.GAME_TICK_LENGTH / 1000.0);
                             final double sinceLast = (now.toEpochMilli() - plugin.lastTickUpdate.toEpochMilli()) / 1000.0;
-                            final double timeLeft = Math.max(0.0, baseTick - sinceLast);
+                            final double timeLeft = Math.max(0, baseTick - sinceLast);
                             text = String.valueOf(timeLeft);
                             if(text.contains(".")){
                                 text = text.substring(0, text.indexOf(".") + 2);
                             }
                         }else {
-                            text = String.valueOf((n.respawnTime - (client.getTickCount() - n.diedOnTick)));
+                            text = String.valueOf(Math.max(0, (n.respawnTime - (client.getTickCount() - n.diedOnTick))));
                         }
 
                         Point textLoc = Perspective.getCanvasTextLocation(client, graphics, lp, text, 0);

@@ -12,6 +12,8 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.input.KeyListener;
+import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -25,6 +27,7 @@ import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.*;
 import java.util.List;
 import java.util.function.Predicate;
@@ -37,27 +40,30 @@ import java.util.function.Predicate;
 		enabledByDefault = false
 )
 @PluginDependency(SocketPlugin.class)
-public class SocketBAPlugin extends Plugin {
-    @Inject
-    private Client client;
+public class SocketBAPlugin extends Plugin implements KeyListener {
+	@Inject
+	private Client client;
 
-    @Inject
-    private OverlayManager overlayManager;
+	@Inject
+	private OverlayManager overlayManager;
 
-    @Inject
-    private SocketBAOverlay overlay;
+	@Inject
+	private SocketBAOverlay overlay;
 
-    @Inject
-    private SocketBAPanelOverlay panelOverlay;
+	@Inject
+	private SocketBAPanelOverlay panelOverlay;
 
 	@Inject
 	private SocketBAItemOverlay itemOverlay;
 
-    @Inject
-    private SocketBAConfig config;
+	@Inject
+	private SocketBAConfig config;
 
-    @Inject
-    private EventBus eventBus;
+	@Inject
+	private EventBus eventBus;
+
+	@Inject
+	private KeyManager keyManager;
 
 	private final ArrayListMultimap<String, Integer> optionIndexes = ArrayListMultimap.create();
 
@@ -83,20 +89,22 @@ public class SocketBAPlugin extends Plugin {
 	public double cannonWidth = 1;
 	public boolean cannonWidthUp = true;
 	public Map<GroundObject, Color> discoTiles = new HashMap<>();
+	public boolean overstockKeyHeld = false;
+	public Map<NPC, Integer> npcSpawns = new HashMap<>();
 
-    public SocketBAPlugin() {
-       
-    }
+	public SocketBAPlugin() {
 
-    @Provides
-    SocketBAConfig getConfig(ConfigManager configManager) {
-        return (SocketBAConfig) configManager.getConfig(SocketBAConfig.class);
-    }
+	}
 
-    protected void startUp() throws Exception {
-		this.overlayManager.add(this.overlay);
-        this.overlayManager.add(this.panelOverlay);
-		this.overlayManager.add(this.itemOverlay);
+	@Provides
+	SocketBAConfig getConfig(ConfigManager configManager) {
+		return (SocketBAConfig) configManager.getConfig(SocketBAConfig.class);
+	}
+
+	protected void startUp() throws Exception {
+		overlayManager.add(overlay);
+		overlayManager.add(panelOverlay);
+		overlayManager.add(itemOverlay);
 		reset();
 		attCall = "";
 		colCall = "";
@@ -107,13 +115,14 @@ public class SocketBAPlugin extends Plugin {
 		cannons.clear();
 		eggHoppers.clear();
 		discoTiles.clear();
-    }
+		keyManager.registerKeyListener(this);
+	}
 
-    protected void shutDown() throws Exception {
-		this.overlayManager.remove(this.overlay);
-        this.overlayManager.remove(this.panelOverlay);
-		this.overlayManager.remove(this.itemOverlay);
-        reset();
+	protected void shutDown() throws Exception {
+		overlayManager.remove(overlay);
+		overlayManager.remove(panelOverlay);
+		overlayManager.remove(itemOverlay);
+		reset();
 		attCall = "";
 		colCall = "";
 		healCall = "";
@@ -124,9 +133,10 @@ public class SocketBAPlugin extends Plugin {
 		vendingMachines.clear();
 		cannons.clear();
 		eggHoppers.clear();
-    }
+		keyManager.unregisterKeyListener(this);
+	}
 
-    protected void reset() {
+	protected void reset() {
 		role = "";
 		otherRole = "";
 		roleDone = false;
@@ -135,14 +145,20 @@ public class SocketBAPlugin extends Plugin {
 		arrowEquiped = 0;
 		roleWidgetText = "";
 		queen = null;
-    }
+		overstockKeyHeld = false;
+		npcSpawns.clear();
+	}
 
 	@Subscribe
 	private void onConfigChanged(ConfigChanged event) {
-		if(event.getGroup().equals("socketBa") && this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1) {
-			Widget hpWidget = client.getWidget(WidgetInfo.BA_HEAL_TEAMMATES.getGroupId(), WidgetInfo.BA_HEAL_TEAMMATES.getChildId());
-			if(hpWidget != null && event.getKey().equals("hideHpOverlay")) {
-				hpWidget.setHidden(config.hideHpOverlay());
+		if(event.getGroup().equals("socketBa")) {
+			if (client.getVarbitValue(Varbits.IN_GAME_BA) == 1 && event.getKey().equals("hideHpOverlay")) {
+				Widget hpWidget = client.getWidget(WidgetInfo.BA_HEAL_TEAMMATES.getGroupId(), WidgetInfo.BA_HEAL_TEAMMATES.getChildId());
+				if(hpWidget != null) {
+					hpWidget.setHidden(config.hideHpOverlay());
+				}
+			} else if (event.getKey().equals("overstockHotkey") && overstockKeyHeld) {
+				overstockKeyHeld = false;
 			}
 		}
 	}
@@ -174,8 +190,8 @@ public class SocketBAPlugin extends Plugin {
 	}
 
 	@Subscribe
-    private void onGameTick(GameTick event) {
-		if(this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1) {
+	private void onGameTick(GameTick event) {
+		if(client.getVarbitValue(Varbits.IN_GAME_BA) == 1) {
 			for (Map.Entry<GameObject, Color> entry : eggHoppers.entrySet()) {
 				entry.setValue(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
 			}
@@ -186,7 +202,7 @@ public class SocketBAPlugin extends Plugin {
 				entry.setValue(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
 			}
 
-			if(!role.equals("") && !otherRole.equals("") && this.client.getLocalPlayer() != null) {
+			if(!role.equals("") && !otherRole.equals("") && client.getLocalPlayer() != null) {
 				Widget otherWidget = null;
 				Widget roleWidget = null;
 				if(role.equals("Attacker")){
@@ -244,67 +260,71 @@ public class SocketBAPlugin extends Plugin {
 
 					if(!otherCall.equals("")) {
 						JSONObject data = new JSONObject();
-						data.put("player", this.client.getLocalPlayer().getName());
+						data.put("player", client.getLocalPlayer().getName());
 						data.put("role", otherRole);
 						data.put("call", otherCall);
 						JSONObject payload = new JSONObject();
 						payload.put("socketbarole", data);
-						this.eventBus.post(new SocketBroadcastPacket(payload));
+						eventBus.post(new SocketBroadcastPacket(payload));
 					}
 				}
 			}
 		}
-    }
+	}
 
 	@Subscribe
-    private void onNpcSpawned(NpcSpawned event) {
-    	if(this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1) {
+	private void onNpcSpawned(NpcSpawned event) {
+		if(client.getVarbitValue(Varbits.IN_GAME_BA) == 1) {
 			if (event.getNpc().getId() == 5775) {
 				queen = event.getNpc();
 			} else if (event.getNpc().getId() == 1655) {
 				cannons.put(event.getNpc(), Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
+			} else if (event.getNpc().getName().equalsIgnoreCase("penance ranger") || event.getNpc().getName().equalsIgnoreCase("penance fighter")) {
+				npcSpawns.put(event.getNpc(), client.getTickCount());
 			}
 		}
-    }
+	}
 
 	@Subscribe
-    private void onNpcDespawned(NpcDespawned event) {
-    	if(this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1) {
+	private void onNpcDespawned(NpcDespawned event) {
+		if(client.getVarbitValue(Varbits.IN_GAME_BA) == 1) {
 			if (event.getNpc().getId() == 5775) {
 				queen = null;
 			} else if (event.getNpc().getId() == 1655) {
 				cannons.remove(event.getNpc());
+			} else if (event.getNpc().getName().equalsIgnoreCase("penance ranger") || event.getNpc().getName().equalsIgnoreCase("penance fighter")) {
+				npcSpawns.remove(event.getNpc());
 			}
 		}
-    }
+	}
 
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event) {
-		if(this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1 && event.getMenuOption().equalsIgnoreCase("wield")
+		if(client.getVarbitValue(Varbits.IN_GAME_BA) == 1 && event.getMenuOption().equalsIgnoreCase("wield")
 				&& (event.getItemId() == 22227 || event.getItemId() == 22228 || event.getItemId() == 22229 || event.getItemId() == 22230)){
 			arrowEquiped = event.getItemId();
 		}
 	}
 
-    private void sendFlag(String msg) {
-        JSONArray data = new JSONArray();
-        JSONObject jsonmsg = new JSONObject();
-        jsonmsg.put("msg", msg);
-        data.put(jsonmsg);
-        JSONObject send = new JSONObject();
-        send.put("socketbaalt", data);
-        this.eventBus.post(new SocketBroadcastPacket(send));
-    }
+	private void sendFlag(String msg) {
+		JSONArray data = new JSONArray();
+		JSONObject jsonmsg = new JSONObject();
+		jsonmsg.put("msg", msg);
+		data.put(jsonmsg);
+		JSONObject send = new JSONObject();
+		send.put("socketbaalt", data);
+		eventBus.post(new SocketBroadcastPacket(send));
+	}
 
-    @Subscribe
-    public void onSocketReceivePacket(SocketReceivePacket event) {
-		if(this.client.getLocalPlayer() != null){
+	@Subscribe
+	public void onSocketReceivePacket(SocketReceivePacket event) {
+		if(client.getLocalPlayer() != null){
 			try {
 				JSONObject payload = event.getPayload();
 				if (payload.has("socketbarole")) {
 					JSONObject data = payload.getJSONObject("socketbarole");
 
-					if(!data.getString("player").equals(this.client.getLocalPlayer().getName())){
+					if(!data.getString("player").equals(client.getLocalPlayer().getName())){
 						if(data.getString("role").equals("Attacker")){
 							attCall = data.getString("call");
 							if(attCall.contains("Defensive")) {
@@ -331,16 +351,16 @@ public class SocketBAPlugin extends Plugin {
 					JSONArray data = payload.getJSONArray("socketbaalt");
 					JSONObject jsonmsg = data.getJSONObject(0);
 					String msg = jsonmsg.getString("msg");
-					this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", msg, null);
+					client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", msg, null);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-    }
+	}
 
 	@Subscribe
-    public void onWidgetLoaded(WidgetLoaded event) {
+	public void onWidgetLoaded(WidgetLoaded event) {
 		if(event.getGroupId() == WidgetID.BA_ATTACKER_GROUP_ID){
 			reset();
 			role = "Attacker";
@@ -367,11 +387,11 @@ public class SocketBAPlugin extends Plugin {
 		if(hpWidget != null) {
 			hpWidget.setHidden(config.hideHpOverlay());
 		}
-    }
+	}
 
-    @Subscribe
-    private void onChatMessage(ChatMessage event) {
-		if(event.getType() == ChatMessageType.GAMEMESSAGE && this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1 && this.client.getLocalPlayer() != null){
+	@Subscribe
+	private void onChatMessage(ChatMessage event) {
+		if(event.getType() == ChatMessageType.GAMEMESSAGE && client.getVarbitValue(Varbits.IN_GAME_BA) == 1 && client.getLocalPlayer() != null){
 			String msg = Text.removeTags(event.getMessage());
 			if((msg.toLowerCase().contains("all of the penance runners have been killed!") && role.equals("Defender"))
 					|| (msg.toLowerCase().contains("all of the penance healers have been killed!") && role.equals("Healer"))){
@@ -389,41 +409,41 @@ public class SocketBAPlugin extends Plugin {
 			}else if(msg.equalsIgnoreCase("the egg exploded.")){
 				int rng = new Random().nextInt(3);
 				if(rng == 0) {
-					sendFlag("<col=ff0000>" + this.client.getLocalPlayer().getName() + " picked up the wrong egg.");
+					sendFlag("<col=ff0000>" + client.getLocalPlayer().getName() + " picked up the wrong egg.");
 				}else if(rng == 1) {
-					sendFlag("<col=ff0000>... Really? Just click the right egg. " + this.client.getLocalPlayer().getName() + " has got no hands");
+					sendFlag("<col=ff0000>... Really? Just click the right egg. " + client.getLocalPlayer().getName() + " has got no hands");
 				}else {
-					sendFlag("<col=ff0000>" + this.client.getLocalPlayer().getName() + " is colorblind");
+					sendFlag("<col=ff0000>" + client.getLocalPlayer().getName() + " is colorblind");
 				}
 			}else if(msg.equalsIgnoreCase("that's the wrong type of poisoned food to use! penalty!")){
 				int rng = new Random().nextInt(3);
 				if(rng == 0) {
-					sendFlag("<col=ff0000>" + this.client.getLocalPlayer().getName() + " used the wrong poisoned food.");
+					sendFlag("<col=ff0000>" + client.getLocalPlayer().getName() + " used the wrong poisoned food.");
 				}else if(rng == 1) {
-					sendFlag("<col=ff0000>" + this.client.getLocalPlayer().getName() + " has room temp IQ");
+					sendFlag("<col=ff0000>" + client.getLocalPlayer().getName() + " has room temp IQ");
 				}else {
-					sendFlag("<col=ff0000>Either they are greedy with the ticks.... or " + this.client.getLocalPlayer().getName() + " can't tell whats " + healCall.replace("Pois. ", ""));
+					sendFlag("<col=ff0000>Either they are greedy with the ticks.... or " + client.getLocalPlayer().getName() + " can't tell whats " + healCall.replace("Pois. ", ""));
 				}
 			}
 		}
-    }
+	}
 
 	@Subscribe
-    public void onHitsplatApplied(HitsplatApplied event) {
-		if(this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1 && this.client.getLocalPlayer() != null){
+	public void onHitsplatApplied(HitsplatApplied event) {
+		if(client.getVarbitValue(Varbits.IN_GAME_BA) == 1 && client.getLocalPlayer() != null){
 			if (role.equals("Attacker") && event.getHitsplat().getAmount() == 0 && event.getActor() instanceof NPC && event.getHitsplat().isMine() && event.getActor().getName() != null
-					&& event.getActor().getName().contains("Penance ") && this.client.getLocalPlayer().getAnimation() != 7511) {
+					&& event.getActor().getName().contains("Penance ") && client.getLocalPlayer().getAnimation() != 7511) {
 				int rng = new Random().nextInt(3);
 				if(rng == 0) {
-					sendFlag("<col=ff0000>" + this.client.getLocalPlayer().getName() + " is being a brainlet");
+					sendFlag("<col=ff0000>" + client.getLocalPlayer().getName() + " is being a brainlet");
 				}else if(rng == 1) {
-					sendFlag("<col=ff0000>Hehe point go brrrrrrrrrrrrrrrrrrr  -" + this.client.getLocalPlayer().getName());
+					sendFlag("<col=ff0000>Hehe point go brrrrrrrrrrrrrrrrrrr  -" + client.getLocalPlayer().getName());
 				}else {
-					sendFlag("<col=ff0000>Just kick him now. " + this.client.getLocalPlayer().getName() + " is bing chillin'");
+					sendFlag("<col=ff0000>Just kick him now. " + client.getLocalPlayer().getName() + " is bing chillin'");
 				}
 			}
 		}
-    }
+	}
 
 	@Subscribe
 	public void onVarbitChanged(VarbitChanged event) {
@@ -448,11 +468,8 @@ public class SocketBAPlugin extends Plugin {
 	}
 
 	@Subscribe
-    public void onClientTick(ClientTick clientTick) {
-        if (this.client.getGameState() != GameState.LOGGED_IN || this.client.isMenuOpen())
-            return;
-
-		if(this.client.getVarbitValue(Varbits.IN_GAME_BA) == 1) {
+	public void onClientTick(ClientTick clientTick) {
+		if(client.getGameState() == GameState.LOGGED_IN && !client.isMenuOpen() && client.getVarbitValue(Varbits.IN_GAME_BA) == 1) {
 			if(cannonWidthUp) {
 				cannonWidth += .02;
 				if(cannonWidth >= 20) {
@@ -464,7 +481,6 @@ public class SocketBAPlugin extends Plugin {
 					cannonWidthUp = true;
 				}
 			}
-
 			MenuEntry[] menuEntries = this.client.getMenuEntries();
 			int idx = 0;
 			this.optionIndexes.clear();
@@ -477,12 +493,35 @@ public class SocketBAPlugin extends Plugin {
 				swapMenuEntry(idx++, entry);
 
 			client.setMenuEntries(updateMenuEntries(client.getMenuEntries()));
+
+			if (config.prioritizeNewestNpc() && Arrays.stream(client.getMenuEntries()).anyMatch(entry -> entry.getOption().contains("Attack") && (entry.getTarget().toLowerCase().contains("penance ranger") || entry.getTarget().toLowerCase().contains("penance fighter")))) {
+				int newestTick = 0;
+				MenuEntry[] newEntries = client.getMenuEntries();
+				for (MenuEntry me : client.getMenuEntries()) {
+					if (me.getOption().contains("Attack") && (me.getTarget().toLowerCase().contains("penance ranger") || me.getTarget().toLowerCase().contains("penance fighter"))) {
+						NPC npc = client.getCachedNPCs()[me.getIdentifier()];
+						if (npc != null && npcSpawns.get(npc) > newestTick) {
+							newestTick = npcSpawns.get(npc);
+						}
+					}
+				}
+
+				for (MenuEntry me : newEntries) {
+					if (me.getOption().contains("Attack") && (me.getTarget().toLowerCase().contains("penance ranger") || me.getTarget().toLowerCase().contains("penance fighter"))) {
+						NPC npc = client.getCachedNPCs()[me.getIdentifier()];
+						if (npc != null && npcSpawns.get(npc) != newestTick) {
+							me.setDeprioritized(true);
+						}
+					}
+				}
+				client.setMenuEntries(newEntries);
+			}
 		}
-    }
-	
+	}
+
 	private void swapMenuEntry(int index, MenuEntry menuEntry) {
-        String option = Text.removeTags(menuEntry.getOption()).toLowerCase();
-        String target = Text.removeTags(menuEntry.getTarget()).toLowerCase();
+		String option = Text.removeTags(menuEntry.getOption()).toLowerCase();
+		String target = Text.removeTags(menuEntry.getTarget()).toLowerCase();
 
 		if (this.config.leftClickHorn() && option.contains("tell-") && hornList.contains(target)) {
 			String newSwap = "";
@@ -499,48 +538,48 @@ public class SocketBAPlugin extends Plugin {
 		}
 	}
 
-    private void swap(String optionA, String optionB, String target, int index, boolean strict) {
-        MenuEntry[] menuEntries = this.client.getMenuEntries();
-        int thisIndex = findIndex(menuEntries, index, optionB, target, strict);
-        int optionIdx = findIndex(menuEntries, thisIndex, optionA, target, strict);
-        if (thisIndex >= 0 && optionIdx >= 0)
-            swap(this.optionIndexes, menuEntries, optionIdx, thisIndex);
-    }
+	private void swap(String optionA, String optionB, String target, int index, boolean strict) {
+		MenuEntry[] menuEntries = this.client.getMenuEntries();
+		int thisIndex = findIndex(menuEntries, index, optionB, target, strict);
+		int optionIdx = findIndex(menuEntries, thisIndex, optionA, target, strict);
+		if (thisIndex >= 0 && optionIdx >= 0)
+			swap(this.optionIndexes, menuEntries, optionIdx, thisIndex);
+	}
 
-    private int findIndex(MenuEntry[] entries, int limit, String option, String target, boolean strict) {
-        if (strict) {
-            List<Integer> indexes = this.optionIndexes.get(option);
-            for (int i = indexes.size() - 1; i >= 0; i--) {
-                int idx = indexes.get(i);
-                MenuEntry entry = entries[idx];
-                String entryTarget = Text.removeTags(entry.getTarget()).toLowerCase();
-                if (idx <= limit && entryTarget.equals(target))
-                    return idx;
-            }
-        } else {
-            for (int i = limit; i >= 0; i--) {
-                MenuEntry entry = entries[i];
-                String entryOption = Text.removeTags(entry.getOption()).toLowerCase();
-                String entryTarget = Text.removeTags(entry.getTarget()).toLowerCase();
-                if (entryOption.contains(option.toLowerCase()) && entryTarget.equals(target))
-                    return i;
-            }
-        }
-        return -1;
-    }
+	private int findIndex(MenuEntry[] entries, int limit, String option, String target, boolean strict) {
+		if (strict) {
+			List<Integer> indexes = this.optionIndexes.get(option);
+			for (int i = indexes.size() - 1; i >= 0; i--) {
+				int idx = indexes.get(i);
+				MenuEntry entry = entries[idx];
+				String entryTarget = Text.removeTags(entry.getTarget()).toLowerCase();
+				if (idx <= limit && entryTarget.equals(target))
+					return idx;
+			}
+		} else {
+			for (int i = limit; i >= 0; i--) {
+				MenuEntry entry = entries[i];
+				String entryOption = Text.removeTags(entry.getOption()).toLowerCase();
+				String entryTarget = Text.removeTags(entry.getTarget()).toLowerCase();
+				if (entryOption.contains(option.toLowerCase()) && entryTarget.equals(target))
+					return i;
+			}
+		}
+		return -1;
+	}
 
-    private void swap(ArrayListMultimap<String, Integer> optionIndexes, MenuEntry[] entries, int index1, int index2) {
-        MenuEntry entry = entries[index1];
-        entries[index1] = entries[index2];
-        entries[index2] = entry;
-        this.client.setMenuEntries(entries);
-        optionIndexes.clear();
-        int idx = 0;
-        for (MenuEntry menuEntry : entries) {
-            String option = Text.removeTags(menuEntry.getOption()).toLowerCase();
-            optionIndexes.put(option, idx++);
-        }
-    }
+	private void swap(ArrayListMultimap<String, Integer> optionIndexes, MenuEntry[] entries, int index1, int index2) {
+		MenuEntry entry = entries[index1];
+		entries[index1] = entries[index2];
+		entries[index2] = entry;
+		this.client.setMenuEntries(entries);
+		optionIndexes.clear();
+		int idx = 0;
+		for (MenuEntry menuEntry : entries) {
+			String option = Text.removeTags(menuEntry.getOption()).toLowerCase();
+			optionIndexes.put(option, idx++);
+		}
+	}
 
 	private MenuEntry[] updateMenuEntries(MenuEntry[] menuEntries) {
 		return Arrays.stream(menuEntries)
@@ -550,11 +589,11 @@ public class SocketBAPlugin extends Plugin {
 
 	private final Predicate<MenuEntry> filterMenuEntries = entry -> {
 		int id = entry.getIdentifier();
-		String option = Text.standardize(entry.getOption(), true).toLowerCase();
-		String target = Text.standardize(entry.getTarget(), true).toLowerCase();
+		String option = Text.standardize(entry.getOption(), true);
+		String target = Text.standardize(entry.getTarget(), true);
 		int type = entry.getType().getId();
 
-		if (this.config.leftClickEggs() && type >= 18 && type <= 22 && (id == 10531 || id == 10532 || id == 10533 || id == 10534)) {
+		if (config.leftClickEggs() && type >= 18 && type <= 22 && (id == 10531 || id == 10532 || id == 10533 || id == 10534)) {
 			if(!role.equals("Collector")
 					|| ((colCall.equalsIgnoreCase("Green eggs") && (id == 10532 || id == 10533))
 					|| (colCall.equalsIgnoreCase("Red eggs") && (id == 10531 || id == 10533))
@@ -563,31 +602,31 @@ public class SocketBAPlugin extends Plugin {
 			}
 		}
 
-		if(config.hideAttack() && (target.contains("penance fighter") || target.contains("penance ranger"))){
-			if(option.contains("attack")) {
-				WeaponType wepType =  WeaponType.getWeaponType(equippedWeaponTypeVarbit);
-				if (!role.equals("Attacker")){
-					return false;
-				} else if(wepType == WeaponType.TYPE_3 || wepType == WeaponType.TYPE_5 || wepType == WeaponType.TYPE_7 || wepType == WeaponType.TYPE_19) {
-					if((arrowEquiped == 22227 && !attCall.contains("Controlled"))
-							|| (arrowEquiped == 22228 && !attCall.contains("Accurate"))
-							|| (arrowEquiped == 22229 && !attCall.contains("Aggressive"))
-							|| (arrowEquiped == 22230 && !attCall.contains("Defensive"))) {
+		if(config.hideAttack()){
+			if (target.contains("penance fighter") || target.contains("penance ranger")) {
+				if(option.contains("attack")) {
+					WeaponType wepType =  WeaponType.getWeaponType(equippedWeaponTypeVarbit);
+					if (!role.equals("Attacker")){
+						return false;
+					} else if(wepType == WeaponType.TYPE_3 || wepType == WeaponType.TYPE_5 || wepType == WeaponType.TYPE_7 || wepType == WeaponType.TYPE_19) {
+						if((arrowEquiped == 22227 && !attCall.contains("Controlled"))
+								|| (arrowEquiped == 22228 && !attCall.contains("Accurate"))
+								|| (arrowEquiped == 22229 && !attCall.contains("Aggressive"))
+								|| (arrowEquiped == 22230 && !attCall.contains("Defensive"))) {
+							return false;
+						}
+					} else if (!attCall.contains(attackStyle.getName())) {
 						return false;
 					}
-				} else if (!attCall.contains(attackStyle.getName())) {
-					return false;
+				}else if(option.contains("cast ") && target.contains(" -> ")){
+					if (!role.equals("Attacker") || (option.contains(" wind ") && !attCall.contains("Controlled")) || (option.contains(" water ") && !attCall.contains("Accurate"))
+							|| (option.contains(" earth ") && !attCall.contains("Aggressive")) || (option.contains(" fire ") && !attCall.contains("Defensive"))) {
+						return false;
+					}
 				}
-			}else if(option.contains("cast ") && target.contains(" -> ")){
-				if (!role.equals("Attacker") || (option.contains(" wind ") && !attCall.contains("Controlled")) || (option.contains(" water ") && !attCall.contains("Accurate"))
-						|| (option.contains(" earth ") && !attCall.contains("Aggressive")) || (option.contains(" fire ") && !attCall.contains("Defensive"))) {
-					return false;
-				}
+			} else if (target.contains("penance queen")) {
+				return false;
 			}
-		}
-
-		if(config.hideAttack() && option.contains("attack") && target.contains("penance queen")){
-			return false;
 		}
 
 		if(config.removeUseFood() && option.contains("use") && (target.contains("poisoned ") && (target.contains(" meat ->") || target.contains(" tofu ->") || target.contains(" worms ->")))
@@ -597,12 +636,40 @@ public class SocketBAPlugin extends Plugin {
 
 		if(config.highlightVendingMachine() && (option.contains("stock-up") || option.contains("take-") || option.contains("convert"))
 				&& (target.contains(" item machine") || target.contains("collector converter"))) {
-			if((role.equals("Attacker") && !target.contains("attacker item machine")) || (role.equals("Defender") && !target.contains("defender item machine"))
-					|| (role.equals("Healer") && !target.contains("healer item machine")) || (!role.equals("Collector") && target.contains("collector converter"))) {
+			if((role.equals("Attacker") && !target.contains("attacker item machine"))
+					|| (role.equals("Defender") && !target.contains("defender item machine"))
+					|| (role.equals("Healer") && !target.contains("healer item machine"))
+					|| (!role.equals("Collector") && target.contains("collector converter"))) {
 				return false;
+			} else if (overstockKeyHeld) {
+				if ((role.equals("Healer") && !option.equalsIgnoreCase("take-" + healCall.replace("Pois. ", "")))
+						|| (role.equals("Defender") && !option.equalsIgnoreCase("take-" + defCall))) {
+					entry.setDeprioritized(true);
+					return true;
+				}
 			}
+		}
+
+		if (config.deprioPickupFood() && role.equals("Defender") && option.equals("take") && (target.contains("tofu") || target.contains("worms") || target.contains("crackers"))) {
+			entry.setDeprioritized(true);
+			return true;
 		}
 		return true;
 	};
+
+	@Override
+	public void keyTyped(KeyEvent e) {}
+
+	public void keyPressed(KeyEvent e) {
+		if (config.overstockHotkey().matches(e)) {
+			overstockKeyHeld = true;
+		}
+	}
+
+	public void keyReleased(KeyEvent e) {
+		if (config.overstockHotkey().matches(e)) {
+			overstockKeyHeld = false;
+		}
+	}
 }
 
