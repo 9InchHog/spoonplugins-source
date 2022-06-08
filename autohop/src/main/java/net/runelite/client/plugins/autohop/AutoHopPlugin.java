@@ -70,6 +70,14 @@ public class AutoHopPlugin extends Plugin
         return configManager.getConfig(AutoHopConfig.class);
     }
 
+    @Override
+    protected void startUp() {
+        blacklistName = new HashSet<>();
+        for (String s : net.runelite.api.util.Text.COMMA_SPLITTER.split(config.ignoredPlayers().toLowerCase())) {
+            blacklistName.add(s);
+        }
+    }
+
     @Subscribe
     public void onConfigChanged(ConfigChanged event) {
         if (event.getGroup().equals("autohop")) {
@@ -83,7 +91,7 @@ public class AutoHopPlugin extends Plugin
     }
 
     @Subscribe
-    private void onGameStateChanged(GameStateChanged event)
+    public void onGameStateChanged(GameStateChanged event)
     {
         final Player local = client.getLocalPlayer();
 
@@ -113,7 +121,7 @@ public class AutoHopPlugin extends Plugin
     }
 
     @Subscribe
-    private void onPlayerSpawned(PlayerSpawned event) {
+    public void onPlayerSpawned(PlayerSpawned event) {
         Player local = client.getLocalPlayer();
         Player player = event.getPlayer();
         if (local == null || player == null || player.equals(local) || (config.cmbBracket() && !PvPUtil.isAttackable(client, player)))
@@ -134,7 +142,7 @@ public class AutoHopPlugin extends Plugin
                 (config.hopRadius() && player.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) > config.playerRadius()) ||
                 (config.disableGrandExchange() && player.getWorldLocation().getRegionID() == GRAND_EXCHANGE_REGION) ||
                 (config.disableFeroxEnclave() && player.getWorldArea().intersectsWith(FEROX_ENCLAVE_AREA)) ||
-                (blacklistName.contains(player.getName().toLowerCase())))
+                (blacklistName.contains(Objects.requireNonNull(player.getName()).toLowerCase())))
         {
             return;
         }
@@ -282,7 +290,7 @@ public class AutoHopPlugin extends Plugin
     }
 
     @Subscribe
-    private void onGameTick(GameTick event)
+    public void onGameTick(GameTick event)
     {
         if (config.autoCloseChatbox() && (
                 client.getVarbitValue(Varbits.IN_WILDERNESS) == 1 || net.runelite.api.WorldType.isPvpWorld(client.getWorldType()))) {
@@ -335,7 +343,7 @@ public class AutoHopPlugin extends Plugin
     }
 
     @Subscribe
-    private void onChatMessage(ChatMessage event)
+    public void onChatMessage(ChatMessage event)
     {
         final Player local = client.getLocalPlayer();
         String eventName = Text.sanitize(event.getName());
@@ -344,7 +352,7 @@ public class AutoHopPlugin extends Plugin
                 (config.disableGrandExchange() && local.getWorldLocation().getRegionID() == GRAND_EXCHANGE_REGION) ||
                 (config.disableFeroxEnclave() && local.getWorldArea().intersectsWith(FEROX_ENCLAVE_AREA)) ||
                 event.getType() != ChatMessageType.GAMEMESSAGE &&
-                        !(config.chatHop() && event.getType() == ChatMessageType.PUBLICCHAT && eventName != local.getName()) &&
+                        !(config.chatHop() && event.getType() == ChatMessageType.PUBLICCHAT && eventName.equals(local.getName())) &&
                         local.getName() != null)
         {
             return;
