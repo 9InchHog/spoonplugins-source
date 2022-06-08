@@ -59,7 +59,7 @@ public class PvPTargetHighlightOverlay extends Overlay {
 
     public Dimension render(Graphics2D graphics) {
         if (config.highlightTargets() != PvPPlayerIndicatorsConfig.TargetHighlightMode.OFF) {
-            this.playerIndicatorsTargetService.forEachPlayer((player, color) -> {
+            playerIndicatorsTargetService.forEachPlayer((player, color) -> {
                 if (config.highlightTargets() == PvPPlayerIndicatorsConfig.TargetHighlightMode.TILE) {
                     renderPolygon(graphics, player.getCanvasTilePoly(), color);
                 } else if (config.highlightTargets() == PvPPlayerIndicatorsConfig.TargetHighlightMode.HULL) {

@@ -4,9 +4,10 @@ import java.awt.Color;
 import java.util.function.BiConsumer;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import com.openosrs.client.util.PvPUtil;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
-import net.runelite.client.plugins.pvpplayerindicators.utils.PvpUtil;
 
 @Singleton
 public class PvPPlayerIndicatorsTargetService {
@@ -24,11 +25,11 @@ public class PvPPlayerIndicatorsTargetService {
     public void forEachPlayer(BiConsumer<Player, Color> consumer) {
         if (config.highlightTargets() == PvPPlayerIndicatorsConfig.TargetHighlightMode.OFF)
             return;
-        Player localPlayer = this.client.getLocalPlayer();
-        for (Player player : this.client.getPlayers()) {
+        Player localPlayer = client.getLocalPlayer();
+        for (Player player : client.getPlayers()) {
             if (player == null || player.getName() == null)
                 continue;
-            if (PvpUtil.isAttackable(this.client, player) && !this.client.isFriended(player.getName(), false) &&
+            if (PvPUtil.isAttackable(client, player) && !client.isFriended(player.getName(), false) &&
                     !player.isFriendsChatMember() && !player.getName().equals(localPlayer.getName())) {
                 consumer.accept(player, config.getTargetColor());
             }

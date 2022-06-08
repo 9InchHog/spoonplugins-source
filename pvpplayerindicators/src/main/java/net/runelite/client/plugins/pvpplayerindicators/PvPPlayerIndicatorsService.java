@@ -29,9 +29,9 @@ import java.util.function.BiConsumer;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.openosrs.client.util.PvPUtil;
 import net.runelite.api.*;
 import net.runelite.api.clan.*;
-import net.runelite.client.plugins.pvpplayerindicators.utils.PvpUtil;
 
 @Singleton
 public class PvPPlayerIndicatorsService
@@ -73,7 +73,7 @@ public class PvPPlayerIndicatorsService
 					consumer.accept(player, config.getOwnPlayerColor());
 				}
 			}
-			else if (config.highlightFriends() && this.client.isFriended(player.getName(), false))
+			else if (config.highlightFriends() && client.isFriended(player.getName(), false))
 			{
 				consumer.accept(player, config.getFriendColor());
 			}
@@ -92,8 +92,8 @@ public class PvPPlayerIndicatorsService
 			else if (config.highlightOthers() && !isFriendsChatMember && !isClanMember)
 			{
 				consumer.accept(player, config.getOthersColor());
-			} else if (config.highlightTargets() != PvPPlayerIndicatorsConfig.TargetHighlightMode.OFF && PvpUtil.isAttackable(this.client, player) &&
-				!this.client.isFriended(player.getName(), false) && !player.isFriendsChatMember()) {
+			} else if (config.highlightTargets() != PvPPlayerIndicatorsConfig.TargetHighlightMode.OFF && PvPUtil.isAttackable(client, player) &&
+				!client.isFriended(player.getName(), false) && !player.isFriendsChatMember()) {
 					consumer.accept(player, config.getTargetColor());
 			}
 		}

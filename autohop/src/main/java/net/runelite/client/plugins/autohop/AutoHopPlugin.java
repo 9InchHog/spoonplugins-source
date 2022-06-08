@@ -1,6 +1,7 @@
 package net.runelite.client.plugins.autohop;
 
 import com.google.inject.Provides;
+import com.openosrs.client.util.PvPUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldArea;
@@ -129,7 +130,7 @@ public class AutoHopPlugin extends Plugin
     private void shouldHop(Player player)
     {
         if ((config.friends() && client.isFriended(player.getName(), false)) ||
-                (config.clanmember() && player.isFriendsChatMember() || config.clanmember() && player.isClanMember()) ||
+                (config.clanmember() && (player.isFriendsChatMember() || player.isClanMember())) ||
                 (config.hopRadius() && player.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) > config.playerRadius()) ||
                 (config.disableGrandExchange() && player.getWorldLocation().getRegionID() == GRAND_EXCHANGE_REGION) ||
                 (config.disableFeroxEnclave() && player.getWorldArea().intersectsWith(FEROX_ENCLAVE_AREA)) ||

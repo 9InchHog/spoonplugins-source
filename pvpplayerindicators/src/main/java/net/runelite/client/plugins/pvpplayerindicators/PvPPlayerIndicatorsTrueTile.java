@@ -62,9 +62,9 @@ public class PvPPlayerIndicatorsTrueTile extends Overlay {
         {
             final WorldPoint playerPos = player.getWorldLocation();
 
-            if(playerPos != null){
+            if (playerPos != null){
                 final LocalPoint playerPosLocal = LocalPoint.fromWorld(client, playerPos);
-                if(playerPosLocal != null){
+                if (playerPosLocal != null){
                     renderTile(graphics, playerPosLocal, color);
                 }
             }

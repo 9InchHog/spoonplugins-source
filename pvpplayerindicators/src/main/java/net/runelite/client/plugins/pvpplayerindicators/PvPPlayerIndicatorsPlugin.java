@@ -25,6 +25,7 @@
 package net.runelite.client.plugins.pvpplayerindicators;
 
 import com.google.inject.Provides;
+import com.openosrs.client.util.PvPUtil;
 import lombok.Value;
 import net.runelite.api.*;
 import net.runelite.api.clan.ClanTitle;
@@ -41,8 +42,6 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ChatIconManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.playerindicators.PlayerIndicatorsPlugin;
-import net.runelite.client.plugins.pvpplayerindicators.utils.PvpUtil;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ColorUtil;
 import org.pf4j.Extension;
@@ -135,25 +134,24 @@ public class PvPPlayerIndicatorsPlugin extends Plugin
 	@Subscribe
 	public void onGameObjectSpawned(GameObjectSpawned event) {
 		if (event.getGameObject().getId() == 10063)
-			this.GELocation = event.getTile().getLocalLocation();
+			GELocation = event.getTile().getLocalLocation();
 	}
 
 	@Subscribe
 	private void onPlayerSpawned(PlayerSpawned event) {
-		if (this.config.playerAlertSound()) {
+		if (config.playerAlertSound()) {
 			Player player = event.getPlayer();
-			if (!player.getName().equalsIgnoreCase(this.client.getLocalPlayer().getName().toLowerCase()) &&
-					PvpUtil.isAttackable(this.client, player) && !player.isFriendsChatMember() && !player.isFriend() &&
-					PvpUtil.isAttackable(this.client, this.client.getLocalPlayer())) {
-				if (this.GELocation != null) {
-					LocalPoint playerloc = this.client.getLocalPlayer().getLocalLocation();
-					if (playerloc.distanceTo(this.GELocation) < 3000) {
-						System.out.println(playerloc.distanceTo(this.GELocation));
+			if (!player.getName().equalsIgnoreCase(client.getLocalPlayer().getName()) &&
+					PvPUtil.isAttackable(client, player) && !player.isFriendsChatMember() && !player.isFriend() &&
+					PvPUtil.isAttackable(client, client.getLocalPlayer())) {
+				if (GELocation != null) {
+					LocalPoint playerloc = client.getLocalPlayer().getLocalLocation();
+					if (playerloc.distanceTo(GELocation) < 3000) {
+						System.out.println(playerloc.distanceTo(GELocation));
 						return;
 					}
 				}
-				System.out.println(config.playerAlertSoundVolume());
-				client.playSoundEffect(3924, this.config.playerAlertSoundVolume());
+				client.playSoundEffect(3924, config.playerAlertSoundVolume());
 			}
 		}
 	}
@@ -223,7 +221,7 @@ public class PvPPlayerIndicatorsPlugin extends Plugin
 			}
 		}
 		if (modified)
-			this.client.setMenuEntries(menuEntries);
+			client.setMenuEntries(menuEntries);
 	}
 
 	private Decorations getDecorations(Player player)
@@ -231,7 +229,7 @@ public class PvPPlayerIndicatorsPlugin extends Plugin
 		int image = -1;
 		Color color = null;
 
-		if (config.highlightFriends() && this.client.isFriended(player.getName(), false))
+		if (config.highlightFriends() && client.isFriended(player.getName(), false))
 		{
 			color = config.getFriendColor();
 		}
@@ -266,7 +264,7 @@ public class PvPPlayerIndicatorsPlugin extends Plugin
 		{
 			color = config.getOthersColor();
 		}
-		else if (PvpUtil.isAttackable(this.client, player) && !player.isFriendsChatMember() && !player.isFriend())
+		else if (PvPUtil.isAttackable(client, player) && !player.isFriendsChatMember() && !player.isFriend())
 		{
 			color = config.getTargetColor();
 		}
