@@ -3,6 +3,7 @@ package net.runelite.client.plugins.deasyscape;
 import com.google.inject.Provides;
 import net.runelite.api.*;
 import net.runelite.api.events.MenuEntryAdded;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -83,7 +84,7 @@ public class DEasyScapePlugin extends Plugin {
         int type = e.getType();
         int id = e.getIdentifier();
         String option = e.getOption();
-        if ((config.removeExamine() && option.equalsIgnoreCase("examine")) || (
+        if ((config.removeExamine() && option.equalsIgnoreCase("examine") && e.getActionParam1() != WidgetInfo.BANK_ITEM_CONTAINER.getId()) || (
                 config.removeInvItems() && type >= 33 && type <= 38 && is_inv_item_blocked(id)) || (
                 config.removeGroundItems() && type >= 18 && type <= 22 && is_ground_item_blocked(id)) || (
                 config.removeNpcs() && type >= 7 && type <= 13 && type != 8 && is_npc_op_blocked(id, type)) || (
