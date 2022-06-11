@@ -1118,9 +1118,9 @@ public class SpoonEzSwapsPlugin extends Plugin {
 			Widget createMenu = client.getWidget(458, 1);
 			Widget dialogOptions = client.getWidget(219, 1);
 			Widget demonPayment = client.getWidget(231, 5);
-			int delay = delayUtils.nextInt(0, 578);
 
 			if (config.afkConstruction()) {
+				int delay = delayUtils.nextInt(config.afkMinDelay(), config.afkMaxDelay());
 				if (dialogOptions != null && !dialogOptions.isHidden() && !dialogOptions.isSelfHidden()) {
 					for (Widget child : dialogOptions.getDynamicChildren()) {
 						if (child.getText().contains("Really remove it?") || child.getText().contains("Repeat last task?")) {
@@ -1145,6 +1145,7 @@ public class SpoonEzSwapsPlugin extends Plugin {
 			//Mahogany homes afk con
 
 			if (config.afkConstructionMahoganyHomes()) {
+				int delay = delayUtils.nextInt(config.afkMahogMinDelay(), config.afkMahogMaxDelay());
 				int key = config.getAfkConstructionMahoganyHomesMode().getKey(); //keypress for config, presses 3 if teak, 4 if mahog
 				Widget playerDialog = client.getWidget(217,6);
 				Widget npcDialog = client.getWidget(231,6);

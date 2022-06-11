@@ -156,11 +156,37 @@ public interface SpoonEzSwapsConfig extends Config
 	)
 	default AfkConstructionHouseMode getAfkConstructionHouseMode() { return AfkConstructionHouseMode.MAHOGANY_TABLES; }
 
+	@Range(min = 0)
+	@Units(Units.MILLISECONDS)
+	@ConfigItem(
+			keyName = "afkMinDelay",
+			name = "Afk Con - Min Delay",
+			description = "Minimum delay it can press the key",
+			position = 4,
+			section = skillingSection,
+			hidden = true,
+			unhide = "afkConstruction"
+	)
+	default int afkMinDelay() {return 0;}
+
+	@Range
+	@Units(Units.MILLISECONDS)
+	@ConfigItem(
+			keyName = "afkMaxDelay",
+			name = "Afk Con - Max Delay",
+			description = "Maximum delay it can press the key",
+			position = 5,
+			section = skillingSection,
+			hidden = true,
+			unhide = "afkConstruction"
+	)
+	default int afkMaxDelay() {return 600;}
+
 	@ConfigItem(
 			keyName = "afkConstructionMahoganyHomes",
 			name = "Afk Construction (Mahogany Homes)",
 			description = "",
-			position = 4,
+			position = 6,
 			section = skillingSection,
 			hidden = true,
 			unhide = "getEasyConstruction"
@@ -174,7 +200,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "getAfkConstructionMahoganyHomesMode",
 			name = "Afk Construction Mode",
 			description = "Teaks or Mahogany",
-			position = 5,
+			position = 7,
 			section = skillingSection,
 			hidden = true,
 			unhide = "afkConstructionMahoganyHomes"
@@ -184,11 +210,37 @@ public interface SpoonEzSwapsConfig extends Config
 		return AfkConstructionMahoganyHomesMode.TEAK_HOMES;
 	}
 
+	@Range()
+	@Units(Units.MILLISECONDS)
+	@ConfigItem(
+			keyName = "afkMahogMinDelay",
+			name = "Afk Mahog - Min Delay",
+			description = "Minimum delay it can press the key",
+			position = 8,
+			section = skillingSection,
+			hidden = true,
+			unhide = "afkConstructionMahoganyHomes"
+	)
+	default int afkMahogMinDelay() {return 0;}
+
+	@Range
+	@Units(Units.MILLISECONDS)
+	@ConfigItem(
+			keyName = "afkMahogMaxDelay",
+			name = "Afk Mahog - Max Delay",
+			description = "Maximum delay it can press the key",
+			position = 9,
+			section = skillingSection,
+			hidden = true,
+			unhide = "afkConstructionMahoganyHomes"
+	)
+	default int afkMahogMaxDelay() {return 600;}
+
 	@ConfigItem(
 			keyName = "stringAmulet",
 			name = "String Amulet Overlay",
 			description = "Overlay indicating how many amulets in your invent are strung",
-			position = 6,
+			position = 10,
 			section = skillingSection
 	)
 	default boolean getStringAmulet() {
@@ -199,7 +251,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "cookPie",
 			name = "Bake Pie Overlay",
 			description = "Overlay indicating how many summer pies in your inventory are baked",
-			position = 7,
+			position = 11,
 			section = skillingSection
 	)
 	default boolean getBakePie() {
@@ -210,7 +262,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "swapPickpocket",
 			name = "Pickpocket",
 			description = "Swap Talk-to with Pickpocket on NPC<br>Example: Man, Woman",
-			position = 8,
+			position = 12,
 			section = skillingSection
 	)
 	default boolean swapPickpocket()
@@ -222,7 +274,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "swapHerblore",
 			name = "Herblore",
 			description = "Removes the `drink` option on herblore potions - for herblore training",
-			position = 9,
+			position = 13,
 			section = skillingSection
 	)
 	default boolean swapHerblore()
@@ -234,7 +286,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "karambwans",
 			name = "Karambwans",
 			description = "Swaps max cape left click teleports depending on location.",
-			position = 10,
+			position = 14,
 			section = skillingSection,
 			disabledBy = "swapMaxCape"
 	)
@@ -247,7 +299,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "swapEmptyPouch",
 			name = "Essence Pouch",
 			description = "Swap 'Fill' with 'Empty' on rune essence pouches.<br>Only activates near altars.",
-			position = 11,
+			position = 15,
 			section = skillingSection
 	)
 	default boolean swapEmptyPouch() {return false;}
@@ -256,7 +308,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "situatonalTraps",
 			name = "Box Traps",
 			description = "Remove box trap options unless you're on top of them",
-			position = 12,
+			position = 16,
 			section = skillingSection
 	)
 	default boolean situationalTraps() {return false;}
@@ -266,7 +318,7 @@ public interface SpoonEzSwapsConfig extends Config
 			keyName = "customDrop",
 			name = "Left Click Drop",
 			description = "Anything in the list will be dropped on left click",
-			position = 13,
+			position = 17,
 			section = skillingSection
 	)
 	default String customDrop()

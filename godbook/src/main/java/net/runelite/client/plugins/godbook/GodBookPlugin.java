@@ -162,7 +162,7 @@ public class GodBookPlugin extends Plugin {
                 for (Widget child : preach.getDynamicChildren()) {
                     if (child.getText().contains("Select a relevant passage")) {
                         //(max - min) + min
-                        int delay = delayUtils.nextInt(0, 241);
+                        int delay = delayUtils.nextInt(config.minDelay(), config.maxDelay());
                         switch (config.keyToPress()) {
                             case ONE:
                                 delayUtils.delayKey(KeyEvent.VK_1, delay);

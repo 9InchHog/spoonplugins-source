@@ -1,8 +1,6 @@
 package net.runelite.client.plugins.godbook;
 
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.*;
 
 @ConfigGroup("God Book")
 public interface GodBookConfig extends Config {
@@ -57,6 +55,30 @@ public interface GodBookConfig extends Config {
     default key keyToPress() {
         return key.ONE;
     }
+
+    @Range()
+    @Units(Units.MILLISECONDS)
+    @ConfigItem(
+            position = 5,
+            keyName = "minDelay",
+            name = "Minimum Delay",
+            description = "Minimum delay it can press the key",
+            hidden = true,
+            unhide = "leftClick"
+    )
+    default int minDelay() {return 0;}
+
+    @Range
+    @Units(Units.MILLISECONDS)
+    @ConfigItem(
+            position = 6,
+            keyName = "maxDelay",
+            name = "Maximum Delay",
+            description = "Maximum delay it can press the key",
+            hidden = true,
+            unhide = "leftClick"
+    )
+    default int maxDelay() {return 250;}
 
     enum key {
         ONE, TWO, THREE, FOUR
