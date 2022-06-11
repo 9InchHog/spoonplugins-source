@@ -70,4 +70,12 @@ public interface XpDropsConfig extends Config {
     {
         return 3;
     }
+
+    @ConfigItem(
+            position = 6,
+            keyName = "fade",
+            name = "Fade out",
+            description = "Fade out"
+    )
+    default boolean fade() {return true;}
 }

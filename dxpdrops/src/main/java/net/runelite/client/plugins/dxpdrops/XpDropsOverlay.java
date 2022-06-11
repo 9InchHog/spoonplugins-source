@@ -72,6 +72,11 @@ public class XpDropsOverlay extends Overlay {
 
             last_y = y;
             int heightLimit = h + (50 / plugin.speed);
+            if (config.fade()) {
+                float alpha = 2.5F * (h - y) / h;
+                if (alpha >= 0.0F && alpha < 1.0F)
+                    g.setComposite(AlphaComposite.getInstance(3, alpha));
+            }
             if (drop_stats[i] != 0 && drop_offset[i] < heightLimit) {
                 draw_drop(g, i, x0, h - y);
             }
