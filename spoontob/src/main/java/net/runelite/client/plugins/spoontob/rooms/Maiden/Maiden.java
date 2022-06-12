@@ -101,8 +101,6 @@ public class Maiden extends Room {
     public Map<NPC, Integer> frozenBloodSpawns = new HashMap<>();
     public int crabTicksSinceSpawn = 0;
 
-    private boolean mirrorMode;
-
     @Inject
     protected Maiden(SpoonTobPlugin plugin, SpoonTobConfig config) {
         super(plugin, config);
@@ -464,13 +462,6 @@ public class Maiden extends Room {
 
     @Subscribe
     public void onClientTick (ClientTick event){
-        /*if (client.isMirrored() && !mirrorMode) {
-            maidenOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(maidenOverlay);
-            overlayManager.add(maidenOverlay);
-            mirrorMode = true;
-        }*/
-
         if(maidenNPC != null && maidenActive) {
             if (maidenCrabInfoList.size() > 0 && nyloSpawnDelay == 0) {
                 for (MaidenCrabInfo mci : maidenCrabInfoList) {

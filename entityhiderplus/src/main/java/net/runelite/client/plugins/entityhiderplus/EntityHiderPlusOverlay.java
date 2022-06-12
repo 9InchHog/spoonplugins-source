@@ -28,21 +28,21 @@ class EntityHiderPlusOverlay extends Overlay {
 
     @Override
     public Dimension render(Graphics2D graphics) {
-        for(NPC npc : this.client.getNpcs()) {
+        for (NPC npc : this.client.getNpcs()) {
             if (npc.isDead() && config.higlightDead() && (npc.getId() < 9434 || npc.getId() > 9445)) {
-                if(npc.getName() != null) {
-                    if(!plugin.blacklistName.contains(npc.getName().toLowerCase()) && !plugin.blacklistID.contains(npc.getId())){
-                        for(String str : plugin.hideNPCsOnDeathName){
-                            if(str.contains("*") && ((str.startsWith("*") && str.endsWith("*") && npc.getName().toLowerCase().contains(str.replace("*", "")))
+                if (npc.getName() != null) {
+                    if (!plugin.blacklistName.contains(npc.getName().toLowerCase()) && !plugin.blacklistID.contains(npc.getId())) {
+                        for (String str : plugin.hideNPCsOnDeathName) {
+                            if (str.contains("*") && ((str.startsWith("*") && str.endsWith("*") && npc.getName().toLowerCase().contains(str.replace("*", "")))
                                     || (str.startsWith("*") && npc.getName().toLowerCase().endsWith(str.replace("*", ""))) || npc.getName().toLowerCase().startsWith(str.replace("*", "")))){
                                 return null;
                             }
                         }
-                        this.modelOutlineRenderer.drawOutline(npc, config.highlightDeadThiCC(), config.highlightDeadColor(), config.highlightDeadFeather());
+                        modelOutlineRenderer.drawOutline(npc, config.highlightDeadThiCC(), config.highlightDeadColor(), config.highlightDeadFeather());
                     }
-                }else {
-                    if(!plugin.hideNPCsOnDeathID.contains(npc.getId())){
-                        this.modelOutlineRenderer.drawOutline(npc, config.highlightDeadThiCC(), config.highlightDeadColor(), config.highlightDeadFeather());
+                } else {
+                    if (!plugin.hideNPCsOnDeathID.contains(npc.getId())) {
+                        modelOutlineRenderer.drawOutline(npc, config.highlightDeadThiCC(), config.highlightDeadColor(), config.highlightDeadFeather());
                     }
                 }
             }

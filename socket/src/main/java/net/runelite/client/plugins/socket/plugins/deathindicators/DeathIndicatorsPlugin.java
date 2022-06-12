@@ -1,5 +1,6 @@
 package net.runelite.client.plugins.socket.plugins.deathindicators;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Provides;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -18,6 +19,7 @@ import net.runelite.api.*;
 import net.runelite.api.events.*;
 import net.runelite.api.kit.KitType;
 import net.runelite.api.util.Text;
+import net.runelite.client.callback.Hooks;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
@@ -66,6 +68,11 @@ public class DeathIndicatorsPlugin extends Plugin
     @Inject
     private EventBus eventBus;
 
+    @Inject
+    private Hooks hooks;
+
+    private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
+
     private ArrayList<NyloQ> nylos;
 
     private ArrayList<Method> reflectedMethods;
@@ -95,6 +102,7 @@ public class DeathIndicatorsPlugin extends Plugin
 
     protected void startUp()
     {
+        hooks.registerRenderableDrawListener(drawListener);
         ATTACK = -1;
         STRENGTH = -1;
         DEFENCE = -1;
@@ -129,6 +137,7 @@ public class DeathIndicatorsPlugin extends Plugin
     @Override
     protected void shutDown()
     {
+        hooks.unregisterRenderableDrawListener(drawListener);
         deadNylos = null;
         nylos = null;
         hiddenIndices = null;
@@ -420,22 +429,17 @@ public class DeathIndicatorsPlugin extends Plugin
 
     private void setHiddenNpc(NPC npc, boolean hidden)
     {
-
-        List<Integer> newHiddenNpcIndicesList = client.getHiddenNpcIndices();
         if (hidden)
         {
-            newHiddenNpcIndicesList.add(npc.getIndex());
             hiddenIndices.add(npc.getIndex());
         }
         else
         {
-            if (newHiddenNpcIndicesList.contains(npc.getIndex()))
+            if (hiddenIndices.contains(npc.getIndex()))
             {
-                newHiddenNpcIndicesList.remove((Integer) npc.getIndex());
+                hiddenIndices.remove((Integer) npc.getIndex());
             }
         }
-        client.setHiddenNpcIndices(newHiddenNpcIndicesList);
-
     }
 
     void addToDamageQueue(int damage)
@@ -629,9 +633,6 @@ public class DeathIndicatorsPlugin extends Plugin
             inNylo = false;
             if (!hiddenIndices.isEmpty())
             {
-                List<Integer> newHiddenNpcIndicesList = client.getHiddenNpcIndices();
-                newHiddenNpcIndicesList.removeAll(hiddenIndices);
-                client.setHiddenNpcIndices(newHiddenNpcIndicesList);
                 hiddenIndices.clear();
             }
             if (!nylos.isEmpty() || !deadNylos.isEmpty())
@@ -691,5 +692,17 @@ public class DeathIndicatorsPlugin extends Plugin
         DEFENCE = client.getSkillExperience(Skill.DEFENCE);
         RANGED = client.getSkillExperience(Skill.RANGED);
         MAGIC = client.getSkillExperience(Skill.MAGIC);
+    }
+
+    @VisibleForTesting
+    boolean shouldDraw(Renderable renderable, boolean drawingUI)
+    {
+        if (renderable instanceof NPC)
+        {
+            NPC npc = (NPC) renderable;
+            return !hiddenIndices.contains(npc.getIndex());
+        }
+
+        return true;
     }
 }

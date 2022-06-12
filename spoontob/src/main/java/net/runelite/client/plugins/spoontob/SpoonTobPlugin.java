@@ -1,5 +1,6 @@
 package net.runelite.client.plugins.spoontob;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.inject.Binder;
@@ -10,6 +11,7 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.callback.Hooks;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
@@ -19,6 +21,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.spoontob.rooms.Bloat.Bloat;
 import net.runelite.client.plugins.spoontob.rooms.Maiden.Maiden;
 import net.runelite.client.plugins.spoontob.rooms.Maiden.MaidenRedsOverlay;
+import net.runelite.client.plugins.spoontob.rooms.Nylocas.NyloInfo;
 import net.runelite.client.plugins.spoontob.rooms.Nylocas.Nylocas;
 import net.runelite.client.plugins.spoontob.rooms.Sotetseg.Sotetseg;
 import net.runelite.client.plugins.spoontob.rooms.Verzik.Verzik;
@@ -78,6 +81,10 @@ public class SpoonTobPlugin extends Plugin {
     private MaidenRedsOverlay redsOverlay;
     @Inject
     public RaveUtils raveUtils;
+    @Inject
+    private Hooks hooks;
+
+    private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
 
     public Color c;
     private Color rave;
@@ -99,7 +106,6 @@ public class SpoonTobPlugin extends Plugin {
 
     public int situationalTicks = 0;
 
-    private boolean mirrorMode;
 
     public static int partySize;
 
@@ -116,7 +122,6 @@ public class SpoonTobPlugin extends Plugin {
         situationalTicksList.clear();
         overlayManager.add(miscOverlay);
         overlayManager.add(tickOverlay);
-        //overlayManager.add(redsOverlay);
         bankLootChest = null;
         roomCompleteMsg = "";
         raveBankChestColor = Color.WHITE;
@@ -133,7 +138,7 @@ public class SpoonTobPlugin extends Plugin {
             eventBus.register(room);
         }
 
-        client.setIsHidingEntities(true);
+        hooks.registerRenderableDrawListener(drawListener);
         hiddenIndices = new ArrayList<>();
     }
 
@@ -141,7 +146,6 @@ public class SpoonTobPlugin extends Plugin {
         situationalTicksList.clear();
         overlayManager.remove(miscOverlay);
         overlayManager.remove(tickOverlay);
-        //overlayManager.remove(redsOverlay);
         bankLootChest = null;
         modifyCustomObjList(true, true);
         roomCompleteMsg = "";
@@ -152,7 +156,7 @@ public class SpoonTobPlugin extends Plugin {
             room.unload();
         }
 
-        client.setIsHidingEntities(false);
+        hooks.unregisterRenderableDrawListener(drawListener);
         clearHiddenNpcs();
         hiddenIndices = null;
 
@@ -163,19 +167,6 @@ public class SpoonTobPlugin extends Plugin {
 
     @Subscribe
     public void onClientTick(ClientTick event) {
-        /*if (client.isMirrored() && !mirrorMode) {
-            miscOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(miscOverlay);
-            overlayManager.add(miscOverlay);
-            tickOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(tickOverlay);
-            overlayManager.add(tickOverlay);
-            redsOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(redsOverlay);
-            overlayManager.add(redsOverlay);
-            mirrorMode = true;
-        }*/
-
         if (config.removeFRCFlag() && client.getGameState() == GameState.LOGGED_IN && !client.isMenuOpen()) {
             if (TheatreRegions.inRegion(client, TheatreRegions.LOOT_ROOM) || isLootingNonLootRoomChest()) {
                 MenuEntry[] entries = client.getMenuEntries();
@@ -486,25 +477,37 @@ public class SpoonTobPlugin extends Plugin {
     }
 
     public void setHiddenNpc(NPC npc, boolean hidden) {
-        List<Integer> newHiddenNpcIndicesList = client.getHiddenNpcIndices();
         if (hidden) {
-            newHiddenNpcIndicesList.add(npc.getIndex());
             hiddenIndices.add(npc.getIndex());
         } else {
-            if (newHiddenNpcIndicesList.contains(npc.getIndex())) {
-                newHiddenNpcIndicesList.remove((Integer) npc.getIndex());
+            if (hiddenIndices.contains(npc.getIndex()))
+            {
                 hiddenIndices.remove((Integer) npc.getIndex());
             }
         }
-        client.setHiddenNpcIndices(newHiddenNpcIndicesList);
     }
 
     public void clearHiddenNpcs() {
-        if (!hiddenIndices.isEmpty()) {
-            List<Integer> newHiddenNpcIndicesList = client.getHiddenNpcIndices();
-            newHiddenNpcIndicesList.removeAll(hiddenIndices);
-            client.setHiddenNpcIndices(newHiddenNpcIndicesList);
-            hiddenIndices.clear();
+        hiddenIndices.clear();
+    }
+
+    @VisibleForTesting
+    boolean shouldDraw(Renderable renderable, boolean drawingUI)
+    {
+        if (renderable instanceof NPC)
+        {
+            NPC npc = (NPC) renderable;
+            return !hiddenIndices.contains(npc.getIndex());
+        }
+
+        return true;
+    }
+
+    private void SocketDeathIntegration(int passedIndex) {
+        for (NyloInfo ni : nylocas.nylocasNpcs) {
+            if (passedIndex == ni.nylo.getIndex()) {
+                ni.alive = false;
+            }
         }
     }
 

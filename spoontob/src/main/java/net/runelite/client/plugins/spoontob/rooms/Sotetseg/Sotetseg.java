@@ -14,8 +14,6 @@ import net.runelite.client.plugins.spoontob.SpoonTobConfig;
 import net.runelite.client.plugins.spoontob.SpoonTobPlugin;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.util.ImageUtil;
-import net.runelite.client.ws.PartyService;
-import net.runelite.client.ws.WSClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,10 +38,6 @@ public class Sotetseg extends Room {
     private SotetsegOverlay sotetsegOverlay;
     @Inject
     private DeathBallPanel deathBallPanel;
-    @Inject
-    private WSClient wsClient;
-    @Inject
-    private PartyService party;
     @Inject
     private SkillIconManager iconManager;
 
@@ -95,8 +89,6 @@ public class Sotetseg extends Room {
     public int rangeHatNum = 0;
     public BufferedImage mageIcon;
     public BufferedImage rangeIcon;
-
-    private boolean mirrorMode;
 
     @Inject
     protected Sotetseg(SpoonTobPlugin plugin, SpoonTobConfig config) {
@@ -349,17 +341,6 @@ public class Sotetseg extends Room {
                 && target.contains("formidable passage") && !client.getItemContainer(InventoryID.INVENTORY).contains(12625))
             client.setMenuEntries(Arrays.copyOf(entries, entries.length - 1));
     }
-
-    /*@Subscribe
-    public void onClientTick(ClientTick event) {
-        if (client.isMirrored() && !mirrorMode) {
-            sotetsegOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(sotetsegOverlay);
-            overlayManager.add(sotetsegOverlay);
-            deathBallPanel.setLayer(OverlayLayer.AFTER_MIRROR);
-            mirrorMode = true;
-        }
-    }*/
 
     WorldPoint worldPointFromMazePoint(Point mazePoint)
     {

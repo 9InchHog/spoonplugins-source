@@ -66,8 +66,6 @@ public class Bloat extends Room {
     private LocalPoint bloatPrevLoc = null;
     private String bloatDirection = "";
 
-    private boolean mirrorMode;
-
     @Inject
     protected Bloat(SpoonTobPlugin plugin, SpoonTobConfig config) {
         super(plugin, config);
@@ -471,14 +469,4 @@ public class Bloat extends Room {
                 && target.contains("formidable passage") && !client.getItemContainer(InventoryID.INVENTORY).contains(12625))
             client.setMenuEntries(Arrays.copyOf(entries, entries.length - 1));
     }
-
-    /*@Subscribe
-    public void onClientTick(ClientTick event) {
-        if (client.isMirrored() && !mirrorMode) {
-            bloatOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(bloatOverlay);
-            overlayManager.add(bloatOverlay);
-            mirrorMode = true;
-        }
-    }*/
 }

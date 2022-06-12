@@ -1,12 +1,11 @@
 package net.runelite.client.plugins.entityhiderplus;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Provides;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.NPC;
+import net.runelite.api.*;
 import net.runelite.api.events.*;
 import net.runelite.api.util.Text;
+import net.runelite.client.callback.Hooks;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -40,6 +39,11 @@ public class EntityHiderPlusPlugin extends Plugin {
     @Inject
     private OverlayManager overlayManager;
 
+    @Inject
+    private Hooks hooks;
+
+    private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
+
     @Provides
     EntityHiderPlusConfig provideConfig(ConfigManager configManager) {
         return configManager.getConfig(EntityHiderPlusConfig.class);
@@ -61,30 +65,27 @@ public class EntityHiderPlusPlugin extends Plugin {
 
     @Override
     protected void startUp() {
-        client.setIsHidingEntities(true);
-        //client.setDeadNPCsHidden(true);
         hiddenIndices = new ArrayList<>();
         animationHiddenIndices = new ArrayList<>();
         updateConfig();
-        this.overlayManager.add(overlay);
+        overlayManager.add(overlay);
+        hooks.registerRenderableDrawListener(drawListener);
     }
 
     @Subscribe
     public void onGameStateChanged(GameStateChanged event) {
         if (event.getGameState() == GameState.LOGGED_IN) {
-            client.setIsHidingEntities(true);
             clearHiddenNpcs();
         }
     }
 
     @Override
     protected void shutDown() {
-        this.overlayManager.remove(overlay);
-        client.setIsHidingEntities(false);
-        //client.setDeadNPCsHidden(false);
+        overlayManager.remove(overlay);
         clearHiddenNpcs();
         hiddenIndices = null;
         animationHiddenIndices = null;
+        hooks.unregisterRenderableDrawListener(drawListener);
     }
 
     @Subscribe
@@ -112,7 +113,7 @@ public class EntityHiderPlusPlugin extends Plugin {
 
                 if (hiddenIndices.contains(npc.getIndex()) && (!animationHiddenIndices.contains(npc.getIndex()) || !hideNPCsOnAnimationID.contains(npc.getAnimation()))
                         && !hideAliveNPCsID.contains(npc.getId()) && (npc.getName() != null && !matchWildCards(hideAliveNPCsName, Text.standardize(npc.getName())))
-                        && npc.getHealthRatio() > 0) {
+                        && (!npc.isDead() || !config.hideDeadNPCs())) {
                     System.out.println("Unhide: " + npc.getName());
                     setHiddenNpc(npc, false);
                 }
@@ -130,7 +131,6 @@ public class EntityHiderPlusPlugin extends Plugin {
     @Subscribe
     public void onConfigChanged(ConfigChanged event) {
         if (event.getGroup().equals("ehplus")) {
-            client.setIsHidingEntities(true);
             updateConfig();
         }
     }
@@ -187,37 +187,31 @@ public class EntityHiderPlusPlugin extends Plugin {
                 hideGraphicsObjects.add(Integer.parseInt(s));
             } catch (NumberFormatException ignored) {
             }
-            client.setHiddenGraphicsObjects(hideGraphicsObjects);
         }
     }
 
     private void setHiddenNpc(NPC npc, boolean hidden) {
-
-        List<Integer> newHiddenNpcIndicesList = client.getHiddenNpcIndices();
         if (hidden) {
-            newHiddenNpcIndicesList.add(npc.getIndex());
             hiddenIndices.add(npc.getIndex());
             if (hideNPCsOnAnimationID.contains(npc.getAnimation())) {
                 animationHiddenIndices.add(npc.getIndex());
             }
         } else {
-            if (newHiddenNpcIndicesList.contains(npc.getIndex())) {
-                newHiddenNpcIndicesList.remove((Integer) npc.getIndex());
+            if (hiddenIndices.contains(npc.getIndex()))
+            {
                 hiddenIndices.remove((Integer) npc.getIndex());
+            }
+
+            if (animationHiddenIndices.contains(npc.getIndex()))
+            {
                 animationHiddenIndices.remove((Integer) npc.getIndex());
             }
         }
-        client.setHiddenNpcIndices(newHiddenNpcIndicesList);
     }
 
     private void clearHiddenNpcs() {
-        if (!hiddenIndices.isEmpty()) {
-            List<Integer> newHiddenNpcIndicesList = client.getHiddenNpcIndices();
-            newHiddenNpcIndicesList.removeAll(hiddenIndices);
-            client.setHiddenNpcIndices(newHiddenNpcIndicesList);
-            hiddenIndices.clear();
-            animationHiddenIndices.clear();
-        }
+        hiddenIndices.clear();
+        animationHiddenIndices.clear();
     }
 
     private boolean matchWildCards(Set<String> items, String pattern) {
@@ -260,5 +254,22 @@ public class EntityHiderPlusPlugin extends Plugin {
                 }
             } catch (ArrayIndexOutOfBoundsException ignored){}
         }
+    }
+
+    @VisibleForTesting
+    boolean shouldDraw(Renderable renderable, boolean drawingUI)
+    {
+        if (renderable instanceof NPC)
+        {
+            NPC npc = (NPC) renderable;
+            return !hiddenIndices.contains(npc.getIndex()) && !animationHiddenIndices.contains(npc.getIndex());
+        }
+        else if (renderable instanceof GraphicsObject)
+        {
+            GraphicsObject graphicsObject = (GraphicsObject) renderable;
+            return !hideGraphicsObjects.contains(graphicsObject.getId());
+        }
+
+        return true;
     }
 }

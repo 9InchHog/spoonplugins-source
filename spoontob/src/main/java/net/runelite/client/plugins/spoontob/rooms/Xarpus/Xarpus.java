@@ -69,8 +69,6 @@ public class Xarpus extends Room {
 
 	private static Clip clip;
 
-	private boolean mirrorMode;
-
     @Getter
     private ExhumedInfobox exhumedCounter;
     private static BufferedImage HEALED_COUNT_ICON;
@@ -398,15 +396,6 @@ public class Xarpus extends Room {
 
     @Subscribe
     protected void onClientTick(ClientTick event) {
-        /*if (client.isMirrored() && !mirrorMode) {
-            xarpusOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(xarpusOverlay);
-            overlayManager.add(xarpusOverlay);
-            xarpusPanel.setLayer(OverlayLayer.AFTER_MIRROR);
-            xarpusTimer.setLayer(OverlayLayer.AFTER_MIRROR);
-            mirrorMode = true;
-        }*/
-
         if (client.getLocalPlayer() == null)
         {
             return;

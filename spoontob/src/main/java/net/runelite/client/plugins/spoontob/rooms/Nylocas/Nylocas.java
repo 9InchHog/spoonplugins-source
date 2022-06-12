@@ -117,8 +117,7 @@ public class Nylocas extends Room {
 
     @Getter
     private HashMap<NPC, Integer> nylocasPillars = new HashMap();
-    @Getter
-    private HashMap<NPC, Integer> nylocasNpcs = new HashMap();
+    public ArrayList<NyloInfo> nylocasNpcs;
     @Getter
     private HashSet<NPC> aggressiveNylocas = new HashSet();
     private HashMap<NyloNPC, NPC> currentWave = new HashMap();
@@ -409,7 +408,7 @@ public class Nylocas extends Room {
 						nyloMiniboss = npc;
 						bossChangeTicks = 10;
 					} else {
-						nylocasNpcs.put(npc, 52);
+						nylocasNpcs.add(new NyloInfo(npc));
 					}
 					
 					if (minibossAlive) {
@@ -673,7 +672,7 @@ public class Nylocas extends Room {
             case NYLOCAS_PRINKIPAS_10804:
             case NYLOCAS_PRINKIPAS_10805:
             case NYLOCAS_PRINKIPAS_10806:
-                if (nylocasNpcs.remove(npc) != null || NYLO_DEMI_BOSS_IDS.contains(id)) {
+                if (nylocasNpcs.removeIf(n -> n.nylo != null && n.nylo == npc) || NYLO_DEMI_BOSS_IDS.contains(id)) {
 					if (NYLO_DEMI_BOSS_IDS.contains(id)) {
 						nyloMiniboss = null;
 						minibossAlive = false;
@@ -807,23 +806,21 @@ public class Nylocas extends Room {
             rangeNyloRaveColors.clear();
             mageNyloRaveColors.clear();
 
-            for (Iterator<NPC> it = nylocasNpcs.keySet().iterator(); it.hasNext();)
+            for (int i = nylocasNpcs.size() - 1; i >= 0; i--)
             {
-                NPC npc = it.next();
-                int ticksLeft = nylocasNpcs.get(npc);
-
-                if (ticksLeft < 0)
+                NyloInfo ni = nylocasNpcs.get(i);
+                ni.ticks--;
+                if (ni.ticks < 0 || ni.nylo.isDead() || !ni.alive)
                 {
-                    it.remove();
+                    nylocasNpcs.remove(ni);
                     continue;
                 }
-                nylocasNpcs.replace(npc, ticksLeft - 1);
 
-                if (MELEE_IDS.contains(npc.getId())) {
+                if (MELEE_IDS.contains(ni.nylo.getId())) {
                     meleeNyloRaveColors.add(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
-                } else if (RANGE_IDS.contains(npc.getId())) {
+                } else if (RANGE_IDS.contains(ni.nylo.getId())) {
                     rangeNyloRaveColors.add(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
-                } else if (MAGIC_IDS.contains(npc.getId())) {
+                } else if (MAGIC_IDS.contains(ni.nylo.getId())) {
                     mageNyloRaveColors.add(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
                 }
             }
@@ -897,16 +894,6 @@ public class Nylocas extends Room {
 
     @Subscribe
     protected void onClientTick(ClientTick event) {
-        /*if (client.isMirrored() && !mirrorMode) {
-            nylocasOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(nylocasOverlay);
-            overlayManager.add(nylocasOverlay);
-            nyloTimer.setLayer(OverlayLayer.AFTER_MIRROR);
-            nyloSelectionManager.setLayer(OverlayLayer.AFTER_MIRROR);
-            nylocasAliveCounterOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            mirrorMode = true;
-        }*/
-
         List<Player> players = client.getPlayers();
         for (Player player : players)
         {
@@ -1017,44 +1004,46 @@ public class Nylocas extends Room {
                 MenuEntry toEdit = entries[entries.length - 1];
 
                 String strippedTarget = Text.removeTags(target);
-                boolean isBig = false;
                 int timeAlive;
                 String timeAliveString = "";
 
                 NPC npc = client.getCachedNPCs()[toEdit.getIdentifier()];
                 if (npc != null && npc.getComposition() != null) {
-                    isBig = npc.getComposition().getSize() > 1;
-                    if (config.nyloTicksMenu() && nylocasNpcs.get(npc) != null) {
-                        if (config.nyloTimeAliveCountStyle() == SpoonTobConfig.nylotimealive.COUNTUP) {
-                            timeAlive = 52 - nylocasNpcs.get(npc);
-                            timeAliveString = ColorUtil.prependColorTag(" - " + timeAlive, new Color(255 * timeAlive / 52, 255 * (52 - timeAlive) / 52, 0));
-                        } else {
-                            timeAlive = nylocasNpcs.get(npc);
-                            timeAliveString = ColorUtil.prependColorTag(" - " + timeAlive, new Color(255 * (52 - timeAlive) / 52, 255 * timeAlive / 52, 0));
+                    boolean isBig = npc.getComposition().getSize() > 1;
+                    for (NyloInfo ni : nylocasNpcs) {
+                        if (config.nyloTicksMenu() && ni.nylo == npc) {
+                            if (config.nyloTimeAliveCountStyle() == SpoonTobConfig.nylotimealive.COUNTUP) {
+                                timeAlive = 52 - ni.ticks;
+                                timeAliveString = ColorUtil.prependColorTag(" - " + timeAlive, new Color(255 * timeAlive / 52, 255 * (52 - timeAlive) / 52, 0));
+                            } else {
+                                timeAlive = ni.ticks;
+                                timeAliveString = ColorUtil.prependColorTag(" - " + timeAlive, new Color(255 * (52 - timeAlive) / 52, 255 * timeAlive / 52, 0));
+                            }
+                            break;
                         }
                     }
-                }
 
-                if (strippedTarget.contains(MAGE_NYLO)) {
-                    if (isBig) {
-                        toEdit.setTarget(ColorUtil.prependColorTag(strippedTarget, new Color(0, 190, 190)) + timeAliveString);
-                    } else {
-                        toEdit.setTarget(ColorUtil.prependColorTag(strippedTarget, new Color(0, 255, 255)) + timeAliveString);
+                    if (strippedTarget.contains(MAGE_NYLO)) {
+                        if (isBig) {
+                            toEdit.setTarget(ColorUtil.prependColorTag(strippedTarget, new Color(0, 190, 190)) + timeAliveString);
+                        } else {
+                            toEdit.setTarget(ColorUtil.prependColorTag(strippedTarget, new Color(0, 255, 255)) + timeAliveString);
+                        }
+                    } else if (strippedTarget.contains(MELEE_NYLO)) {
+                        if (isBig) {
+                            toEdit.setTarget(ColorUtil.prependColorTag(strippedTarget, new Color(190, 150, 150)) + timeAliveString);
+                        } else {
+                            toEdit.setTarget(ColorUtil.prependColorTag(strippedTarget, new Color(255, 188, 188)) + timeAliveString);
+                        }
+                    } else if (strippedTarget.contains(RANGE_NYLO)) {
+                        if (isBig) {
+                            toEdit.setTarget(ColorUtil.prependColorTag(strippedTarget, new Color(0, 190, 0)) + timeAliveString);
+                        } else {
+                            toEdit.setTarget(ColorUtil.prependColorTag(strippedTarget, new Color(0, 255, 0)) + timeAliveString);
+                        }
                     }
-                } else if (strippedTarget.contains(MELEE_NYLO)) {
-                    if (isBig) {
-                        toEdit.setTarget(ColorUtil.prependColorTag(strippedTarget, new Color(190, 150, 150)) + timeAliveString);
-                    } else {
-                        toEdit.setTarget(ColorUtil.prependColorTag(strippedTarget, new Color(255, 188, 188)) + timeAliveString);
-                    }
-                } else if (strippedTarget.contains(RANGE_NYLO)) {
-                    if (isBig) {
-                        toEdit.setTarget(ColorUtil.prependColorTag(strippedTarget, new Color(0, 190, 0)) + timeAliveString);
-                    } else {
-                        toEdit.setTarget(ColorUtil.prependColorTag(strippedTarget, new Color(0, 255, 0)) + timeAliveString);
-                    }
+                    client.setMenuEntries(entries);
                 }
-                client.setMenuEntries(entries);
             }
 
             if ((config.wheelchairNylo() == SpoonTobConfig.wheelchairMode.WAVES || config.wheelchairNylo() == SpoonTobConfig.wheelchairMode.BOTH)

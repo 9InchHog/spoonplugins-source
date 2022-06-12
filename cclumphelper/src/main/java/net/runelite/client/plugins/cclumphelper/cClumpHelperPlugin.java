@@ -1,12 +1,16 @@
 package net.runelite.client.plugins.cclumphelper;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Provides;
 import lombok.Getter;
 import net.runelite.api.Client;
+import net.runelite.api.GraphicsObject;
 import net.runelite.api.NPC;
+import net.runelite.api.Renderable;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
+import net.runelite.client.callback.Hooks;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.input.KeyListener;
@@ -44,6 +48,11 @@ public class cClumpHelperPlugin extends Plugin implements KeyListener {
     @Inject
     private KeyManager keyManager;
 
+    @Inject
+    private Hooks hooks;
+
+    private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
+
     @Provides
     cClumpHelperConfig getConfig(ConfigManager configManager) {
         return (cClumpHelperConfig)configManager.getConfig(cClumpHelperConfig.class);
@@ -77,7 +86,7 @@ public class cClumpHelperPlugin extends Plugin implements KeyListener {
     private ArrayList<Integer> hiddenIndices;
 
     protected void startUp() throws Exception {
-        client.setIsHidingEntities(true);
+        hooks.registerRenderableDrawListener(drawListener);
         hiddenIndices = new ArrayList<>();
         hiddenState = false;
         crabs = new ArrayList<>();
@@ -86,7 +95,7 @@ public class cClumpHelperPlugin extends Plugin implements KeyListener {
     }
 
     protected void shutDown() {
-        client.setIsHidingEntities(false);
+        hooks.unregisterRenderableDrawListener(drawListener);
         clearHiddenNpcs();
         hiddenIndices = null;
     }
@@ -249,26 +258,18 @@ public class cClumpHelperPlugin extends Plugin implements KeyListener {
     }
 
     private void setHiddenNpc(NPC npc, boolean hidden) {
-        List<Integer> newHiddenNpcIndicesList = client.getHiddenNpcIndices();
         if (hidden) {
-            newHiddenNpcIndicesList.add(npc.getIndex());
             hiddenIndices.add(npc.getIndex());
         } else {
-            if (newHiddenNpcIndicesList.contains(npc.getIndex())) {
-                newHiddenNpcIndicesList.remove((Integer) npc.getIndex());
+            if (hiddenIndices.contains(npc.getIndex()))
+            {
                 hiddenIndices.remove((Integer) npc.getIndex());
             }
         }
-        client.setHiddenNpcIndices(newHiddenNpcIndicesList);
     }
 
     private void clearHiddenNpcs() {
-        if (!hiddenIndices.isEmpty()) {
-            List<Integer> newHiddenNpcIndicesList = client.getHiddenNpcIndices();
-            newHiddenNpcIndicesList.removeAll(hiddenIndices);
-            client.setHiddenNpcIndices(newHiddenNpcIndicesList);
-            hiddenIndices.clear();
-        }
+        hiddenIndices.clear();
     }
 
     public void keyTyped(KeyEvent e) {}
@@ -283,4 +284,16 @@ public class cClumpHelperPlugin extends Plugin implements KeyListener {
     }
 
     public void keyReleased(KeyEvent e) {}
+
+    @VisibleForTesting
+    boolean shouldDraw(Renderable renderable, boolean drawingUI)
+    {
+        if (renderable instanceof NPC)
+        {
+            NPC npc = (NPC) renderable;
+            return !hiddenIndices.contains(npc.getIndex());
+        }
+
+        return true;
+    }
 }

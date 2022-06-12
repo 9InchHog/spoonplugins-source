@@ -69,16 +69,16 @@ public class NylocasOverlay extends RoomOverlay {
 
                 if (config.showNylocasExplosions() != SpoonTobConfig.ExplosionWarning.OFF || config.getHighlightMageNylo() || config.getHighlightMeleeNylo()
                         || config.getHighlightRangeNylo() || config.nyloAggressiveOverlay() != SpoonTobConfig.aggroStyle.OFF) {
-                    HashMap<NPC, Integer> npcMap = nylocas.getNylocasNpcs();
 				    int meleeIndex = 0;
                     int rangeIndex = 0;
                     int mageIndex = 0;
 
-                    for (NPC npc : npcMap.keySet()) {
+                    for (NyloInfo ni : nylocas.nylocasNpcs) {
+                        NPC npc = ni.nylo;
                         String name = npc.getName();
                         LocalPoint lp = npc.getLocalLocation();
 
-                        if(!npc.isDead() && !client.getHiddenNpcIndices().contains(npc.getIndex())){
+                        if (ni.alive){
                             if (nylocas.getAggressiveNylocas().contains(npc) && lp != null) {
                                 if (config.nyloAggressiveOverlay() == SpoonTobConfig.aggroStyle.TILE) {
                                     Polygon poly = getCanvasTileAreaPoly(client, lp, npc.getComposition().getSize(), -25);
@@ -96,7 +96,7 @@ public class NylocasOverlay extends RoomOverlay {
                                 }
                             }
 
-                            int ticksLeft = npcMap.get(npc);
+                            int ticksLeft = ni.ticks;
                             if (ticksLeft > -1 && ticksLeft <= config.nyloExplosionDisplayTicks()) {
                                 int ticksAlive = ticksLeft;
                                 if (config.nyloTimeAliveCountStyle() == SpoonTobConfig.nylotimealive.COUNTUP)

@@ -13,7 +13,6 @@ import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.components.ComponentConstants;
 import net.runelite.client.ui.overlay.components.LineComponent;
 import net.runelite.client.util.QuantityFormatter;
-import net.runelite.client.ws.PartyService;
 
 class SocketDpsOverlay extends OverlayPanel {
     static final OverlayMenuEntry RESET_ENTRY = new OverlayMenuEntry(MenuAction.RUNELITE_OVERLAY, "Reset", "DPS counter");
@@ -22,7 +21,7 @@ class SocketDpsOverlay extends OverlayPanel {
     private final Client client;
 
     @Inject
-    SocketDpsOverlay(SocketDpsCounterPlugin socketDpsCounterPlugin, SocketDpsConfig socketDpsConfig, PartyService partyService, Client client) {
+    SocketDpsOverlay(SocketDpsCounterPlugin socketDpsCounterPlugin, SocketDpsConfig socketDpsConfig, Client client) {
         super(socketDpsCounterPlugin);
         this.plugin = socketDpsCounterPlugin;
         this.config = socketDpsConfig;

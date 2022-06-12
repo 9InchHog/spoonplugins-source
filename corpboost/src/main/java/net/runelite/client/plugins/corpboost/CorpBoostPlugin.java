@@ -1,5 +1,6 @@
 package net.runelite.client.plugins.corpboost;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.inject.Provides;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.callback.Hooks;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -101,11 +103,18 @@ public class CorpBoostPlugin extends Plugin
     @Inject
     private ClientThread clientThread;
 
+    @Inject
+    private Hooks hooks;
+
+    private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
+
     private final ArrayListMultimap<String, Integer> optionIndexes = ArrayListMultimap.create();
 
     public NPC corp = null;
     public NPC core = null;
     int coreStunTick = -1;
+    int unhideFailSafeTick = -1;
+    public boolean temporaryHide = false;
 
     @Provides
     CorpBoostConfig provideConfig(ConfigManager configManager)
@@ -116,6 +125,7 @@ public class CorpBoostPlugin extends Plugin
     @Override
     protected void startUp() throws Exception
     {
+        hooks.registerRenderableDrawListener(drawListener);
         overlayManager.add(overlay);
         overlayManager.add(cannonSpotOverlay);
     }
@@ -123,6 +133,7 @@ public class CorpBoostPlugin extends Plugin
     @Override
     protected void shutDown() throws Exception
     {
+        hooks.unregisterRenderableDrawListener(drawListener);
         cannonSpotOverlay.setHidden(true);
         overlayManager.remove(overlay);
         overlayManager.remove(cannonSpotOverlay);
@@ -467,35 +478,22 @@ public class CorpBoostPlugin extends Plugin
         }
     }
 
-    int unhideFailSafeTick = -1;
-    public boolean temporaryHide = false;
-
     public void TemporarilyHidePlayers(boolean hiding, int failSafeTicks) {
         temporaryHide = hiding;
         if (hiding) {
             unhideFailSafeTick = client.getTickCount() + failSafeTicks;
-            hideShit(true);
         } else {
-            hideShit(false);
             unhideFailSafeTick = -1;
         }
     }
 
-    public void hideShit (boolean hide) {
-        if (hide) {
-            client.setIsHidingEntities(true);
-            client.setOthersHidden(true);
-            client.setOthersHidden2D(true);
-            client.setFriendsHidden(true);
-            client.setFriendsChatMembersHidden(true);
-            client.setClanChatMembersHidden(true);
-        } else {
-            client.setOthersHidden(false);
-            client.setOthersHidden2D(false);
-            client.setFriendsHidden(false);
-            client.setFriendsChatMembersHidden(false);
-            client.setClanChatMembersHidden(false);
+    @VisibleForTesting
+    boolean shouldDraw(Renderable renderable, boolean drawingUI)
+    {
+        if (renderable instanceof Player && renderable != client.getLocalPlayer()) {
+            return !temporaryHide;
         }
+        return true;
     }
 
     @Subscribe

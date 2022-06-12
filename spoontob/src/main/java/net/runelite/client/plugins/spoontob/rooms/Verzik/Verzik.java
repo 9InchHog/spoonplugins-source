@@ -189,8 +189,6 @@ public class Verzik extends Room {
     List<GameObject> pillarsPendingRemoval;
     public List<WorldPoint> pillarLocations;
 
-    private boolean mirrorMode;
-
     BufferedImage icon = ImageUtil.loadImageResource(SpoonTobPlugin.class, "chinkspeak.png");
     BufferedImage ratIcon = ImageUtil.loadImageResource(SpoonTobPlugin.class, "RatSpeakAmulet.png");
 
@@ -1058,18 +1056,6 @@ public class Verzik extends Room {
 
     @Subscribe
     public void onClientTick(ClientTick event) {
-        /*if (client.isMirrored() && !mirrorMode) {
-            verzikOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(verzikOverlay);
-            overlayManager.add(verzikOverlay);
-            yellowGroupOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(yellowGroupOverlay);
-            overlayManager.add(yellowGroupOverlay);
-            greenBallPanel.setLayer(OverlayLayer.AFTER_MIRROR);
-            lightningPanel.setLayer(OverlayLayer.AFTER_MIRROR);
-            mirrorMode = true;
-        }*/
-
         if (config.hideOtherNados()) {
             for (NPC npc : client.getNpcs()) {
                 if (npc != null && NADO_IDS.contains(npc.getId())) {
