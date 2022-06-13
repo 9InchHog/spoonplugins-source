@@ -117,7 +117,7 @@ public class Nylocas extends Room {
 
     @Getter
     private HashMap<NPC, Integer> nylocasPillars = new HashMap();
-    public ArrayList<NyloInfo> nylocasNpcs;
+    public ArrayList<NyloInfo> nylocasNpcs = new ArrayList<>();
     @Getter
     private HashSet<NPC> aggressiveNylocas = new HashSet();
     private HashMap<NyloNPC, NPC> currentWave = new HashMap();
