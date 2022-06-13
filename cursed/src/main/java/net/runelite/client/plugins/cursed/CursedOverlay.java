@@ -125,6 +125,22 @@ public class CursedOverlay extends OverlayPanel {
 				graphics.setComposite(oldComposite);
 			}
 		}
+
+		if (config.immersiveHp() && client.getBoostedSkillLevel(Skill.HITPOINTS) < client.getRealSkillLevel(Skill.HITPOINTS)) {
+			float hpPercent = 1 - (float)client.getBoostedSkillLevel(Skill.HITPOINTS) / (float) client.getRealSkillLevel(Skill.HITPOINTS);
+			if (hpPercent > .5) {
+				Point base = Perspective.localToCanvas(this.client, this.client.getLocalPlayer().getLocalLocation(), this.client.getPlane(), this.client.getLocalPlayer().getLogicalHeight() / 2 - 10);
+				if (base != null) {
+					BufferedImage icon = ImageUtil.loadImageResource(CursedPlugin.class, "codScreenBlood.png");
+					if (icon != null) {
+						Composite oldComposite = graphics.getComposite();
+						graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, hpPercent / 2));
+						graphics.drawImage(icon, 0, 0, this.client.getCanvasWidth(), this.client.getCanvasHeight(), null);
+						graphics.setComposite(oldComposite);
+					}
+				}
+			}
+		}
 		return super.render(graphics);
 	}
 

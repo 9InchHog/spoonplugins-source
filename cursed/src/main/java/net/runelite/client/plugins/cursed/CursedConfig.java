@@ -67,4 +67,7 @@ public interface CursedConfig extends Config {
     @Range(min = 0, max = 100)
     @ConfigItem(keyName = "gtaCaVolume", name = "GTA CA Volume", description = "Another volume setting so im not deaf by 30", position = 18)
     default int gtaCaVolume() { return 40; }
+
+    @ConfigItem(keyName = "immersiveHp", name = "Immersive HP", description = "You are hurt. Get to cover!", position = 19)
+    default boolean immersiveHp() { return false; }
 }
