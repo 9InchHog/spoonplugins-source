@@ -49,8 +49,6 @@ public class EntityHiderPlusPlugin extends Plugin {
         return configManager.getConfig(EntityHiderPlusConfig.class);
     }
 
-    public ArrayList<Integer> hiddenIndices;
-    public ArrayList<Integer> animationHiddenIndices;
     public Set<String> hideAliveNPCsName;
     public Set<Integer> hideAliveNPCsID;
     public Set<Integer> hideNPCsOnAnimationID;
@@ -65,67 +63,50 @@ public class EntityHiderPlusPlugin extends Plugin {
 
     @Override
     protected void startUp() {
-        hiddenIndices = new ArrayList<>();
-        animationHiddenIndices = new ArrayList<>();
         updateConfig();
         overlayManager.add(overlay);
         hooks.registerRenderableDrawListener(drawListener);
     }
 
-    @Subscribe
-    public void onGameStateChanged(GameStateChanged event) {
-        if (event.getGameState() == GameState.LOGGED_IN) {
-            clearHiddenNpcs();
-        }
-    }
-
     @Override
     protected void shutDown() {
         overlayManager.remove(overlay);
-        clearHiddenNpcs();
-        hiddenIndices = null;
-        animationHiddenIndices = null;
         hooks.unregisterRenderableDrawListener(drawListener);
     }
 
-    @Subscribe
-    public void onClientTick(ClientTick event) {
-        for (NPC npc : client.getNpcs()) {
-            if (npc != null) {
-                if (!olmIDs.contains(npc.getId()) && !totemIDs.contains(npc.getId())) {
-                    if (((npc.getName() != null && matchWildCards(hideAliveNPCsName, Text.standardize(npc.getName())))
-                            || (hideAliveNPCsID.contains(npc.getId()))
-                            || (hideNPCsOnAnimationID.contains(npc.getAnimation()))
-                            || (config.hideDeadNPCs() && npc.getHealthRatio() == 0 && npc.getName() != null && !matchWildCards(blacklistName, Text.standardize(npc.getName())) && !blacklistID.contains(npc.getId()))
-                            || (npc.getHealthRatio() == 0 && npc.getName() != null && matchWildCards(hideNPCsOnDeathName, Text.standardize(npc.getName())))
-                            || (npc.getHealthRatio() == 0 && hideNPCsOnDeathID.contains(npc.getId())))) {
-                        if (!hiddenIndices.contains(npc.getIndex())) {
-                            setHiddenNpc(npc, true);
-                        }
-                    }
-                }
+    @VisibleForTesting
+    boolean shouldDraw(Renderable renderable, boolean drawingUI)
+    {
+        if (renderable instanceof NPC)
+        {
+            NPC npc = (NPC) renderable;
 
-                if (animationHiddenIndices.contains(npc.getIndex()) && !hideNPCsOnAnimationID.contains(npc.getAnimation())) {
-                    if (hiddenIndices.contains(npc.getIndex())) {
-                        setHiddenNpc(npc, false);
-                    }
-                }
-
-                if (hiddenIndices.contains(npc.getIndex()) && (!animationHiddenIndices.contains(npc.getIndex()) || !hideNPCsOnAnimationID.contains(npc.getAnimation()))
-                        && !hideAliveNPCsID.contains(npc.getId()) && (npc.getName() != null && !matchWildCards(hideAliveNPCsName, Text.standardize(npc.getName())))
-                        && (!npc.isDead() || !config.hideDeadNPCs())) {
-                    System.out.println("Unhide: " + npc.getName());
-                    setHiddenNpc(npc, false);
+            if (!olmIDs.contains(npc.getId()) && !totemIDs.contains(npc.getId()))
+            {
+                if ((npc.getName() != null && matchWildCards(hideAliveNPCsName, Text.standardize(npc.getName())))
+                        || (hideAliveNPCsID.contains(npc.getId()))
+                        || (hideNPCsOnAnimationID.contains(npc.getAnimation()))
+                        || (config.hideDeadNPCs() && npc.getHealthRatio() == 0 && npc.getName() != null && !matchWildCards(blacklistName, Text.standardize(npc.getName())) && !blacklistID.contains(npc.getId()))
+                        || (npc.getHealthRatio() == 0 && npc.getName() != null && matchWildCards(hideNPCsOnDeathName, Text.standardize(npc.getName())))
+                        || (npc.getHealthRatio() == 0 && hideNPCsOnDeathID.contains(npc.getId())))
+                {
+                    return false;
                 }
             }
-        }
-    }
 
-    @Subscribe
-    public void onNpcDespawned(NpcDespawned event) {
-        if (hiddenIndices.contains(event.getNpc().getIndex())) {
-            setHiddenNpc(event.getNpc(), false);
+            if (!hideNPCsOnAnimationID.contains(npc.getAnimation()) && !hideAliveNPCsID.contains(npc.getId()) && (npc.getName() != null
+                    && !matchWildCards(hideAliveNPCsName, Text.standardize(npc.getName()))) && (!npc.isDead() || !config.hideDeadNPCs()))
+            {
+                return true;
+            }
         }
+        else if (renderable instanceof GraphicsObject)
+        {
+            GraphicsObject graphicsObject = (GraphicsObject) renderable;
+            return !hideGraphicsObjects.contains(graphicsObject.getId());
+        }
+
+        return true;
     }
 
     @Subscribe
@@ -190,30 +171,6 @@ public class EntityHiderPlusPlugin extends Plugin {
         }
     }
 
-    private void setHiddenNpc(NPC npc, boolean hidden) {
-        if (hidden) {
-            hiddenIndices.add(npc.getIndex());
-            if (hideNPCsOnAnimationID.contains(npc.getAnimation())) {
-                animationHiddenIndices.add(npc.getIndex());
-            }
-        } else {
-            if (hiddenIndices.contains(npc.getIndex()))
-            {
-                hiddenIndices.remove((Integer) npc.getIndex());
-            }
-
-            if (animationHiddenIndices.contains(npc.getIndex()))
-            {
-                animationHiddenIndices.remove((Integer) npc.getIndex());
-            }
-        }
-    }
-
-    private void clearHiddenNpcs() {
-        hiddenIndices.clear();
-        animationHiddenIndices.clear();
-    }
-
     private boolean matchWildCards(Set<String> items, String pattern) {
         boolean matched = false;
         for (final String item : items) {
@@ -254,22 +211,5 @@ public class EntityHiderPlusPlugin extends Plugin {
                 }
             } catch (ArrayIndexOutOfBoundsException ignored){}
         }
-    }
-
-    @VisibleForTesting
-    boolean shouldDraw(Renderable renderable, boolean drawingUI)
-    {
-        if (renderable instanceof NPC)
-        {
-            NPC npc = (NPC) renderable;
-            return !hiddenIndices.contains(npc.getIndex()) && !animationHiddenIndices.contains(npc.getIndex());
-        }
-        else if (renderable instanceof GraphicsObject)
-        {
-            GraphicsObject graphicsObject = (GraphicsObject) renderable;
-            return !hideGraphicsObjects.contains(graphicsObject.getId());
-        }
-
-        return true;
     }
 }
