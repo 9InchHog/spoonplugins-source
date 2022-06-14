@@ -48,6 +48,9 @@ public class CursedPlugin extends Plugin {
     @Inject
     private CursedOverlay overlay;
 
+    @Inject
+    private CursedBelowWidgetsOverlay bwOverlay;
+
     public Set<Integer> gameObjects = null;
 
     public int pulseOpacity = 0;
@@ -83,16 +86,18 @@ public class CursedPlugin extends Plugin {
     @Override
     protected void startUp(){
         reset();
-        this.overlayManager.add(this.overlay);
+        overlayManager.add(overlay);
+        overlayManager.add(bwOverlay);
     }
 
     @Override
     protected void shutDown(){
         reset();
         if(config.magicTrick()){
-            this.clientThread.invokeLater(() -> this.client.setGameState(GameState.LOADING));
+            clientThread.invokeLater(() -> client.setGameState(GameState.LOADING));
         }
-        this.overlayManager.remove(this.overlay);
+        overlayManager.remove(overlay);
+        overlayManager.remove(bwOverlay);
     }
 
     private void reset(){
@@ -121,9 +126,9 @@ public class CursedPlugin extends Plugin {
         if (event.getGroup().equals("SpoonCursed")) {
             if (event.getKey().equals("magicTrick")) {
                 if (!config.magicTrick()) {
-                    this.clientThread.invokeLater(() -> this.client.setGameState(GameState.LOADING));
+                    clientThread.invokeLater(() -> client.setGameState(GameState.LOADING));
                 } else {
-                    removeGameObjectsFromScene(gameObjects, this.client.getPlane(), true);
+                    removeGameObjectsFromScene(gameObjects, client.getPlane(), true);
                 }
             } else if (event.getKey().equals("catJamVolume")) {
                 if (clip != null) {
@@ -184,7 +189,7 @@ public class CursedPlugin extends Plugin {
 
     @Subscribe
     private void onActorDeath(ActorDeath event){
-        if(event.getActor().getName() != null && this.client.getLocalPlayer() != null) {
+        if(event.getActor().getName() != null && client.getLocalPlayer() != null) {
             if (event.getActor().getName().equals(client.getLocalPlayer().getName())) {
                 if (config.bigDie()) {
                     client.playSoundEffect(3892, 10);
@@ -210,8 +215,8 @@ public class CursedPlugin extends Plugin {
         if(config.skinwalkers()){
             skinwalkerDelay--;
             if(skinwalkerDelay <= 0){
-                if (this.client.getLocalPlayer() != null && this.client.getLocalPlayer().getPlayerComposition() != null) {
-                    this.client.getLocalPlayer().getPlayerComposition().setTransformedNpcId(new Random().nextInt(15000));
+                if (client.getLocalPlayer() != null && client.getLocalPlayer().getPlayerComposition() != null) {
+                    client.getLocalPlayer().getPlayerComposition().setTransformedNpcId(new Random().nextInt(15000));
                 }
                 skinwalkerDelay = 6;
             }
@@ -243,7 +248,7 @@ public class CursedPlugin extends Plugin {
             int rng = rand.nextInt(2);
             if(rng == 1) {
                 gameObjects = ImmutableSet.of(obj.getGameObject().getId());
-                removeGameObjectsFromScene(gameObjects, this.client.getPlane(), false);
+                removeGameObjectsFromScene(gameObjects, client.getPlane(), false);
             }
         }
     }
@@ -253,13 +258,13 @@ public class CursedPlugin extends Plugin {
         String target = Text.removeTags(event.getTarget()).toLowerCase();
         String option = Text.removeTags(event.getOption()).toLowerCase();
         if ((config.swapEssenceRunning() && target.contains("stamina potion") && !option.contains("drink")) || config.why()) {
-            this.client.setMenuEntries(Arrays.copyOf(this.client.getMenuEntries(), this.client.getMenuEntries().length - 1));
+            client.setMenuEntries(Arrays.copyOf(client.getMenuEntries(), client.getMenuEntries().length - 1));
         }
     }
 
     @Subscribe
     public void onClientTick(ClientTick event) {
-        if (this.client.getGameState() == GameState.LOGGED_IN) {
+        if (client.getGameState() == GameState.LOGGED_IN) {
             catJamFrame++;
             if(catJamFrame >= 157){
                 catJamFrame = 0;
@@ -410,7 +415,7 @@ public class CursedPlugin extends Plugin {
     }
 
     public void removeGameObjectsFromScene(Set<Integer> objectIDs, int plane, boolean onToggle) {
-        Scene scene = this.client.getScene();
+        Scene scene = client.getScene();
         Tile[][] tiles = scene.getTiles()[plane];
         for (int x = 0; x < 104; x++) {
             for (int y = 0; y < 104; y++) {

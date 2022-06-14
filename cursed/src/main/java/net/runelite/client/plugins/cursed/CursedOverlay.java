@@ -30,8 +30,8 @@ public class CursedOverlay extends OverlayPanel {
 
 	@Override
 	public Dimension render(Graphics2D graphics) {
-		if(this.client.getLocalPlayer() != null && config.catJam() && plugin.playCatJam) {
-			Point base = Perspective.localToCanvas(this.client, this.client.getLocalPlayer().getLocalLocation(), this.client.getPlane(), this.client.getLocalPlayer().getLogicalHeight() / 2 - 10);
+		if(client.getLocalPlayer() != null && config.catJam() && plugin.playCatJam) {
+			Point base = Perspective.localToCanvas(client, client.getLocalPlayer().getLocalLocation(), client.getPlane(), client.getLocalPlayer().getLogicalHeight() / 2 - 10);
 			if (base != null) {
 				String pngName;
 				if(plugin.catJamFrame > 99) {
@@ -46,14 +46,14 @@ public class CursedOverlay extends OverlayPanel {
 				if (icon != null) {
 					Composite oldComposite = graphics.getComposite();
 					graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, plugin.catJamOpacity));
-					graphics.drawImage(icon, 0, 0, this.client.getCanvasWidth(), this.client.getCanvasHeight(), null);
+					graphics.drawImage(icon, 0, 0, client.getCanvasWidth(), client.getCanvasHeight(), null);
 					graphics.setComposite(oldComposite);
 				}
 			}
 		}
 
 		if(config.npcEpilepsy()){
-			for(NPC npc : this.client.getNpcs()){
+			for(NPC npc : client.getNpcs()){
 				NPCComposition npcComposition = npc.getTransformedComposition();
 				int size = 0;
 				if(npcComposition != null) {
@@ -88,7 +88,7 @@ public class CursedOverlay extends OverlayPanel {
 		}
 
 		if(config.pulsingPlayers()){
-			for(Player player : this.client.getPlayers()){
+			for(Player player : client.getPlayers()){
 				Shape box = player.getConvexHull();
 				if (box != null) {
 					Color color = new Color(Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue(), plugin.pulseOpacity);
@@ -99,7 +99,7 @@ public class CursedOverlay extends OverlayPanel {
 		}
 
 		if(config.psychedelicNpcs()){
-			for(NPC npc : this.client.getNpcs()){
+			for(NPC npc : client.getNpcs()){
 				Shape box = npc.getConvexHull();
 				if (box != null) {
 					Color color = new Color(plugin.psychedelicRed, plugin.psychedelicGreen, plugin.psychedelicBlue, 150);
@@ -123,22 +123,6 @@ public class CursedOverlay extends OverlayPanel {
 				graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, plugin.gtaOpacity));
 				graphics.drawImage(icon, (client.getCanvasWidth() - 300) / 2, ((client.getCanvasHeight() - 100) / 2) - 100, 300, 100, null);
 				graphics.setComposite(oldComposite);
-			}
-		}
-
-		if (config.immersiveHp() && client.getBoostedSkillLevel(Skill.HITPOINTS) < client.getRealSkillLevel(Skill.HITPOINTS)) {
-			float hpPercent = 1 - (float)client.getBoostedSkillLevel(Skill.HITPOINTS) / (float) client.getRealSkillLevel(Skill.HITPOINTS);
-			if (hpPercent > .5) {
-				Point base = Perspective.localToCanvas(this.client, this.client.getLocalPlayer().getLocalLocation(), this.client.getPlane(), this.client.getLocalPlayer().getLogicalHeight() / 2 - 10);
-				if (base != null) {
-					BufferedImage icon = ImageUtil.loadImageResource(CursedPlugin.class, "codScreenBlood.png");
-					if (icon != null) {
-						Composite oldComposite = graphics.getComposite();
-						graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, hpPercent / 2));
-						graphics.drawImage(icon, 0, 0, this.client.getCanvasWidth(), this.client.getCanvasHeight(), null);
-						graphics.setComposite(oldComposite);
-					}
-				}
 			}
 		}
 		return super.render(graphics);
