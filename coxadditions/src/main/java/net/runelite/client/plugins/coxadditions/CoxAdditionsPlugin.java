@@ -189,7 +189,7 @@ public class CoxAdditionsPlugin extends Plugin {
 
     public ArrayList<Integer> chestHighlightIdList = new ArrayList<>();
     public ArrayList<Integer> chestHighlightIdList2 = new ArrayList<>();
-	
+
 	public ArrayList<NPC> ropeNpcs = new ArrayList<>();
 
     public int ticksSinceHPRegen;
@@ -290,7 +290,7 @@ public class CoxAdditionsPlugin extends Plugin {
         orbTicks = 0;
 
         olmTile = null;
-		
+
 		ropeNpcs.clear();
 
 		shortcut.clear();
@@ -496,7 +496,7 @@ public class CoxAdditionsPlugin extends Plugin {
             }
         }
 
-        if (msg.equalsIgnoreCase("you have been kicked from the channel.") || msg.contains("decided to start the raid without you. sorry.") 
+        if (msg.equalsIgnoreCase("you have been kicked from the channel.") || msg.contains("decided to start the raid without you. sorry.")
             || msg.equalsIgnoreCase("you are no longer eligible to lead the party.") || msg.equalsIgnoreCase("the raid has begun!")){
             instanceTimer = 5;
             isInstanceTimerRunning = false;
@@ -558,7 +558,7 @@ public class CoxAdditionsPlugin extends Plugin {
 					}
 				}
 			}
-			
+
 			if (olmHealingPools.size() > 0) {
 				for (int i = olmHealingPools.size() - 1; i >= 0; i--) {
 					olmHealingPools.get(i).ticks--;
@@ -624,7 +624,7 @@ public class CoxAdditionsPlugin extends Plugin {
                 ropeSpawnDelay--;
             }
 		}
-		
+
 		if (isInstanceTimerRunning){
 			instanceTimer--;
 			if (instanceTimer < 0){
@@ -1033,118 +1033,6 @@ public class CoxAdditionsPlugin extends Plugin {
         return true;
     };
 
-	/*@Subscribe
-    public void onMenuEntryAdded(MenuEntryAdded e) {
-        if (client.getVarbitValue(Varbits.IN_RAID) == 1) {
-            int type = e.getType();
-            int id = e.getIdentifier();
-            String target = Text.standardize(e.getTarget(), true).toLowerCase();
-            String option = Text.standardize(e.getOption()).toLowerCase();
-
-            if (config.hideAttackHead()) {
-                try {
-                    if (type >= 7 && type <= 13 && type != 8){
-                        NPC npc = client.getCachedNPCs()[id];
-                        if (npc != null && npc.getName() != null) {
-                            String name = npc.getName().toLowerCase();
-                            if (name.contains("great olm") && !name.contains("(left claw)") && !name.contains("(right claw)") && (meleeHand != null || mageHand != null)) {
-                                client.setMenuOptionCount(client.getMenuOptionCount() - 1);
-                            }
-                        }
-                    }
-                }catch (ArrayIndexOutOfBoundsException ex){
-                    System.out.println(ex.getMessage());
-                }
-            }
-
-            if (config.hideVesp()) {
-                try {
-                    if (type >= 7 && type <= 13 && type != 8){
-                        NPC npc = client.getCachedNPCs()[id];
-                        if (npc != null && npc.getName() != null) {
-                            String name = npc.getName().toLowerCase();
-                            if (name.contains("vespula")) {
-                                client.setMenuOptionCount(client.getMenuOptionCount() - 1);
-                            }
-                        }
-                    }
-                }catch (ArrayIndexOutOfBoundsException ex){
-                    System.out.println(ex.getMessage());
-                }
-            }
-
-            if (config.swapBats() && option.contains("catch") && (target.contains("guanic bat") || target.contains("prael bat") || target.contains("giral bat") || target.contains("phluxia bat") ||
-                    target.contains("kryket bat") || target.contains("murng bat") || target.contains("psykk bat"))) {
-                client.setMenuOptionCount(client.getMenuOptionCount() - 1);
-            }
-
-            if (config.removeChop() && target.equals("sapling") && option.equals("chop")) {
-                ArrayList<Integer> axeList = new ArrayList<>(Arrays.asList(1349, 1351, 1353, 1355, 1357, 1359, 1361, 6739, 13241, 13242, 25110, 23673, 25066, 25371, 25378));
-                int weapon = Objects.requireNonNull(client.getLocalPlayer()).getPlayerComposition().getEquipmentId(KitType.WEAPON);
-                boolean axeFound = false;
-                for (int axe : axeList) {
-                    if (client.getItemContainer(InventoryID.INVENTORY).count(axe) > 0 || weapon == axe) {
-                        axeFound = true;
-                        break;
-                    }
-                }
-
-                if (!axeFound) {
-                    client.setMenuOptionCount(client.getMenuOptionCount() - 1);
-                }
-            }
-
-            if (config.removeUseSeed() && option.equals("use") && target.contains(" seed -> ")) {
-                String[] seeds = {"buchu seed", "golpar seed", "noxifer seed"};
-                MenuEntry[] entries = client.getMenuEntries();
-                MenuEntry[] newEntries = client.getMenuEntries();
-                for (String seed : seeds) {
-                    if (target.startsWith(seed + " ->") && type != 8 && (!target.contains("herb patch") || target.contains("(level-"))) {
-                        System.out.println("Removed entry: " + target);
-                        newEntries = (MenuEntry[]) ArrayUtils.remove((Object[]) entries, entries.length-1);
-                        break;
-                    }
-                }
-                client.setMenuEntries(newEntries);
-            }
-
-            if (config.removeUseVial() && option.equals("use") && target.contains("empty gourd vial -> ") && type != 8 && (!target.contains("geyser")
-                    && !target.contains("xeric's aid ") && !target.contains("revitalisation ") && !target.contains("prayer enhance ") && !target.contains("overload "))) {
-                MenuEntry[] entries = client.getMenuEntries();
-                MenuEntry[] newEntries = (MenuEntry[]) ArrayUtils.remove((Object[]) entries, entries.length-1);
-                client.setMenuEntries(newEntries);
-            }
-
-            if (config.removeFeed() && target.equals("lux grub") && option.equals("feed")) {
-                if (client.getItemContainer(InventoryID.INVENTORY).count(20892) > 0) {
-                    client.setMenuOptionCount(client.getMenuOptionCount() - 1);
-                }
-            }
-
-            if (config.removePickRoot() && target.equals("medivaemia root") && vespDied && option.equals("pick")) {
-                client.setMenuOptionCount(client.getMenuOptionCount() - 1);
-            }
-
-            if (config.removePickSpec() && (target.equals("special attack") || option.equals("use special attack"))) {
-                ArrayList<Integer> pickList = new ArrayList<>(Arrays.asList(11920, 12797, 23677, 25376, 13243, 13244, 25063, 25369, 23680, 23682, 23863, 20014, 23276, 23822));
-                int weapon = Objects.requireNonNull(client.getLocalPlayer()).getPlayerComposition().getEquipmentId(KitType.WEAPON);
-                if (pickList.contains(weapon)) {
-                    client.setMenuOptionCount(0);
-                }
-            }
-
-            if (config.removeCastCoX() && option.equals("cast") && type == MenuAction.SPELL_CAST_ON_PLAYER.getId()) {
-                String[] spells = {"ice barrage", "ice burst", "ice blitz", "ice rush", "entangle", "snare", "bind", "blood barrage", "blood burst", "blood rush",
-                        "blood blitz", "fire surge", "fire wave"};
-                for (String spell : spells) {
-                    if (client.getSelectedSpellName().toLowerCase().contains(spell)) {
-                        client.setMenuOptionCount(client.getMenuOptionCount() - 1);
-                    }
-                }
-            }
-        }
-    }*/
-	
     @Subscribe
     public void onMenuOptionClicked(MenuOptionClicked event) {
         if (event.getMenuOption().equalsIgnoreCase("hold") || event.getMenuOption().equalsIgnoreCase("equip") || event.getMenuOption().equalsIgnoreCase("wield")){
@@ -1190,46 +1078,6 @@ public class CoxAdditionsPlugin extends Plugin {
 
     @Subscribe
     public void onClientTick(ClientTick clientTick) {
-        /*if (client.isMirrored() && !mirrorMode) {
-            overlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(overlay);
-            overlayManager.add(overlay);
-            olmOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(olmOverlay);
-            overlayManager.add(olmOverlay);
-            vespEnahnceOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(vespEnahnceOverlay);
-            overlayManager.add(vespEnahnceOverlay);
-            vanguardCycleOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(vanguardCycleOverlay);
-            overlayManager.add(vanguardCycleOverlay);
-            shortcutOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(shortcutOverlay);
-            overlayManager.add(shortcutOverlay);
-            orbOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(orbOverlay);
-            overlayManager.add(orbOverlay);
-            orbTabOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(orbTabOverlay);
-            overlayManager.add(orbTabOverlay);
-            olmHpPanelOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(olmHpPanelOverlay);
-            overlayManager.add(olmHpPanelOverlay);
-            olmSideOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(olmSideOverlay);
-            overlayManager.add(olmSideOverlay);
-            instanceTimerOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(instanceTimerOverlay);
-            overlayManager.add(instanceTimerOverlay);
-            itemOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(itemOverlay);
-            overlayManager.add(itemOverlay);
-            meatTreeCycleOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(meatTreeCycleOverlay);
-            overlayManager.add(meatTreeCycleOverlay);
-            mirrorMode = true;
-        }*/
-
         if (client.getGameState() == GameState.LOGGED_IN && !client.isMenuOpen()) {
             MenuEntry[] menuEntries = client.getMenuEntries();
             int idx = 0;
